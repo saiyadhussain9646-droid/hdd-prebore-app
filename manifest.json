@@ -1,0 +1,12 @@
+{
+  "background_color": "#0a0e1a",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "HDD Pre-Bore Pro",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "HDD Pre-Bore Pro",
+  "start_url": "/",
+  "theme_color": "#0a0e1a",
+  "description": "Professional HDD bore profile calculator for Horizontal Directional Drilling"
+}
