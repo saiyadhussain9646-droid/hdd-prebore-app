@@ -1560,9 +1560,9 @@ document.addEventListener('click',function(e){
       <span>⚙️ USER MANAGEMENT</span>
       <button class="btn-xs" onclick="closeAdmin()">✕ Close</button>
     </div>
-    <div id="userList"><div class="user-row" style="flex-direction:column;align-items:flex-start;gap:6px;padding:10px 0;"><div style="display:flex;align-items:center;gap:8px;width:100%;flex-wrap:wrap;"><span class="uname">saiyad</span><span class="urole r-admin">admin</span></div><div style="display:flex;align-items:center;gap:6px;width:100%;background:rgba(0,0,0,.2);border-radius:6px;padding:6px 10px;"><span style="font-size:9px;color:var(--t3)">ID:</span><span style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--accent);flex:1">saiyad</span><span style="font-size:9px;color:var(--t3)">PW:</span><span id="pw-show-0" style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--green);flex:1">••••••</span><button class="btn-xs" onclick="toggleShowPw(0)">👁</button></div></div><div class="user-row" style="flex-direction:column;align-items:flex-start;gap:6px;padding:10px 0;"><div style="display:flex;align-items:center;gap:8px;width:100%;flex-wrap:wrap;"><span class="uname">user1</span><span class="urole r-off">user (disabled)</span><button class="btn-xs grn" onclick="toggleU(1)" style="margin-left:auto">✅ Enable</button></div><div style="display:flex;align-items:center;gap:6px;width:100%;background:rgba(0,0,0,.2);border-radius:6px;padding:6px 10px;"><span style="font-size:9px;color:var(--t3)">ID:</span><span style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--accent);flex:1">user1</span><span style="font-size:9px;color:var(--t3)">PW:</span><span id="pw-show-1" style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--green);flex:1">••••••</span><button class="btn-xs" onclick="toggleShowPw(1)">👁</button><button class="btn-xs" onclick="editUser(1)" style="color:var(--warn);border-color:rgba(255,204,0,.3)">✏️ Edit</button></div></div><div class="user-row" style="flex-direction:column;align-items:flex-start;gap:6px;padding:10px 0;"><div style="display:flex;align-items:center;gap:8px;width:100%;flex-wrap:wrap;"><span class="uname">satish</span><span class="urole r-user">user</span><button class="btn-xs red" onclick="toggleU(2)" style="margin-left:auto">🚫 Disable</button></div><div style="display:flex;align-items:center;gap:6px;width:100%;background:rgba(0,0,0,.2);border-radius:6px;padding:6px 10px;"><span style="font-size:9px;color:var(--t3)">ID:</span><span style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--accent);flex:1">satish</span><span style="font-size:9px;color:var(--t3)">PW:</span><span id="pw-show-2" style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--green);flex:1">••••••</span><button class="btn-xs" onclick="toggleShowPw(2)">👁</button><button class="btn-xs" onclick="editUser(2)" style="color:var(--warn);border-color:rgba(255,204,0,.3)">✏️ Edit</button></div></div><div class="admin-note" style="margin-top:10px">⚠️ Users stored on this device only.<br>Share credentials via WhatsApp to give access.</div></div>
+    <div id="userList"><div style="text-align:center;padding:20px;color:var(--t2);font-size:12px;">⏳ Loading users from Firebase...</div></div>
     <div class="admin-add">
-      <h4>ADD / UPDATE USER</h4>
+      <h4>ADD NEW USER</h4>
       <div class="arow">
         <input type="text" id="nu" placeholder="Username">
         <div class="pw-wrap" style="flex:1;min-width:90px;">
@@ -1572,28 +1572,14 @@ document.addEventListener('click',function(e){
         <select id="nr"><option value="user">User</option><option value="admin">Admin</option></select>
       </div>
       <div class="arow">
-        <input type="email" id="ne" placeholder="Email (optional)" style="flex:2;min-width:120px;">
+        <input type="email" id="ne" placeholder="Email (required for Firebase)" style="flex:2;min-width:120px;">
       </div>
-      <div class="arow"><button class="btn-add" onclick="addUser()">＋ Add / Update User</button></div>
-      <div class="amsg" id="amsg" style="color: var(--green);">✅ "satish" added!</div>
+      <div class="arow"><button class="btn-add" onclick="addUser()">＋ Add User to Firebase</button></div>
+      <div class="amsg" id="amsg"></div>
     </div>
     <div class="admin-note">
-      ⚠️ Users are stored per-device (browser storage).<br>
-      Share credentials directly via WhatsApp to new users.
-    </div>
-    <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
-      <div style="font-size:10px;color:var(--t2);font-weight:600;margin-bottom:8px;">📤 SHARE APP WITH USERS</div>
-      <div style="font-size:10px;color:var(--t3);line-height:1.8;margin-bottom:10px;">
-        User बनाने के बाद यह button दबाएं → Updated HTML file download होगी →<br>
-        WhatsApp पर उस user को भेजें। उनके फोन में यही credentials काम करेंगे।
-      </div>
-      <button class="btn-add" style="width:100%;background:rgba(0,212,255,.1);border-color:rgba(0,212,255,.3);color:var(--accent);" onclick="exportUpdatedFile()">
-        📥 Download Updated App File
-      </button>
-      <div style="font-size:9px;color:var(--t3);margin-top:6px;line-height:1.7;">
-        ✅ Enable/Disable तुरंत इस device पर काम करता है।<br>
-        दूसरे की device पर disable करने के लिए updated file भेजनी होगी।
-      </div>
+      ☁️ Users are managed via Firebase — changes apply instantly across all devices.<br>
+      New users can login immediately after being added.
     </div>
   </div>
 </div>
@@ -4307,7 +4293,15 @@ async function doLogin() {
   const btn = document.getElementById('loginBtn');
   btn.disabled=true; btn.textContent='⏳ Logging in…';
   try {
-    const email = u.includes('@') ? u : u+'@hddpro.app';
+    // Find email by username first, then fallback to @hddpro.app
+    let email = u.includes('@') ? u : u+'@hddpro.app';
+    if (!u.includes('@')) {
+      try {
+        const uSnap = await _db.collection('user')
+          .where('username','==',u.toLowerCase()).limit(1).get();
+        if (!uSnap.empty) email = uSnap.docs[0].data().email || email;
+      } catch(e2) { /* fallback to @hddpro.app */ }
+    }
     const cred = await _auth.signInWithEmailAndPassword(email, p);
     const uid = cred.user.uid;
     let snap = await _db.collection('user').doc(uid).get();
@@ -4466,36 +4460,31 @@ function _clearAllBoreData() {
 
 function renderUserList() {
   var users = getUsers();
-  var _pw = {};
-  users.forEach(function(u,i){ _pw[i]=u.p; });
-  window._pwCache = _pw;
 
   var rows = '';
   users.forEach(function(u,i){
     var isAdm = u.role === 'admin';
     var email  = u.ne || '—';
-    var rowCls = isAdm ? 'row-admin' : (!u.active ? 'row-disabled' : '');
     var statusHtml = isAdm
       ? '<span class="tbl-status-ok">👑 ADMIN</span>'
       : (u.active
           ? '<span class="tbl-status-ok">✅ ACTIVE</span>'
           : '<span class="tbl-status-off">🚫 BLOCKED</span>');
-    // Block toggle switch — admin rows protected
     var switchHtml = isAdm
       ? '<span style="font-size:9px;color:var(--t3)">Protected</span>'
       : '<label class="tbl-block-switch" title="'+(u.active?'Block user':'Enable user')+'">'
         +'<input type="checkbox"'+(u.active?' checked':'')+' onchange="toggleU('+i+')">'
         +'<span class="tbl-block-slider"></span>'
         +'</label>';
-    var pwCell = '<span id="pw-show-'+i+'" style="font-family:\'Share Tech Mono\',monospace;font-size:11px;color:var(--green)">••••••</span>'
-               +'<button class="btn-xs" onclick="toggleShowPw('+i+')" style="margin-left:4px;padding:1px 5px">👁</button>';
+    // Firebase mein password visible nahi hota
+    var pwCell = '<span style="font-family:\'Share Tech Mono\',monospace;font-size:11px;color:var(--t3)">Firebase Auth</span>';
     var editCell = isAdm ? '<span style="color:var(--t3);font-size:9px">—</span>'
-      : '<button class="btn-xs" onclick="editUser('+i+')" style="color:var(--warn);border-color:rgba(255,204,0,.3);font-size:9px;padding:2px 6px">✏️</button>';
+      : '<button class="btn-xs" onclick="resetPW('+i+')" style="color:var(--warn);border-color:rgba(255,204,0,.3);font-size:9px;padding:2px 6px">📧 Reset</button>';
 
     rows +=
-      '<tr class="'+rowCls+'">'
+      '<tr>'
       +'<td style="font-family:\'Share Tech Mono\',monospace;color:var(--accent)">'+u.u+'</td>'
-      +'<td style="font-size:11px;color:var(--t2)">'+email+'</td>'
+      +'<td style="font-size:10px;color:var(--t2)">'+email+'</td>'
       +'<td>'+statusHtml+'</td>'
       +'<td>'+pwCell+'</td>'
       +'<td style="text-align:center">'+switchHtml+'</td>'
@@ -4503,14 +4492,18 @@ function renderUserList() {
       +'</tr>';
   });
 
+  if (users.length === 0) {
+    rows = '<tr><td colspan="6" style="text-align:center;color:var(--t2);padding:16px;">⏳ Loading users...</td></tr>';
+  }
+
   var html =
     '<table class="admin-user-tbl">'
     +'<thead><tr>'
     +'<th>USERNAME</th><th>EMAIL</th><th>STATUS</th>'
-    +'<th>PASSWORD</th><th style="text-align:center">ACCESS</th><th style="text-align:center">EDIT</th>'
+    +'<th>PASSWORD</th><th style="text-align:center">ACCESS</th><th style="text-align:center">RESET PW</th>'
     +'</tr></thead><tbody>'+rows+'</tbody></table>'
-    +'<div class="admin-note" style="margin-top:8px">⚠️ Users stored on this device. '
-    +'Share credentials via WhatsApp to grant access.</div>';
+    +'<div class="admin-note" style="margin-top:8px">☁️ Users managed via Firebase. '
+    +'Reset Password sends email to user directly.</div>';
 
   document.getElementById('userList').innerHTML = html;
 }
@@ -6368,31 +6361,38 @@ function _doGraphPDF(){
 
     const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>HDD Graph</title>
 <style>*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:Arial,sans-serif;background:#fff;color:#111;}
+html,body{height:100%;font-family:Arial,sans-serif;background:#fff;color:#111;}
 @page{size:A4 landscape;margin:8mm 10mm;}
-@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
+@media print{
+  html,body{height:100%;}
+  body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .page-wrap{page-break-after:avoid;page-break-inside:avoid;}
+}
+.page-wrap{display:flex;flex-direction:column;height:185mm;overflow:hidden;}
 .gh{display:flex;align-items:center;gap:10px;border-bottom:3px solid #1a3a6a;
-  padding-bottom:6px;margin-bottom:6px;}
-.gl{flex:0 0 auto;}.gl img{height:38px;max-width:100px;object-fit:contain;}
-.gt{flex:1;}.gm{font-size:15px;font-weight:900;color:#1a3a6a;letter-spacing:1px;}
-.gs{font-size:8.5px;color:#555;margin-top:2px;line-height:1.5;}
-.gb{background:#1a3a6a;color:#fff;padding:3px 9px;border-radius:6px;
-  font-size:8.5px;font-weight:700;letter-spacing:1px;white-space:nowrap;}
-.gi{display:flex;border:1px solid #c5d0f0;border-radius:6px;overflow:hidden;
-  background:#f0f4ff;margin-bottom:6px;}
-.gc{flex:1;padding:4px 7px;border-right:1px solid #c5d0f0;font-size:7.5px;}
+  padding-bottom:5px;margin-bottom:5px;flex-shrink:0;}
+.gl{flex:0 0 auto;}.gl img{height:36px;max-width:90px;object-fit:contain;}
+.gt{flex:1;}.gm{font-size:14px;font-weight:900;color:#1a3a6a;letter-spacing:1px;}
+.gs{font-size:8px;color:#555;margin-top:2px;line-height:1.4;}
+.gb{background:#1a3a6a;color:#fff;padding:3px 8px;border-radius:5px;
+  font-size:8px;font-weight:700;letter-spacing:1px;white-space:nowrap;}
+.gi{display:flex;border:1px solid #c5d0f0;border-radius:5px;overflow:hidden;
+  background:#f0f4ff;margin-bottom:5px;flex-shrink:0;}
+.gc{flex:1;padding:3px 6px;border-right:1px solid #c5d0f0;font-size:7px;}
 .gc:last-child{border-right:none;}
-.gcl{color:#888;letter-spacing:.5px;margin-bottom:1px;font-size:6.5px;text-transform:uppercase;}
-.gcv{font-weight:700;color:#1a3a6a;font-size:9px;}
-.gw{border:1.5px solid #c5d0f0;border-radius:8px;padding:8px;
-  background:#f8faff;text-align:center;}
-.gw img{width:95%;height:auto;display:block;margin:0 auto;}
-.gf{margin-top:6px;display:flex;align-items:center;justify-content:space-between;
-  padding:5px 8px;background:#f0fff4;border:1px solid #aaccaa;
-  border-radius:4px;font-size:7px;color:#333;}
+.gcl{color:#888;margin-bottom:1px;font-size:6px;text-transform:uppercase;}
+.gcv{font-weight:700;color:#1a3a6a;font-size:8.5px;}
+.gw{border:1.5px solid #c5d0f0;border-radius:6px;padding:5px;
+  background:#f8faff;flex:1;overflow:hidden;display:flex;
+  align-items:center;justify-content:center;min-height:0;}
+.gw img{max-width:100%;max-height:100%;object-fit:contain;display:block;}
+.gf{margin-top:4px;display:flex;align-items:center;justify-content:space-between;
+  padding:4px 7px;background:#f0fff4;border:1px solid #aaccaa;
+  border-radius:3px;font-size:6.5px;color:#333;flex-shrink:0;}
 </style></head><body>
+<div class="page-wrap">
 <div class="gh">
-  <div class="gl">${logoHtml||`<div style="font-size:13px;font-weight:900;color:#1a3a6a;">${v('prepB')||'HDD Pro'}<br><span style="font-size:8px;color:#888;">HDD SPECIALIST</span></div>`}</div>
+  <div class="gl">${logoHtml||`<div style="font-size:12px;font-weight:900;color:#1a3a6a;">${v('prepB')||'HDD Pro'}<br><span style="font-size:7px;color:#888;">HDD SPECIALIST</span></div>`}</div>
   <div class="gt">
     <div class="gm">📊 BORE PROFILE GRAPH</div>
     <div class="gs">${info[0]||''}</div>
@@ -6406,6 +6406,7 @@ body{font-family:Arial,sans-serif;background:#fff;color:#111;}
 <div class="gf">
   <span>Formula: Depth=Prev+(Angle%×Seg÷100) | Min BR=OD×100÷1000 | RC=Seg÷tan(ΔAngle) | API RP 1107</span>
   <span><strong>Saiyad Hussain</strong> — HDD Driller &amp; Locator · 14+ Yrs · Saudi Arabia</span>
+</div>
 </div>
 </body></html>`;
 
@@ -7203,33 +7204,7 @@ const QG_DATA = {
         'Tap 🔐 LOGIN to access the app.',
         'Use Forgot Password? if you need a reset.'],
         note:'💡 No account? Contact admin via WhatsApp.' },
-      { ico:'⛏️', lbl:'MODE 1 — STANDARD BORING', steps:[
-        'USE WHEN: Open areas, highway crossings, long rural bores with no fixed pit constraints.',
-        'PUNCH-IN: Machine sets up at ground level. Enter bore length, rod length, max depth.',
-        'AUTO PROFILE: App calculates entry angle, level section, and exit curve automatically.',
-        'STEER PATH: Entry angle (neg %) → descend rods → level/hold → ascend rods → exit angle (neg %).',
-        'EXIT: Drill bit emerges at the far end at ground level. Pull back pipe from exit to entry.',
-        'CRITICAL CHECK: Verify all RC values exceed minimum bend radius. Red RC = over-bend risk.'],
-        note:'📐 Rod step limit: ±2.5%/rod (9.5m). Entry ~13–18%. Min BR = OD×100÷1000 m.' },
-      { ico:'🏙️', lbl:'MODE 2 — PIT-TO-PIT CURVE (CITY MODE)', steps:[
-        'USE WHEN: Urban/congested zones with pre-dug client pits at both ends.',
-        'SETUP: Enter Entry Pit Depth and Exit Pit Depth (client-specified). These are the real soil surface constraints.',
-        'PUNCH-IN: Machine drills from Entry Pit base level — NOT from ground zero.',
-        'RESTRICTIONS: Bore length and depth are constrained by both pit dimensions + NC punch-in space.',
-        'NC SECTION: Machine punches forward at steep angle inside the pit before transitioning to design grade.',
-        'STEER PATH: Pit base → NC steep punch → smooth grade transition → level bore → exit curve → Pit base.',
-        'EXIT: Pipe pulled from Exit Pit. Final depth must match exit pit floor elevation.'],
-        note:'⚠️ City Mode uses ±0.30m depth clamp on intermediate rods. Max NC angle auto-calculated from pit space.' },
-      { ico:'🎯', lbl:'MODE 3 — PIT-TO-PIT ZERO-DEGREE (RIVER / RAILWAY)', steps:[
-        'USE WHEN: Level crossings — rivers, railways, canals — where entry & exit elevations are nearly identical.',
-        'PRINCIPLE: Entry pit and exit pit are at the same or near-same depth. Bore stays near-horizontal throughout.',
-        'SETUP: Enter Entry Pit Depth = Exit Pit Depth (or near-equal). App forces near-zero grade on level section.',
-        'ZDC ENGINE: Adaptive NC scaling (13–25%) ensures the drill curve fits within the crossing window.',
-        'STEER PATH: Pit → NC punch-in → minimal grade hold → NC punch-out → Pit.',
-        'CROSSING RULE: Max depth must fit between soil surface and any buried obstacles (cables, utilities).',
-        'PULL-BACK: After breakthrough, swab pass is done before product pipe pull-back.'],
-        note:'🎯 Zero-degree mode targets ≤0.5% grade on the horizontal section. Tolerates ±3% flex with auto-grade.' },
-      { ico:'📐', lbl:'MODE 4 — TRIAL BORE DRAFT LOGGING', steps:[
+      { ico:'📐', lbl:'MODE 1 — TRIAL BORE DRAFT LOGGING', steps:[
         'USE WHEN: Manual field steering — log actual measured rod-by-rod angles as you drill.',
         'INPUT: Enter each rod\'s actual angle reading from the sonde/walkover locator after each rod push.',
         'LIVE GRAPH: App instantly plots the bore profile on a depth vs. distance graph with each entry.',
@@ -7238,6 +7213,32 @@ const QG_DATA = {
         'CORRECTION: If depth is drifting, adjust next rod angle before pushing — app shows required correction.',
         'EXPORT: Final trial bore log exported as PDF/Excel for as-built record and client handover.'],
         note:'📋 Trial Bore is a LIVE logging tool — do NOT pre-fill angles. Enter each rod after actual steering measurement.' },
+      { ico:'⛏️', lbl:'MODE 2 — STANDARD BORING', steps:[
+        'USE WHEN: Open areas, highway crossings, long rural bores with no fixed pit constraints.',
+        'PUNCH-IN: Machine sets up at ground level. Enter bore length, rod length, max depth.',
+        'AUTO PROFILE: App calculates entry angle, level section, and exit curve automatically.',
+        'STEER PATH: Entry angle (neg %) → descend rods → level/hold → ascend rods → exit angle (neg %).',
+        'EXIT: Drill bit emerges at the far end at ground level. Pull back pipe from exit to entry.',
+        'CRITICAL CHECK: Verify all RC values exceed minimum bend radius. Red RC = over-bend risk.'],
+        note:'📐 Rod step limit: ±2.5%/rod (9.5m). Entry ~13–18%. Min BR = OD×100÷1000 m.' },
+      { ico:'🏙️', lbl:'MODE 3 — PIT-TO-PIT CURVE (CITY MODE)', steps:[
+        'USE WHEN: Urban/congested zones with pre-dug client pits at both ends.',
+        'SETUP: Enter Entry Pit Depth and Exit Pit Depth (client-specified). These are the real soil surface constraints.',
+        'PUNCH-IN: Machine drills from Entry Pit base level — NOT from ground zero.',
+        'RESTRICTIONS: Bore length and depth are constrained by both pit dimensions + NC punch-in space.',
+        'NC SECTION: Machine punches forward at steep angle inside the pit before transitioning to design grade.',
+        'STEER PATH: Pit base → NC steep punch → smooth grade transition → level bore → exit curve → Pit base.',
+        'EXIT: Pipe pulled from Exit Pit. Final depth must match exit pit floor elevation.'],
+        note:'⚠️ City Mode uses ±0.30m depth clamp on intermediate rods. Max NC angle auto-calculated from pit space.' },
+      { ico:'🎯', lbl:'MODE 4 — PIT-TO-PIT ZERO-DEGREE (RIVER / RAILWAY)', steps:[
+        'USE WHEN: Level crossings — rivers, railways, canals — where entry & exit elevations are nearly identical.',
+        'PRINCIPLE: Entry pit and exit pit are at the same or near-same depth. Bore stays near-horizontal throughout.',
+        'SETUP: Enter Entry Pit Depth = Exit Pit Depth (or near-equal). App forces near-zero grade on level section.',
+        'ZDC ENGINE: Adaptive NC scaling (13–25%) ensures the drill curve fits within the crossing window.',
+        'STEER PATH: Pit → NC punch-in → minimal grade hold → NC punch-out → Pit.',
+        'CROSSING RULE: Max depth must fit between soil surface and any buried obstacles (cables, utilities).',
+        'PULL-BACK: After breakthrough, swab pass is done before product pipe pull-back.'],
+        note:'🎯 Zero-degree mode targets ≤0.5% grade on the horizontal section. Tolerates ±3% flex with auto-grade.' },
       { ico:'⚙️', lbl:'BORE DETAILS ENTRY', steps:[
         'Enter total bore length, pipe OD, and rod length.',
         'Set entry angle (%) and required max depth (m).',
@@ -8832,24 +8833,45 @@ function zdcExportPDF() {
   try { const cvs = document.getElementById('zdcGraphCanvas');
     if (cvs) graphDataUrl = cvs.toDataURL('image/png'); } catch(e) {}
 
-  // Build table HTML for PDF
-  const cols8 = ['ROD No.','DISTANCE (m)','CALCULATED ANGLE','CALCULATED DEPTH (m)',
-    'RC (m)','ACTUAL ANGLE','ACTUAL DEPTH (m)','REMARKS'];
+  // Build table HTML for PDF — with RL columns if active
+  const _rlZdcPdf = d.hasRL || false; // RL active check from zdcData
+  // Read RL values from DOM (user may have typed them)
+  const _rlSurveyMap = {};
+  const _rlActualMap = {};
+  if (_rlZdcPdf) {
+    document.querySelectorAll('[id^="srl-zdc-"]').forEach(el => {
+      const rod = el.dataset.srlrod;
+      _rlSurveyMap[rod] = el.textContent.trim();
+    });
+    document.querySelectorAll('[id^="rla-zdc-"]').forEach(el => {
+      const rod = el.id.replace('rla-zdc-','');
+      _rlActualMap[rod] = el.textContent.trim();
+    });
+  }
+  const cols8 = _rlZdcPdf
+    ? ['ROD No.','DISTANCE (m)','CALC ANGLE','CALC DEPTH (m)','SURVEY RL (m)','ACTUAL DEPTH FROM RL (m)','RC (m)','ACT ANGLE','ACT DEPTH (m)','REMARKS']
+    : ['ROD No.','DISTANCE (m)','CALCULATED ANGLE','CALCULATED DEPTH (m)','RC (m)','ACTUAL ANGLE','ACTUAL DEPTH (m)','REMARKS'];
+  const _cs = _rlZdcPdf ? 10 : 8;
+  function _rlCells(rod){
+    if(!_rlZdcPdf) return '';
+    return `<td style="color:#a16207;font-weight:600">${_rlSurveyMap[rod]||''}</td>
+            <td style="color:#0f766e;font-weight:600;background:#f0fdfa">${_rlActualMap[rod]||''}</td>`;
+  }
 
   let tbl = `<table><thead><tr>${cols8.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>`;
-  // PI row
   const ncA = d.ncRows.length ? Math.abs(d.ncRows[0].angle).toFixed(2) : '—';
   tbl += `<tr style="background:#dbeafe"><td>0</td><td>0.0</td><td>−${ncA}%</td>
-    <td>0.00</td><td>∞</td><td>—</td><td>—</td>
+    <td>0.00</td>${_rlCells('0')}<td>∞</td><td>—</td><td>—</td>
     <td>PUNCH IN | Entry:−${ncA}% | Target:−${d.ed.toFixed(2)}m in ${d.ncRods} rods</td></tr>`;
   d.ncRows.forEach(r => {
     tbl += `<tr style="background:#fee2e2">
       <td>${r.rod}</td><td>${r.dist.toFixed(1)}</td>
       <td>${r.angle.toFixed(2)}%</td><td>−${r.depth.toFixed(2)}</td>
+      ${_rlCells(String(r.rod))}
       <td>${r.rc!==null?r.rc.toFixed(0):'∞'}</td>
       <td>—</td><td>—</td><td>🚫 NOT COUNTABLE — Punch-In zone</td></tr>`;
   });
-  tbl += `<tr style="background:#d1fae5"><td colspan="8" style="text-align:center;font-weight:bold;color:#065f46;">
+  tbl += `<tr style="background:#d1fae5"><td colspan="${_cs}" style="text-align:center;font-weight:bold;color:#065f46;">
     🕳️ ENTRY PIT — Depth: ${d.ed.toFixed(2)}m | Countable bore starts ↓</td></tr>`;
   d.countRows.forEach((r,i) => {
     const bg = i%2===0?'#f0fff4':'#ffffff';
@@ -8858,11 +8880,12 @@ function zdcExportPDF() {
       <td>${r.rod}</td><td>${(r.rod===d.n?d.bl:r.rod*d.rl).toFixed(1)}</td>
       <td style="color:#065f46;font-weight:bold">${aStr}</td>
       <td style="font-weight:bold">−${r.depth.toFixed(2)}</td>
+      ${_rlCells(String(r.rod))}
       <td>${r.rc!==null?r.rc.toFixed(0):'∞'}</td>
       <td style="background:#f0fff4">—</td><td style="background:#f0fff4">—</td>
       <td>&nbsp;</td></tr>`;
   });
-  tbl += `<tr style="background:#d1fae5"><td colspan="8" style="text-align:center;font-weight:bold;color:#065f46;">
+  tbl += `<tr style="background:#d1fae5"><td colspan="${_cs}" style="text-align:center;font-weight:bold;color:#065f46;">
     🕳️ EXIT PIT — Depth: ${d.xd.toFixed(2)}m | Vertical pullout ↑</td></tr>`;
   tbl += '</tbody></table>';
 
