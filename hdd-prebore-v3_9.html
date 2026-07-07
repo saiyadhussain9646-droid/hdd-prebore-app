@@ -401,12 +401,42 @@ input:not(:checked)+.tbl-block-slider:before{background:var(--danger);transform:
 /* ── LIGHT (SUNLIGHT / FIELD) THEME — HIGH VISIBILITY ── */
 body.light-theme{
   --bg:#ffffff; --bg2:#ffffff; --bg3:#f0f0f0; --panel:#ffffff;
-  --border:#bbbbbb; --accent:#000000; --green:#000000; --orange:#000000;
-  --warn:#000000; --danger:#000000; --text:#000000; --t2:#000000; --t3:#000000;
+  --border:#bbbbbb; --accent:#0a5fb4; --green:#0a7a3d; --orange:#9a5b00;
+  --warn:#9a5b00; --danger:#c81e3a; --text:#000000; --t2:#000000; --t3:#000000;
   font-size:112%;
 }
-/* Force all text to solid black */
+/* Force all text to solid black by default (best contrast on white field-glare) */
 body.light-theme *{color:#000000!important;}
+/* Restore semantic colour-coding for status/feedback elements — without this,
+   success/warning/danger all read as plain black and lose meaning at a glance. */
+body.light-theme .gps-status.ok,
+body.light-theme .toast.ok,
+body.light-theme .toast.ok *,
+body.light-theme .tbl-status-ok,
+body.light-theme .angle-status.level,
+body.light-theme .angle-status.level *{color:var(--green)!important;}
+body.light-theme .gps-status.err,
+body.light-theme .toast.bad,
+body.light-theme .toast.bad *,
+body.light-theme .tbl-status-off,
+body.light-theme .angle-status.steep,
+body.light-theme .angle-status.steep *,
+body.light-theme .curv-alert-txt strong,
+body.light-theme .login-err,
+body.light-theme .su-err{color:var(--danger)!important;}
+body.light-theme .gps-status.wait,
+body.light-theme .toast.wn,
+body.light-theme .toast.wn *,
+body.light-theme .angle-status.tilted,
+body.light-theme .angle-status.tilted *,
+body.light-theme .pit-addr.pending,
+body.light-theme .cw-badge-on{color:var(--warn)!important;}
+/* Restore active/selected tab + mode-button highlighting */
+body.light-theme .lang-btn.on,
+body.light-theme .ft-tab.on,
+body.light-theme .ftab.on,
+body.light-theme .mode-btn.mode-active.m1{color:var(--accent)!important;}
+body.light-theme .mode-btn.mode-active.m2{color:var(--warn)!important;}
 /* Force solid white background everywhere */
 body.light-theme,
 body.light-theme .app{background:#ffffff!important;}
@@ -6341,7 +6371,21 @@ function _doGraphPDF(){
   try{
     const cvs=document.getElementById('cvs');
     if(!cvs){toast('⚠️ Graph canvas not found','wn');return;}
-    const graphImg=cvs.toDataURL('image/png');
+    // Temporarily widen canvas to A4-landscape proportions so the exported
+    // graph image fills ~90% of the printed page instead of appearing small.
+    // No drawing/formula logic touched — just a bigger render of the same drawProfile().
+    const _pe=cvs.parentElement;
+    const _prevInlineWidth=_pe?_pe.style.width:null;
+    let graphImg;
+    if(_pe && typeof drawProfile==='function'){
+      _pe.style.width='680px';
+      drawProfile();
+      graphImg=cvs.toDataURL('image/png');
+      _pe.style.width=_prevInlineWidth||'';
+      drawProfile();
+    }else{
+      graphImg=cvs.toDataURL('image/png');
+    }
     const logoHtml=getPDFLogoHTML?getPDFLogoHTML():'';
     const info=getInfoLines();
     const plan=G.plan||{};
@@ -6369,22 +6413,22 @@ html,body{height:100%;font-family:Arial,sans-serif;background:#fff;color:#111;}
   .page-wrap{page-break-after:avoid;page-break-inside:avoid;}
 }
 .page-wrap{display:flex;flex-direction:column;height:185mm;overflow:hidden;}
-.gh{display:flex;align-items:center;gap:10px;border-bottom:3px solid #1a3a6a;
-  padding-bottom:5px;margin-bottom:5px;flex-shrink:0;}
-.gl{flex:0 0 auto;}.gl img{height:36px;max-width:90px;object-fit:contain;}
-.gt{flex:1;}.gm{font-size:14px;font-weight:900;color:#1a3a6a;letter-spacing:1px;}
-.gs{font-size:8px;color:#555;margin-top:2px;line-height:1.4;}
-.gb{background:#1a3a6a;color:#fff;padding:3px 8px;border-radius:5px;
-  font-size:8px;font-weight:700;letter-spacing:1px;white-space:nowrap;}
-.gi{display:flex;border:1px solid #c5d0f0;border-radius:5px;overflow:hidden;
-  background:#f0f4ff;margin-bottom:5px;flex-shrink:0;}
-.gc{flex:1;padding:3px 6px;border-right:1px solid #c5d0f0;font-size:7px;}
+.gh{display:flex;align-items:center;gap:8px;border-bottom:2px solid #1a3a6a;
+  padding-bottom:3px;margin-bottom:3px;flex-shrink:0;}
+.gl{flex:0 0 auto;}.gl img{height:28px;max-width:80px;object-fit:contain;}
+.gt{flex:1;}.gm{font-size:12px;font-weight:900;color:#1a3a6a;letter-spacing:1px;}
+.gs{font-size:7px;color:#555;margin-top:1px;line-height:1.3;}
+.gb{background:#1a3a6a;color:#fff;padding:2px 7px;border-radius:5px;
+  font-size:7px;font-weight:700;letter-spacing:1px;white-space:nowrap;}
+.gi{display:flex;border:1px solid #c5d0f0;border-radius:4px;overflow:hidden;
+  background:#f0f4ff;margin-bottom:3px;flex-shrink:0;}
+.gc{flex:1;padding:2px 5px;border-right:1px solid #c5d0f0;font-size:6.5px;}
 .gc:last-child{border-right:none;}
-.gcl{color:#888;margin-bottom:1px;font-size:6px;text-transform:uppercase;}
-.gcv{font-weight:700;color:#1a3a6a;font-size:8.5px;}
-.gw{border:1.5px solid #c5d0f0;border-radius:6px;padding:5px;
+.gcl{color:#888;margin-bottom:1px;font-size:5.5px;text-transform:uppercase;}
+.gcv{font-weight:700;color:#1a3a6a;font-size:7.5px;}
+.gw{border:1.5px solid #c5d0f0;border-radius:6px;padding:3px;
   background:#f8faff;flex:1;overflow:hidden;display:flex;
-  align-items:center;justify-content:center;min-height:0;}
+  align-items:center;justify-content:center;min-height:0;width:100%;}
 .gw img{max-width:100%;max-height:100%;object-fit:contain;display:block;}
 .gf{margin-top:4px;display:flex;align-items:center;justify-content:space-between;
   padding:4px 7px;background:#f0fff4;border:1px solid #aaccaa;
@@ -8834,17 +8878,21 @@ function zdcExportPDF() {
     if (cvs) graphDataUrl = cvs.toDataURL('image/png'); } catch(e) {}
 
   // Build table HTML for PDF — with RL columns if active
-  const _rlZdcPdf = d.hasRL || false; // RL active check from zdcData
-  // Read RL values from DOM (user may have typed them)
+  // Use the SAME flag the on-screen table used to decide 8 vs 10 columns
+  // (rlGetValues), since window._zdcData never stored a hasRL field and the
+  // srl-zdc-/rla-zdc- cell IDs exist in the DOM even when RL mode is off.
+  const _rlZdcPdf = !!rlGetValues(window._zdcExportMode === 'cw' ? 'cw' : 'zdc');
+  const _rlPfx = window._zdcExportMode === 'cw' ? 'cw' : 'zdc';
+  window._zdcExportMode = null;
   const _rlSurveyMap = {};
   const _rlActualMap = {};
   if (_rlZdcPdf) {
-    document.querySelectorAll('[id^="srl-zdc-"]').forEach(el => {
+    document.querySelectorAll('[id^="srl-'+_rlPfx+'-"]').forEach(el => {
       const rod = el.dataset.srlrod;
       _rlSurveyMap[rod] = el.textContent.trim();
     });
-    document.querySelectorAll('[id^="rla-zdc-"]').forEach(el => {
-      const rod = el.id.replace('rla-zdc-','');
+    document.querySelectorAll('[id^="rla-'+_rlPfx+'-"]').forEach(el => {
+      const rod = el.id.replace('rla-'+_rlPfx+'-','');
       _rlActualMap[rod] = el.textContent.trim();
     });
   }
@@ -9275,14 +9323,14 @@ function getGPS() {
         const lon = pos.coords.longitude;
         sta.textContent = '⏳ Fetching address…';
 
+        // Cache is checked first inside _gpsReverseGeocodeFull, so this
+        // resolves instantly (and works offline) for any previously-visited point.
         let geo = null;
-        if (navigator.onLine) {
-          try { geo = await _gpsReverseGeocodeFull(lat, lon); } catch (e) { geo = null; }
-        }
+        try { geo = await _gpsReverseGeocodeFull(lat, lon); } catch (e) { geo = null; }
         const addr = (geo && geo.address) || {};
         const country = addr.country || '—';
-        const state   = addr.state || addr.region || '—';
-        const city    = addr.city || addr.town || addr.village || addr.county || '—';
+        const state   = addr.state || '—';
+        const city    = addr.city || addr.village || addr.district || '—';
         const postal  = addr.postcode || '';
 
         // Concise place-name for the editable Location field (not the full raw address string)
@@ -10918,7 +10966,7 @@ function _cwPatchSafetyCards(d) {
 }
 
 // ── CW export stubs (reuse ZDC export pattern reading _cwData) ──────────
-function cwExportPDF()   { if(window._cwData) { window._zdcData = window._cwData; zdcExportPDF();   } }
+function cwExportPDF()   { if(window._cwData) { window._zdcData = window._cwData; window._zdcExportMode='cw'; zdcExportPDF();   } }
 function cwExportExcel() { if(window._cwData) { window._zdcData = window._cwData; zdcExportExcel(); } }
 function cwExportGraph() { if(window._cwData) { window._zdcData = window._cwData; zdcExportGraph(); } }
 
@@ -12470,6 +12518,7 @@ function switchFTab(tab) {
 let _gpsWatchId  = null;
 let _gpsRunning  = false;
 let _gpsPrevCoord = null;       // {lat, lon}
+let _gpsPrevAcc   = null;       // accuracy (m) of last accepted fix — used for noise filtering
 let _gpsTotalDist = 0;          // metres
 let _gpsPoints   = [];          // path points for info
 let _gpsLastFix  = null;        // most recent {lat,lon,acc} — used to capture Exit Pit
@@ -12483,6 +12532,7 @@ function gpsStart() {
   }
   _gpsRunning = true;
   _gpsPrevCoord = null;
+  _gpsPrevAcc = null;
 
   // Reset Entry/Exit pit cards for a fresh run
   _gpsSetPitCard('entry', null);
@@ -12544,6 +12594,7 @@ function gpsStop() {
 function gpsReset() {
   gpsStop();
   _gpsPrevCoord = null;
+  _gpsPrevAcc = null;
   _gpsTotalDist = 0;
   _gpsPoints = [];
   _gpsLastFix = null;
@@ -12562,24 +12613,55 @@ function _gpsOnSuccess(pos) {
   const lat = pos.coords.latitude;
   const lon = pos.coords.longitude;
   const acc = pos.coords.accuracy;
+
+  // ── Accuracy gate ──
+  // Phone GPS fixes right after lock are often very inaccurate (15-50m).
+  // Reject anything worse than 20m outright — using it would produce
+  // spurious "movement" even while standing still.
+  const ACC_REJECT = 20;   // metres — fix discarded entirely
+  const ACC_GOOD    = 12;  // metres — fix trusted as a normal reading
+  if (acc > ACC_REJECT) {
+    document.getElementById('gpsStatusTxt').textContent =
+      '📡 Improving GPS accuracy… (±' + acc.toFixed(0) + 'm)';
+    return; // do not update _gpsLastFix / distance with a bad fix
+  }
+
   _gpsLastFix = {lat, lon, acc};
 
-  // Calculate incremental distance (UNCHANGED — original logic)
+  // Calculate incremental distance
   if (_gpsPrevCoord) {
     const d = _gpsHaversine(_gpsPrevCoord.lat, _gpsPrevCoord.lon, lat, lon);
-    // Only add if > 0.5m to avoid GPS drift noise
-    if (d > 0.5) {
+    // Accuracy-aware noise filter: the minimum credible movement is tied
+    // to how uncertain the current and previous fixes are, not a fixed
+    // 0.5m. Two overlapping accuracy circles can "appear" to move several
+    // metres without the user moving at all — require the displacement to
+    // clearly exceed the combined uncertainty before counting it.
+    const prevAcc = _gpsPrevAcc || acc;
+    const minMove = Math.max(1.0, (acc + prevAcc) * 0.6);
+    if (d > minMove) {
       _gpsTotalDist += d;
       _gpsPoints.push({lat, lon});
       document.getElementById('gpsCounter').textContent = _gpsTotalDist.toFixed(2);
+      _gpsPrevCoord = {lat, lon};
+      _gpsPrevAcc = acc;
     }
+    // else: treat as GPS noise — keep previous coord as the reference point
+    // (do NOT advance _gpsPrevCoord), so drift doesn't silently accumulate.
   } else {
-    // First point — starting location = Entry Pit
+    // First point — only accept as Entry Pit once accuracy is reasonably
+    // good; otherwise wait for a better fix instead of locking onto a
+    // noisy starting location.
+    if (acc > ACC_GOOD) {
+      document.getElementById('gpsStatusTxt').textContent =
+        '📡 Waiting for accurate fix… (±' + acc.toFixed(0) + 'm)';
+      return;
+    }
     _gpsPoints.push({lat, lon});
     document.getElementById('gpsStatusTxt').textContent = '📡 GPS lock acquired — walking…';
     _gpsSetPitCard('entry', {lat, lon, acc});
+    _gpsPrevCoord = {lat, lon};
+    _gpsPrevAcc = acc;
   }
-  _gpsPrevCoord = {lat, lon};
 
   // Track Map: live update (path/markers redraw; tiles refreshed only when projection changes)
   _trackLiveTick();
@@ -12631,7 +12713,12 @@ function _gpsSetPitCard(type, fix) {
   const fixRecord = { lat: fix.lat, lon: fix.lon, acc: fix.acc, addr: null };
   if (type === 'entry') _gpsEntryFix = fixRecord; else _gpsExitFix = fixRecord;
 
-  if (navigator.onLine) {
+  const _cachedAddr = _geoCacheGet(fix.lat, fix.lon);
+  if (_cachedAddr) {
+    // Same spot resolved before (even offline) — zero network calls needed
+    addrEl.textContent = _cachedAddr.display_name || 'Address unavailable';
+    fixRecord.addr = _cachedAddr.display_name || null;
+  } else if (navigator.onLine) {
     addrEl.textContent = '🔄 Fetching address…';
     addrEl.classList.add('pending');
     _gpsReverseGeocode(fix.lat, fix.lon).then(addr => {
@@ -12646,9 +12733,67 @@ function _gpsSetPitCard(type, fix) {
   }
 }
 
-// Reverse geocode via OpenStreetMap Nominatim (free, no API key)
-// Shared reverse-geocoding core — both Field Tools and Project Info use this single function
-async function _gpsReverseGeocodeFull(lat, lon) {
+// ════════════════════════════════════════════════════
+// REVERSE GEOCODING — GOOGLE-FREE (production decision, July 2026)
+// Primary & ONLY engine: OpenStreetMap Nominatim — free, no API key,
+//   no billing, no quota risk. Google Cloud Geocoding is permanently
+//   removed from this build (billing/e-mandate risk on the developer's
+//   bank account made it unsafe). Do NOT reintroduce a Google provider
+//   here unless the app has stable ad/revenue income to safely absorb
+//   billing risk (see app notes).
+//
+// LOCAL CACHE — every resolved GPS point is saved to localStorage so
+//   repeat visits to the same spot resolve instantly with ZERO network
+//   calls, and so previously-visited points remain available offline.
+// Both providers/cache normalize to the SAME return shape:
+//   { display_name, address: { village, city, district, state, postcode, country } }
+// so nothing else in the app needs to know whether the answer came
+// from cache or from a live Nominatim lookup.
+// ════════════════════════════════════════════════════
+
+const GEOCODE_CACHE_KEY = 'hdd_geocode_cache_v1';
+const GEOCODE_CACHE_MAX = 500;          // oldest entries dropped beyond this
+const GEOCODE_CACHE_PRECISION = 4;      // ~11m grid — good enough to reuse a bore-site fix
+
+function _geoCacheKey(lat, lon) {
+  return lat.toFixed(GEOCODE_CACHE_PRECISION) + ',' + lon.toFixed(GEOCODE_CACHE_PRECISION);
+}
+function _geoCacheGet(lat, lon) {
+  try {
+    const store = JSON.parse(localStorage.getItem(GEOCODE_CACHE_KEY) || '{}');
+    return store[_geoCacheKey(lat, lon)] || null;
+  } catch (e) { return null; }
+}
+function _geoCacheSet(lat, lon, data) {
+  try {
+    const store = JSON.parse(localStorage.getItem(GEOCODE_CACHE_KEY) || '{}');
+    const key = _geoCacheKey(lat, lon);
+    store[key] = data;
+    const keys = Object.keys(store);
+    if (keys.length > GEOCODE_CACHE_MAX) delete store[keys[0]]; // simple FIFO trim
+    localStorage.setItem(GEOCODE_CACHE_KEY, JSON.stringify(store));
+  } catch (e) { /* localStorage full/unavailable — cache is best-effort only */ }
+}
+
+// ── Improved structured parsing of Nominatim's raw address object ──
+// Nominatim doesn't have one fixed field for "village" — depending on
+// area it can land in village/hamlet/suburb/neighbourhood etc. This
+// picks the most specific match available so the Field Tools / PDF
+// output shows a clean Village, City/District, State, PIN breakdown.
+function _parseNominatimAddress(addr) {
+  addr = addr || {};
+  return {
+    village:  addr.village || addr.hamlet || addr.suburb || addr.neighbourhood || null,
+    city:     addr.city || addr.town || addr.municipality || null,
+    district: addr.county || addr.state_district || addr.city_district || null,
+    state:    addr.state || addr.region || null,
+    postcode: addr.postcode || null,
+    country:  addr.country || null,
+  };
+}
+
+// ── Provider: OpenStreetMap Nominatim (free, no API key, no limit risk) ──
+async function _geocodeWithNominatim(lat, lon) {
   try {
     const res = await fetch(
       'https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lon + '&zoom=16',
@@ -12656,35 +12801,33 @@ async function _gpsReverseGeocodeFull(lat, lon) {
     );
     const data = await res.json();
     if (!data) return null;
-    return { display_name: data.display_name || null, address: data.address || {} };
+    return {
+      display_name: data.display_name || null,
+      address: _parseNominatimAddress(data.address),
+    };
   } catch (e) {
     return null;
   }
+}
+
+// Shared reverse-geocoding core — both Field Tools and Project Info use this single function.
+// Cache-first: works fully offline for any previously-visited point, and
+// avoids re-hitting Nominatim for a coordinate we already resolved.
+async function _gpsReverseGeocodeFull(lat, lon) {
+  const cached = _geoCacheGet(lat, lon);
+  if (cached) return cached;
+
+  if (!navigator.onLine) return null; // nothing cached and no network — caller queues for later
+
+  const result = await _geocodeWithNominatim(lat, lon);
+  if (result) _geoCacheSet(lat, lon, result);
+  return result;
 }
 
 async function _gpsReverseGeocode(lat, lon) {
   const geo = await _gpsReverseGeocodeFull(lat, lon);
   return geo ? geo.display_name : null;
 }
-
-// When connection returns, auto-fill any pending Entry/Exit addresses — no need to re-survey
-window.addEventListener('online', async () => {
-  if (!_gpsPendingGeocode.length) return;
-  const queue = _gpsPendingGeocode.slice();
-  _gpsPendingGeocode = [];
-  for (const item of queue) {
-    const addrEl = document.getElementById(item.type + 'Addr');
-    const addr = await _gpsReverseGeocode(item.lat, item.lon);
-    if (addrEl) {
-      addrEl.textContent = addr || 'Address unavailable';
-      addrEl.classList.remove('pending');
-    }
-    const fixRecord = item.type === 'entry' ? _gpsEntryFix : _gpsExitFix;
-    if (fixRecord) fixRecord.addr = addr || null;
-  }
-  toast('✅ Address auto-updated for stored GPS points', 'ok');
-});
-
 // ════════════════════════════════════════════════════
 // TRACK MAP — live path drawing, turn-by-turn, online/offline
 // (Reads _gpsPoints / _gpsTotalDist / _gpsRunning — does not modify them)
