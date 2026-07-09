@@ -85,8 +85,8 @@ body::before{content:'';position:fixed;inset:0;
   font-family:'Exo 2',sans-serif;
   text-shadow:0 0 12px rgba(0,212,255,.3);white-space:nowrap;}
 /* Light theme login logo override */
-body.light-theme .login-logo p{color:#000000!important;text-shadow:none!important;}
-body.light-theme .login-logo-divider{background:linear-gradient(90deg,transparent,#999,transparent)!important;}
+body.light-theme .login-logo p{color:#16181d!important;text-shadow:none!important;}
+body.light-theme .login-logo-divider{background:linear-gradient(90deg,transparent,#c7cbd1,transparent)!important;}
 body.light-theme .login-logo-img-wrap::before{display:none!important;}
 .lf{margin-bottom:18px;}
 .lf label{display:block;font-size:13px;color:#ffffff;font-weight:700;
@@ -398,17 +398,24 @@ input:not(:checked)+.tbl-block-slider:before{background:var(--danger);transform:
   align-items:center;justify-content:center;transition:all .3s;flex-shrink:0;}
 .btn-theme:hover{background:rgba(255,204,0,.15);border-color:rgba(255,204,0,.4);}
 
-/* ── LIGHT (SUNLIGHT / FIELD) THEME — HIGH VISIBILITY ── */
+/* ══════════════════════════════════════════════════════════════
+   LIGHT (DAY) THEME — premium, modern, rounded — redesigned July 2026
+   Only visual/CSS changes below. No JS, IDs, classes, or formulas
+   touched. Dark Mode (the default, non-.light-theme styles) is
+   completely untouched — every rule here is scoped to
+   body.light-theme so it can never affect Dark Mode.
+   ══════════════════════════════════════════════════════════════ */
 body.light-theme{
-  --bg:#ffffff; --bg2:#ffffff; --bg3:#f0f0f0; --panel:#ffffff;
-  --border:#bbbbbb; --accent:#0a5fb4; --green:#0a7a3d; --orange:#9a5b00;
-  --warn:#9a5b00; --danger:#c81e3a; --text:#000000; --t2:#000000; --t3:#000000;
+  --bg:#f5f6f8; --bg2:#f5f6f8; --bg3:#eef0f3; --panel:#ffffff;
+  --border:#e2e5ea; --accent:#2563eb; --green:#15803d; --orange:#b45309;
+  --warn:#b45309; --danger:#dc2626; --text:#16181d; --t2:#4b5058; --t3:#6b7280;
   font-size:112%;
 }
-/* Force all text to solid black by default (best contrast on white field-glare) */
-body.light-theme *{color:#000000!important;}
+/* Base text — soft near-black (not harsh pure #000) for a calmer, premium look
+   while staying dark enough for strong sunlight readability. */
+body.light-theme *{color:#16181d!important;}
 /* Restore semantic colour-coding for status/feedback elements — without this,
-   success/warning/danger all read as plain black and lose meaning at a glance. */
+   success/warning/danger all read as plain text and lose meaning at a glance. */
 body.light-theme .gps-status.ok,
 body.light-theme .toast.ok,
 body.light-theme .toast.ok *,
@@ -437,17 +444,21 @@ body.light-theme .ft-tab.on,
 body.light-theme .ftab.on,
 body.light-theme .mode-btn.mode-active.m1{color:var(--accent)!important;}
 body.light-theme .mode-btn.mode-active.m2{color:var(--warn)!important;}
-/* Force solid white background everywhere */
+/* Soft neutral canvas behind everything — cards "float" on top of this,
+   the same layered look used by Gemini / ChatGPT rather than stark white. */
 body.light-theme,
-body.light-theme .app{background:#ffffff!important;}
+body.light-theme .app{background:#f5f6f8!important;}
 body.light-theme::before{display:none!important;}
-/* Header */
+/* Header — clean, softly elevated, rounded on scroll edge */
 body.light-theme .hdr{
-  background:#ffffff!important;border-color:#bbbbbb!important;
-  box-shadow:0 2px 8px rgba(0,0,0,.18)!important;}
+  background:rgba(255,255,255,.92)!important;border-color:#e2e5ea!important;
+  border-bottom:1px solid #e2e5ea!important;
+  box-shadow:0 1px 2px rgba(16,24,40,.04)!important;
+  backdrop-filter:saturate(180%) blur(8px);}
 body.light-theme .hdr-main-title{
-  text-shadow:none!important;color:#000000!important;}
-/* Panels / cards */
+  text-shadow:none!important;color:#16181d!important;font-weight:800!important;}
+/* Panels / cards — soft rounded corners + gentle elevation instead of flat
+   hard-bordered boxes, for a premium "card" feel */
 body.light-theme .form-card,
 body.light-theme .mode-card,
 body.light-theme .chart-wrap,
@@ -457,43 +468,75 @@ body.light-theme .profile-card,
 body.light-theme .cw-card,
 body.light-theme .zdc-card,
 body.light-theme .ibox{
-  background:#ffffff!important;border-color:#bbbbbb!important;}
-/* Inputs / selects */
+  background:#ffffff!important;border:1px solid #e9ebef!important;
+  border-radius:16px!important;
+  box-shadow:0 1px 2px rgba(16,24,40,.04),0 1px 8px rgba(16,24,40,.03)!important;}
+/* Inputs / selects — soft filled fields with rounded corners, subtle focus ring */
 body.light-theme input,
 body.light-theme select,
 body.light-theme textarea{
-  background:#f0f0f0!important;border-color:#999!important;
-  color:#000000!important;}
-body.light-theme input::placeholder{color:rgba(0,0,0,.45)!important;}
-/* Buttons */
+  background:#f7f8fa!important;border:1px solid #dfe2e8!important;
+  border-radius:10px!important;color:#16181d!important;
+  transition:border-color .15s ease,box-shadow .15s ease;}
+body.light-theme input:focus,
+body.light-theme select:focus,
+body.light-theme textarea:focus{
+  border-color:#2563eb!important;
+  box-shadow:0 0 0 3px rgba(37,99,235,.14)!important;outline:none!important;}
+body.light-theme input::placeholder{color:rgba(22,24,29,.42)!important;}
+/* Buttons — rounded, modern primary action colour, soft hover lift */
 body.light-theme .btn-hdr,
-body.light-theme .btn-theme{background:#e8e8e8!important;border-color:#999!important;}
-body.light-theme .btn-gen{background:#1a1a1a!important;color:#ffffff!important;box-shadow:none!important;}
-body.light-theme .byline{background:#f0f0f0!important;border-color:#aaa!important;}
-/* Table */
-body.light-theme thead tr{background:#eeeeee!important;}
-body.light-theme th{background:#eeeeee!important;border-color:#aaa!important;}
-body.light-theme td{border-color:#ccc!important;}
-body.light-theme tbody tr:hover{background:#f5f5f5!important;}
-/* Side menu */
-body.light-theme #sideMenu{background:#ffffff!important;border-color:#ccc!important;}
-body.light-theme .smenu-profile{background:#f0f0f0!important;}
-body.light-theme .smenu-item:hover{background:rgba(0,0,0,.08)!important;}
-/* Login */
-body.light-theme .login-box{background:#ffffff!important;border-color:#ccc!important;}
-body.light-theme .lf input{background:#f0f0f0!important;border-color:#999!important;}
-body.light-theme .lf input::placeholder{color:rgba(0,0,0,.4)!important;}
-/* Canvas invert for profile curve */
-body.light-theme canvas{filter:invert(1) hue-rotate(180deg);}
-/* Mode buttons */
-body.light-theme .mode-btn{background:#f0f0f0!important;border-color:#aaa!important;}
-body.light-theme .mode-btn:hover:not(.mode-active){background:#e0e0e0!important;}
-/* Unit toggle */
-body.light-theme .utog{background:#e8e8e8!important;border-color:#aaa!important;}
-body.light-theme .utog button.on{background:#333!important;color:#fff!important;}
-/* Scrollbar */
-body.light-theme ::-webkit-scrollbar-track{background:#f0f0f0!important;}
-body.light-theme ::-webkit-scrollbar-thumb{background:#aaa!important;}
+body.light-theme .btn-theme{
+  background:#ffffff!important;border:1px solid #dfe2e8!important;
+  border-radius:10px!important;box-shadow:0 1px 2px rgba(16,24,40,.04)!important;}
+body.light-theme .btn-gen{
+  background:linear-gradient(135deg,#2563eb,#1d4ed8)!important;
+  color:#ffffff!important;border:none!important;border-radius:12px!important;
+  box-shadow:0 2px 6px rgba(37,99,235,.28)!important;}
+body.light-theme .byline{
+  background:#f7f8fa!important;border:1px solid #e2e5ea!important;border-radius:10px!important;}
+/* Generic rounding for any remaining flat buttons/pills */
+body.light-theme button{border-radius:10px;}
+/* Table — soft header, rounded outer corners, gentle row hover */
+body.light-theme thead tr{background:#f3f4f6!important;}
+body.light-theme th{
+  background:#f3f4f6!important;border-color:#e2e5ea!important;
+  color:#374151!important;font-weight:700!important;}
+body.light-theme td{border-color:#edeff2!important;}
+body.light-theme tbody tr:hover{background:#f7f9fc!important;}
+/* Side menu — clean white panel, soft shadow instead of hard border */
+body.light-theme #sideMenu{
+  background:#ffffff!important;border-color:#e9ebef!important;
+  box-shadow:-4px 0 24px rgba(16,24,40,.08)!important;}
+body.light-theme .smenu-profile{background:#f7f8fa!important;border-radius:12px!important;}
+body.light-theme .smenu-item:hover{background:#f1f4f9!important;border-radius:8px!important;}
+/* Login — centred card on the soft neutral canvas */
+body.light-theme .login-box{
+  background:#ffffff!important;border:1px solid #e9ebef!important;
+  border-radius:20px!important;
+  box-shadow:0 4px 24px rgba(16,24,40,.08),0 1px 4px rgba(16,24,40,.04)!important;}
+body.light-theme .lf input{
+  background:#f7f8fa!important;border:1px solid #dfe2e8!important;border-radius:10px!important;}
+body.light-theme .lf input::placeholder{color:rgba(22,24,29,.4)!important;}
+/* Graph canvas — kept as its own dark, high-contrast panel (the drawing code
+   fills its own #0a0e1a background), just given a rounded premium "card"
+   frame to match the rest of the Light Mode UI. NO colour/CSS filter is
+   applied to the canvas — its pixels are untouched, exactly as required. */
+body.light-theme canvas{
+  border-radius:14px!important;
+  box-shadow:0 2px 10px rgba(16,24,40,.10)!important;}
+/* Mode buttons — soft rounded pills */
+body.light-theme .mode-btn{
+  background:#f7f8fa!important;border:1px solid #e2e5ea!important;border-radius:12px!important;}
+body.light-theme .mode-btn:hover:not(.mode-active){background:#eef0f3!important;}
+/* Unit toggle — rounded pill switch */
+body.light-theme .utog{
+  background:#f0f1f4!important;border:1px solid #e2e5ea!important;border-radius:10px!important;}
+body.light-theme .utog button.on{
+  background:#2563eb!important;color:#fff!important;border-radius:8px!important;}
+/* Scrollbar — soft, unobtrusive */
+body.light-theme ::-webkit-scrollbar-track{background:#f0f1f4!important;}
+body.light-theme ::-webkit-scrollbar-thumb{background:#c7cbd1!important;border-radius:8px!important;}
 
 /* ══════════════════════════════════════════
    PHASE 1 — FEATURE CSS
@@ -1333,7 +1376,7 @@ td.rla-cell:empty:before{content:attr(data-ph);color:var(--t3);font-size:10px;}
     <button class="smenu-item" id="smenu-guide" onclick="closeSideMenu();openQuickGuide&&openQuickGuide()">
       <span class="sm-ico">📘</span><span class="sm-txt"> Quick Guide</span>
     </button>
-    <a href="mailto:saiyadhussain9646@gmail.com?subject=HDD%20Pre-Bore%20Designer%20Pro%20-%20Technical%20Support%20Required&body=Hello%20Admin%2C%20I%20am%20using%20the%20HDD%20Pre-Bore%20Designer%20Pro%20App%20%28v2.0%29.%20I%20need%20technical%20assistance%20with%20my%20bore%20profile%20calculation.%20Kindly%20contact%20me.%0A%0A%E0%A4%A8%E0%A4%AE%E0%A4%B8%E0%A5%8D%E0%A4%A4%E0%A5%87%20%E0%A4%8F%E0%A4%A1%E0%A4%AE%E0%A4%BF%E0%A4%A8%2C%20%E0%A4%AE%E0%A5%88%E0%A4%82%20HDD%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%80-%E0%A4%AC%E0%A5%8B%E0%A4%B0%20%E0%A4%A1%E0%A4%BC%E0%A4%BF%E0%A4%9C%E0%A4%BC%E0%A4%BE%E0%A4%87%E0%A4%A8%E0%A4%B0%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%8B%20%E0%A4%90%E0%A4%AA%20%E0%A4%95%E0%A4%BE%20%E0%A4%89%E0%A4%AA%E0%A4%AF%E0%A5%8B%E0%A4%97%20%E0%A4%95%E0%A4%B0%20%E0%A4%B0%E0%A4%B9%E0%A4%BE%20%E0%A4%B9%E0%A5%82%E0%A4%81%E0%A5%A4%20%E0%A4%AE%E0%A5%81%E0%A4%9D%E0%A5%87%20%E0%A4%85%E0%A4%AA%E0%A4%A8%E0%A5%87%20%E0%A4%AC%E0%A5%8B%E0%A4%B0%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%8B%E0%A4%AB%E0%A4%BC%E0%A4%BE%E0%A4%87%E0%A4%B2%20%E0%A4%95%E0%A5%88%E0%A4%B2%E0%A4%95%E0%A5%81%E0%A4%B2%E0%A5%87%E0%A4%B6%E0%A4%A8%20%E0%A4%95%E0%A5%87%20%E0%A4%B2%E0%A4%BF%E0%A4%8F%20%E0%A4%A4%E0%A4%95%E0%A4%A8%E0%A5%80%E0%A4%95%E0%A5%80%20%E0%A4%B8%E0%A4%B9%E0%A4%BE%E0%A4%AF%E0%A4%A4%E0%A4%BE%20%E0%A4%9A%E0%A4%BE%E0%A4%B9%E0%A4%BF%E0%A4%8F%E0%A5%A4%20%E0%A4%95%E0%A5%83%E0%A4%AA%E0%A4%AF%E0%A4%BE%20%E0%A4%AE%E0%A5%81%E0%A4%9D%E0%A4%B8%E0%A5%87%20%E0%A4%B8%E0%A4%82%E0%A4%AA%E0%A4%B0%E0%A5%8D%E0%A4%95%20%E0%A4%95%E0%A4%B0%E0%A5%87%E0%A4%82%E0%A5%A4" class="smenu-item" id="smenu-email" onclick="closeSideMenu()">
+    <a href="mailto:saiyadhussain9646@gmail.com?subject=HDD%20Pre-Bore%20Designer%20Pro%20-%20Technical%20Support%20Required&body=Hello%20Admin%2C%20I%20am%20using%20the%20HDD%20Pre-Bore%20Designer%20Pro%20App%20%28v3.9%29.%20I%20need%20technical%20assistance%20with%20my%20bore%20profile%20calculation.%20Kindly%20contact%20me.%0A%0A%E0%A4%A8%E0%A4%AE%E0%A4%B8%E0%A5%8D%E0%A4%A4%E0%A5%87%20%E0%A4%8F%E0%A4%A1%E0%A4%AE%E0%A4%BF%E0%A4%A8%2C%20%E0%A4%AE%E0%A5%88%E0%A4%82%20HDD%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%80-%E0%A4%AC%E0%A5%8B%E0%A4%B0%20%E0%A4%A1%E0%A4%BC%E0%A4%BF%E0%A4%9C%E0%A4%BC%E0%A4%BE%E0%A4%87%E0%A4%A8%E0%A4%B0%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%8B%20%E0%A4%90%E0%A4%AA%20%E0%A4%95%E0%A4%BE%20%E0%A4%89%E0%A4%AA%E0%A4%AF%E0%A5%8B%E0%A4%97%20%E0%A4%95%E0%A4%B0%20%E0%A4%B0%E0%A4%B9%E0%A4%BE%20%E0%A4%B9%E0%A5%82%E0%A4%81%E0%A5%A4%20%E0%A4%AE%E0%A5%81%E0%A4%9D%E0%A5%87%20%E0%A4%85%E0%A4%AA%E0%A4%A8%E0%A5%87%20%E0%A4%AC%E0%A5%8B%E0%A4%B0%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%8B%E0%A4%AB%E0%A4%BC%E0%A4%BE%E0%A4%87%E0%A4%B2%20%E0%A4%95%E0%A5%88%E0%A4%B2%E0%A4%95%E0%A5%81%E0%A4%B2%E0%A5%87%E0%A4%B6%E0%A4%A8%20%E0%A4%95%E0%A5%87%20%E0%A4%B2%E0%A4%BF%E0%A4%8F%20%E0%A4%A4%E0%A4%95%E0%A4%A8%E0%A5%80%E0%A4%95%E0%A5%80%20%E0%A4%B8%E0%A4%B9%E0%A4%BE%E0%A4%AF%E0%A4%A4%E0%A4%BE%20%E0%A4%9A%E0%A4%BE%E0%A4%B9%E0%A4%BF%E0%A4%8F%E0%A5%A4%20%E0%A4%95%E0%A5%83%E0%A4%AA%E0%A4%AF%E0%A4%BE%20%E0%A4%AE%E0%A5%81%E0%A4%9D%E0%A4%B8%E0%A5%87%20%E0%A4%B8%E0%A4%82%E0%A4%AA%E0%A4%B0%E0%A5%8D%E0%A4%95%20%E0%A4%95%E0%A4%B0%E0%A5%87%E0%A4%82%E0%A5%A4" class="smenu-item" id="smenu-email" onclick="closeSideMenu()">
       <span class="sm-ico">📧</span><span class="sm-txt"> Email Support</span>
     </a>
     <button class="smenu-item" id="smenu-contact" onclick="closeSideMenu();openContactModal()">
@@ -1354,7 +1397,7 @@ td.rla-cell:empty:before{content:attr(data-ph);color:var(--t3);font-size:10px;}
       <span class="sm-ico">🚪</span><span class="sm-txt"> Logout</span>
     </button>
   </div>
-  <div class="smenu-version">HDD PRE-BORE DESIGNER PRO · v2.0 · Built by Saiyad Hussain</div>
+  <div class="smenu-version">HDD PRE-BORE DESIGNER PRO · v3.9 · Built by Saiyad Hussain</div>
 </div>
 
 <!-- ═══════ LOGIN ═══════ -->
@@ -1551,7 +1594,7 @@ document.addEventListener('click',function(e){
       <button class="cmenu-close" onclick="closeContactModal()">✕</button>
     </div>
     <div class="cmenu-opts">
-      <a href="https://wa.me/966573133634?text=Hello%20Admin%2C%20I%20am%20using%20the%20HDD%20Pre-Bore%20Designer%20Pro%20App%20%28v2.0%29.%20I%20need%20technical%20assistance%20with%20my%20bore%20profile%20calculation.%20Kindly%20contact%20me.%0A%0A%E0%A4%A8%E0%A4%AE%E0%A4%B8%E0%A5%8D%E0%A4%A4%E0%A5%87%20%E0%A4%8F%E0%A4%A1%E0%A4%AE%E0%A4%BF%E0%A4%A8%2C%20%E0%A4%AE%E0%A5%88%E0%A4%82%20HDD%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%80-%E0%A4%AC%E0%A5%8B%E0%A4%B0%20%E0%A4%A1%E0%A4%BF%E0%A4%9C%E0%A4%BC%E0%A4%BE%E0%A4%87%E0%A4%A8%E0%A4%B0%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%8B%20%E0%A4%90%E0%A4%AA%20%E0%A4%95%E0%A4%BE%20%E0%A4%89%E0%A4%AA%E0%A4%AF%E0%A5%8B%E0%A4%97%20%E0%A4%95%E0%A4%B0%20%E0%A4%B0%E0%A4%B9%E0%A4%BE%20%E0%A4%B9%E0%A5%82%E0%A4%81%E0%A5%A4%20%E0%A4%AE%E0%A5%81%E0%A4%9D%E0%A5%87%20%E0%A4%85%E0%A4%AA%E0%A4%A8%E0%A5%87%20%E0%A4%AC%E0%A5%8B%E0%A4%B0%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%8B%E0%A4%AB%E0%A4%BE%E0%A4%87%E0%A4%B2%20%E0%A4%95%E0%A5%88%E0%A4%B2%E0%A4%95%E0%A5%81%E0%A4%B2%E0%A5%87%E0%A4%B6%E0%A4%A8%20%E0%A4%95%E0%A5%87%20%E0%A4%B2%E0%A4%BF%E0%A4%8F%20%E0%A4%A4%E0%A4%95%E0%A4%A8%E0%A5%80%E0%A4%95%E0%A5%80%20%E0%A4%B8%E0%A4%B9%E0%A4%BE%E0%A4%AF%E0%A4%A4%E0%A4%BE%20%E0%A4%9A%E0%A4%BE%E0%A4%B9%E0%A4%BF%E0%A4%8F%E0%A5%A4%20%E0%A4%95%E0%A5%83%E0%A4%AA%E0%A4%AF%E0%A4%BE%20%E0%A4%AE%E0%A5%81%E0%A4%9D%E0%A4%B8%E0%A5%87%20%E0%A4%B8%E0%A4%82%E0%A4%AA%E0%A4%B0%E0%A5%8D%E0%A4%95%20%E0%A4%95%E0%A4%B0%E0%A5%87%E0%A4%82%E0%A5%A4"
+      <a href="https://wa.me/966573133634?text=Hello%20Admin%2C%20I%20am%20using%20the%20HDD%20Pre-Bore%20Designer%20Pro%20App%20%28v3.9%29.%20I%20need%20technical%20assistance%20with%20my%20bore%20profile%20calculation.%20Kindly%20contact%20me.%0A%0A%E0%A4%A8%E0%A4%AE%E0%A4%B8%E0%A5%8D%E0%A4%A4%E0%A5%87%20%E0%A4%8F%E0%A4%A1%E0%A4%AE%E0%A4%BF%E0%A4%A8%2C%20%E0%A4%AE%E0%A5%88%E0%A4%82%20HDD%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%80-%E0%A4%AC%E0%A5%8B%E0%A4%B0%20%E0%A4%A1%E0%A4%BF%E0%A4%9C%E0%A4%BC%E0%A4%BE%E0%A4%87%E0%A4%A8%E0%A4%B0%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%8B%20%E0%A4%90%E0%A4%AA%20%E0%A4%95%E0%A4%BE%20%E0%A4%89%E0%A4%AA%E0%A4%AF%E0%A5%8B%E0%A4%97%20%E0%A4%95%E0%A4%B0%20%E0%A4%B0%E0%A4%B9%E0%A4%BE%20%E0%A4%B9%E0%A5%82%E0%A4%81%E0%A5%A4%20%E0%A4%AE%E0%A5%81%E0%A4%9D%E0%A5%87%20%E0%A4%85%E0%A4%AA%E0%A4%A8%E0%A5%87%20%E0%A4%AC%E0%A5%8B%E0%A4%B0%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%8B%E0%A4%AB%E0%A4%BE%E0%A4%87%E0%A4%B2%20%E0%A4%95%E0%A5%88%E0%A4%B2%E0%A4%95%E0%A5%81%E0%A4%B2%E0%A5%87%E0%A4%B6%E0%A4%A8%20%E0%A4%95%E0%A5%87%20%E0%A4%B2%E0%A4%BF%E0%A4%8F%20%E0%A4%A4%E0%A4%95%E0%A4%A8%E0%A5%80%E0%A4%95%E0%A5%80%20%E0%A4%B8%E0%A4%B9%E0%A4%BE%E0%A4%AF%E0%A4%A4%E0%A4%BE%20%E0%A4%9A%E0%A4%BE%E0%A4%B9%E0%A4%BF%E0%A4%8F%E0%A5%A4%20%E0%A4%95%E0%A5%83%E0%A4%AA%E0%A4%AF%E0%A4%BE%20%E0%A4%AE%E0%A5%81%E0%A4%9D%E0%A4%B8%E0%A5%87%20%E0%A4%B8%E0%A4%82%E0%A4%AA%E0%A4%B0%E0%A5%8D%E0%A4%95%20%E0%A4%95%E0%A4%B0%E0%A5%87%E0%A4%82%E0%A5%A4"
          target="_blank" class="cmenu-opt cmenu-opt-wa" onclick="closeContactModal()">
         <span class="cmenu-opt-ico">🟢</span>
         <div><div>WhatsApp Support</div>
@@ -6090,6 +6133,25 @@ function collectRows(){
 }
 
 function getInfoLines(){
+  if (CURRENT_MODE === 4) {
+    // Trial Bore Draft has no auto-plan (G) — build equivalent info lines
+    // straight from the form fields + the manually-entered rows instead.
+    if (!_tbdRows.length) return [];
+    const rl = parseFloat(v('rodL')) || 0;
+    const bl = parseFloat(v('boreL')) || _tbdRows[_tbdRows.length-1].dist;
+    const maxD = Math.max(0, ..._tbdRows.map(r => Math.abs(r.depth || 0)));
+    const entAngle = _tbdRows.length > 1 ? _tbdRows[1].angle : 0;
+    const extAngle = _tbdRows.length > 1 ? _tbdRows[_tbdRows.length-1].angle : 0;
+    return ['TRIAL BORE DRAFT — PRE-BORE CHART',
+      `Project: ${v('projN')||'—'} | Client: ${v('projC')||'—'} | Location: ${v('projL')||'—'}`,
+      `Date: ${v('projDt')||'—'} | By: ${v('prepB')||'—'} | Bore ID: ${v('boreID')||'—'}`,
+      `Rod=${rl}m | Bore=${bl}m | Rods: ${_tbdRows.length-1}`,
+      `Manually-entered angles | Max Depth (from entries): ${maxD.toFixed(2)}m`,
+      `Entry Angle: ${entAngle.toFixed(1)}% | Exit Angle: ${extAngle.toFixed(1)}%`,
+      `Formula: Depth = Prev + (Angle% × Seg ÷ 100) | Punch-In=0.00m`,
+      `Designed by: Saiyad Hussain — HDD Driller & Locator · 14+ Years · Saudi Arabia`,
+      rlGetInfoLine('std')].filter(x=>x);
+  }
   if(!G)return[];
   return['HDD PRE-BORE CHART',
     `Project: ${v('projN')||'—'} | Client: ${v('projC')||'—'} | Location: ${v('projL')||'—'}`,
@@ -6110,7 +6172,9 @@ function dl(blob,name){
 }
 
 function doExcel(){
-  if(!G){toast('⚠️ Generate chart first!','wn');return;}
+  if (CURRENT_MODE === 4) {
+    if (!_tbdRows.length) {toast('⚠️ Generate chart first!','wn');return;}
+  } else if(!G){toast('⚠️ Generate chart first!','wn');return;}
   toast('⏳ Building Excel file…','ok');
   // Dynamically load SheetJS for proper .xlsx
   if(!window.XLSX){
@@ -6193,20 +6257,40 @@ function _doExcelCore(){
     XLSX.utils.book_append_sheet(wb, wsChart, 'Pre-Bore Chart');
 
     // ── Sheet 3: Safety Summary ──
-    const sfData=[
-      ['SAFETY & DESIGN CHECK',''],
-      ['Formula','Depth = Prev + (Angle% × Seg ÷ 100)'],
-      ['Min Bend Radius','OD × 100 ÷ 1000 = '+G.BR.toFixed(2)+'m'],
-      ['Pipe OD',G.odMM.toFixed(0)+'mm'],
-      ['Ream Size',G.ream.toFixed(0)+'mm'],
-      ['Bore Length',G.bl+'m'],
-      ['Total Rods',G.totalRods],
-      ['Max Depth Required',G.maxD+'m'],
-      ['Entry Angle',G.plan.entPct.toFixed(1)+'%'],
-      ['Exit Angle',G.plan.extPct.toFixed(1)+'%'],
-      ['Safe Step','±'+G.ss+'%/rod'],
-      ['Designed by','Saiyad Hussain — HDD Driller & Locator · 14+ Years · Saudi Arabia'],
-    ];
+    let sfData;
+    if (CURRENT_MODE === 4) {
+      const rl = parseFloat(v('rodL')) || 0;
+      const bl = parseFloat(v('boreL')) || _tbdRows[_tbdRows.length-1].dist;
+      const maxD = Math.max(0, ..._tbdRows.map(r => Math.abs(r.depth || 0)));
+      const entAngle = _tbdRows.length > 1 ? _tbdRows[1].angle : 0;
+      const extAngle = _tbdRows.length > 1 ? _tbdRows[_tbdRows.length-1].angle : 0;
+      sfData=[
+        ['TRIAL BORE DRAFT — SUMMARY',''],
+        ['Formula','Depth = Prev + (Angle% × Seg ÷ 100)'],
+        ['Bore Length',bl+'m'],
+        ['Rod Length',rl+'m'],
+        ['Total Rods',_tbdRows.length-1],
+        ['Max Depth (from entries)',maxD.toFixed(2)+'m'],
+        ['Entry Angle',entAngle.toFixed(1)+'%'],
+        ['Exit Angle',extAngle.toFixed(1)+'%'],
+        ['Designed by','Saiyad Hussain — HDD Driller & Locator · 14+ Years · Saudi Arabia'],
+      ];
+    } else {
+      sfData=[
+        ['SAFETY & DESIGN CHECK',''],
+        ['Formula','Depth = Prev + (Angle% × Seg ÷ 100)'],
+        ['Min Bend Radius','OD × 100 ÷ 1000 = '+G.BR.toFixed(2)+'m'],
+        ['Pipe OD',G.odMM.toFixed(0)+'mm'],
+        ['Ream Size',G.ream.toFixed(0)+'mm'],
+        ['Bore Length',G.bl+'m'],
+        ['Total Rods',G.totalRods],
+        ['Max Depth Required',G.maxD+'m'],
+        ['Entry Angle',G.plan.entPct.toFixed(1)+'%'],
+        ['Exit Angle',G.plan.extPct.toFixed(1)+'%'],
+        ['Safe Step','±'+G.ss+'%/rod'],
+        ['Designed by','Saiyad Hussain — HDD Driller & Locator · 14+ Years · Saudi Arabia'],
+      ];
+    }
     const wsSafety=XLSX.utils.aoa_to_sheet(sfData);
     wsSafety['!cols']=[{wch:26},{wch:50}];
     XLSX.utils.book_append_sheet(wb, wsSafety, 'Safety Summary');
@@ -6220,6 +6304,18 @@ function _doExcelCore(){
 }
 
 function doPDF(){
+  if (CURRENT_MODE === 4) {
+    if (!_tbdRows.length) {toast('⚠️ Generate chart first!','wn');return;}
+    openPdfChooser(); return;
+  }
+  if (CURRENT_MODE === 2) {
+    if (!window._cwData) {toast('⚠️ Generate chart first!','wn');return;}
+    openPdfChooser(); return;
+  }
+  if (CURRENT_MODE === 3) {
+    if (!window._zdcData) {toast('⚠️ Generate chart first!','wn');return;}
+    openPdfChooser(); return;
+  }
   if(!G){toast('⚠️ Generate chart first!','wn');return;}
   openPdfChooser();
 }
@@ -6254,6 +6350,14 @@ function pdfchGo(){
   const cb2=document.getElementById('pdfch-cb2').checked;
   if(!cb1&&!cb2){toast('⚠️ Kam se kam ek PDF select karein','wn');return;}
   closePdfChooser();
+  if (CURRENT_MODE === 2 || CURRENT_MODE === 3) {
+    // City Mode / Zero Degree Crossing — same popup, their own table+graph builders
+    const _isCw = (CURRENT_MODE === 2);
+    if (_isCw && window._cwData) window._zdcData = window._cwData;
+    if(cb1) setTimeout(()=>{ window._zdcExportMode = _isCw ? 'cw' : null; zdcExportPDF(); },200);
+    if(cb2) setTimeout(()=>{ window._zdcExportGraphMode = _isCw ? 'cw' : null; zdcExportGraphPDF(); },cb1?1000:200);
+    return;
+  }
   if(cb1) setTimeout(()=>_doChartPDF(),200);
   if(cb2) setTimeout(()=>_doGraphPDF(),cb1?1000:200);
 }
@@ -6262,7 +6366,8 @@ function pdfchGo(){
 // PDF CHART ONLY — A4 Portrait
 // ════════════════════════════════════════
 function _doChartPDF(){
-  if(!G){toast('⚠️ Generate chart first!','wn');return;}
+  if (CURRENT_MODE !== 4 && !G) {toast('⚠️ Generate chart first!','wn');return;}
+  if (CURRENT_MODE === 4 && !_tbdRows.length) {toast('⚠️ Generate chart first!','wn');return;}
   try{
     const info=getInfoLines(), rows=collectRows();
     const proj=v('projN')||'—';
@@ -6367,6 +6472,7 @@ ${colWidthCSS}
 // PDF GRAPH ONLY — A4 Landscape
 // ════════════════════════════════════════
 function _doGraphPDF(){
+  if (CURRENT_MODE === 4) { _doGraphPDF_TBD(); return; }
   if(!G){toast('⚠️ Generate chart first!','wn');return;}
   try{
     const cvs=document.getElementById('cvs');
@@ -6464,9 +6570,113 @@ html,body{height:100%;font-family:Arial,sans-serif;background:#fff;color:#111;}
   }catch(e){toast('❌ '+e.message,'bad');console.error(e);}
 }
 
+// ════════════════════════════════════════
+// PDF GRAPH ONLY — Trial Bore Draft (Mode 4) — A4 Landscape
+// Mirrors _doGraphPDF() above but reads from _tbdRows / tbdDrawProfile()
+// instead of G — Trial Bore Draft has no auto-plan object.
+// ════════════════════════════════════════
+function _doGraphPDF_TBD(){
+  if (!_tbdRows.length) {toast('⚠️ Generate chart first!','wn');return;}
+  try{
+    const cvs=document.getElementById('cvs');
+    if(!cvs){toast('⚠️ Graph canvas not found','wn');return;}
+    const _pe=cvs.parentElement;
+    const _prevInlineWidth=_pe?_pe.style.width:null;
+    let graphImg;
+    if(_pe && typeof tbdDrawProfile==='function'){
+      _pe.style.width='680px';
+      tbdDrawProfile();
+      graphImg=cvs.toDataURL('image/png');
+      _pe.style.width=_prevInlineWidth||'';
+      tbdDrawProfile();
+    }else{
+      graphImg=cvs.toDataURL('image/png');
+    }
+    const logoHtml=getPDFLogoHTML?getPDFLogoHTML():'';
+    const info=getInfoLines();
+    const rl = parseFloat(v('rodL')) || 0;
+    const bl = parseFloat(v('boreL')) || _tbdRows[_tbdRows.length-1].dist;
+    const maxD = Math.max(0, ..._tbdRows.map(r => Math.abs(r.depth || 0)));
+    const entAngle = _tbdRows.length > 1 ? _tbdRows[1].angle : 0;
+    const extAngle = _tbdRows.length > 1 ? _tbdRows[_tbdRows.length-1].angle : 0;
+
+    const cells=[
+      ['PROJECT / KM', v('projN')||'—'],
+      ['CLIENT',       v('projC')||'—'],
+      ['LOCATION',     v('projL')||'—'],
+      ['BORE ID',      v('boreID')||'—'],
+      ['BORE LENGTH',  bl+' m'],
+      ['MAX DEPTH',    maxD.toFixed(2)+' m'],
+      ['ENTRY ANGLE',  entAngle.toFixed(1)+'%'],
+      ['EXIT ANGLE',   extAngle.toFixed(1)+'%'],
+      ['RODS',         (_tbdRows.length-1)+' × '+rl+'m'],
+      ['DATE',         v('projDt')||new Date().toISOString().slice(0,10)],
+    ];
+
+    const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Trial Bore Draft Graph</title>
+<style>*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:Arial,sans-serif;background:#fff;color:#111;}
+@page{size:A4 landscape;margin:8mm 10mm;}
+@media print{
+  html,body{height:100%;}
+  body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .page-wrap{page-break-after:avoid;page-break-inside:avoid;}
+}
+.page-wrap{display:flex;flex-direction:column;height:185mm;overflow:hidden;}
+.gh{display:flex;align-items:center;gap:8px;border-bottom:2px solid #7c3aed;
+  padding-bottom:3px;margin-bottom:3px;flex-shrink:0;}
+.gl{flex:0 0 auto;}.gl img{height:28px;max-width:80px;object-fit:contain;}
+.gt{flex:1;}.gm{font-size:12px;font-weight:900;color:#7c3aed;letter-spacing:1px;}
+.gs{font-size:7px;color:#555;margin-top:1px;line-height:1.3;}
+.gb{background:#7c3aed;color:#fff;padding:2px 7px;border-radius:5px;
+  font-size:7px;font-weight:700;letter-spacing:1px;white-space:nowrap;}
+.gi{display:flex;border:1px solid #ddd6fe;border-radius:4px;overflow:hidden;
+  background:#f5f3ff;margin-bottom:3px;flex-shrink:0;}
+.gc{flex:1;padding:2px 5px;border-right:1px solid #ddd6fe;font-size:6.5px;}
+.gc:last-child{border-right:none;}
+.gcl{color:#888;margin-bottom:1px;font-size:5.5px;text-transform:uppercase;}
+.gcv{font-weight:700;color:#7c3aed;font-size:7.5px;}
+.gw{border:1.5px solid #ddd6fe;border-radius:6px;padding:3px;
+  background:#faf9ff;flex:1;overflow:hidden;display:flex;
+  align-items:center;justify-content:center;min-height:0;width:100%;}
+.gw img{max-width:100%;max-height:100%;object-fit:contain;display:block;}
+.gf{margin-top:4px;display:flex;align-items:center;justify-content:space-between;
+  padding:4px 7px;background:#f5f3ff;border:1px solid #ddd6fe;
+  border-radius:3px;font-size:6.5px;color:#333;flex-shrink:0;}
+</style></head><body>
+<div class="page-wrap">
+<div class="gh">
+  <div class="gl">${logoHtml||`<div style="font-size:12px;font-weight:900;color:#7c3aed;">${v('prepB')||'HDD Pro'}<br><span style="font-size:7px;color:#888;">HDD SPECIALIST</span></div>`}</div>
+  <div class="gt">
+    <div class="gm">📊 TRIAL BORE DRAFT — BORE PROFILE GRAPH</div>
+    <div class="gs">${info[0]||''}</div>
+  </div>
+  <div class="gb">A4 LANDSCAPE</div>
+</div>
+<div class="gi">
+  ${cells.map(([l,val])=>`<div class="gc"><div class="gcl">${l}</div><div class="gcv">${val}</div></div>`).join('')}
+</div>
+<div class="gw"><img src="${graphImg}" alt="Bore Profile Graph"></div>
+<div class="gf">
+  <span>Formula: Depth=Prev+(Angle%×Seg÷100) | Manually-entered angles (Trial Bore Draft)</span>
+  <span><strong>Saiyad Hussain</strong> — HDD Driller &amp; Locator · 14+ Yrs · Saudi Arabia</span>
+</div>
+</div>
+</body></html>`;
+
+    let ifr3=document.getElementById('pf3');
+    if(!ifr3){ifr3=document.createElement('iframe');ifr3.id='pf3';
+      ifr3.style.cssText='position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:none;';
+      document.body.appendChild(ifr3);}
+    ifr3.onload=()=>setTimeout(()=>ifr3.contentWindow.print(),600);
+    ifr3.srcdoc=html;
+    toast('📈 Graph PDF — A4 Landscape ready','ok');
+  }catch(e){toast('❌ '+e.message,'bad');console.error(e);}
+}
+
 
 function savePNG(){
-  drawProfile();
+  if (CURRENT_MODE === 4) { tbdDrawProfile(); } else { drawProfile(); }
   const a=document.createElement('a');
   a.href=document.getElementById('cvs').toDataURL('image/png');
   a.download=(v('boreID')||'HDD')+'_profile.png';a.click();
@@ -8724,7 +8934,7 @@ function _zdcRenderInline(d) {
       <div class="exp-btns">
         <button class="btn-smart" id="smartEditBtn" onclick="toggleSmartEdit()">✏️ Smart Edit: <span id="seState">${SMART_EDIT_ON ? 'ON' : 'OFF'}</span></button>
         <button class="btn-exp" onclick="zdcExportExcel()">📊 Excel</button>
-        <button class="btn-exp" onclick="zdcExportPDF()">📄 PDF / Print</button>
+        <button class="btn-exp" onclick="doPDF()">📄 PDF / Print</button>
         <button class="btn-exp" onclick="zdcExportGraph()">🖼️ Graph PNG</button>
       </div>`;
   }
@@ -8871,11 +9081,8 @@ function zdcExportPDF() {
   if (!d) return;
   const proj = (document.getElementById('projN')||{}).value || '—';
   const dateStr = new Date().toISOString().slice(0,10);
-
-  // Capture graph from main canvas
-  let graphDataUrl = '';
-  try { const cvs = document.getElementById('zdcGraphCanvas');
-    if (cvs) graphDataUrl = cvs.toDataURL('image/png'); } catch(e) {}
+  // Capture BEFORE it gets cleared below — needed for the title/columns.
+  const _isCityMode = (window._zdcExportMode === 'cw');
 
   // Build table HTML for PDF — with RL columns if active
   // Use the SAME flag the on-screen table used to decide 8 vs 10 columns
@@ -8938,7 +9145,7 @@ function zdcExportPDF() {
   tbl += '</tbody></table>';
 
   const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
-<title>ZDC — ${proj}</title>
+<title>${_isCityMode ? 'City Mode' : 'ZDC'} — ${proj}</title>
 <style>*{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:Arial,sans-serif;font-size:9px;padding:8px;}
 h2{color:#065f46;font-size:13px;margin-bottom:5px;}
@@ -8951,7 +9158,7 @@ td{padding:3px 3px;text-align:center;border:1px solid #ccc;}
   border-radius:3px;font-size:8px;}
 @page{size:A4 portrait;margin:10mm 8mm;}</style>
 </head><body>
-<h2>🎯 ZERO DEGREE CROSSING — BORE CHART</h2>
+<h2>${_isCityMode ? '🏙️ PIT TO PIT CURVE / CITY MODE — BORE CHART' : '🎯 ZERO DEGREE CROSSING — BORE CHART'}</h2>
 <div class="inf">
   • Project: ${proj} | Date: ${dateStr} | Prepared by: Saiyad Hussain<br>
   • Bore Length (Countable): ${d.bl}m | Rods: ${d.n}×${d.rl}m | Pipe OD: ${d.odMM}mm<br>
@@ -8973,7 +9180,93 @@ ${tbl}
     document.body.appendChild(iframe); }
   iframe.onload = () => setTimeout(() => iframe.contentWindow.print(), 400);
   iframe.srcdoc = html;
-  toast('📄 ZDC PDF opening…', 'ok');
+  toast('📋 Chart PDF — A4 Portrait ready', 'ok');
+}
+
+// ── City/ZDC Graph-only PDF — A4 Landscape ──
+// Companion to zdcExportPDF() above. Previously the graph canvas was
+// captured but never actually placed in any printable output — this
+// function is what was missing, so "Bore Profile Graph" in the PDF
+// chooser now produces a real, full-size landscape page for these modes too.
+function zdcExportGraphPDF() {
+  const d = window._zdcData;
+  if (!d) return;
+  const _isCityMode = (window._zdcExportGraphMode === 'cw');
+  window._zdcExportGraphMode = null;
+  const proj = (document.getElementById('projN')||{}).value || '—';
+  const dateStr = (document.getElementById('projDt')||{}).value || new Date().toISOString().slice(0,10);
+
+  let graphImg = '';
+  try {
+    const cvs = document.getElementById('zdcGraphCanvas');
+    if (cvs) graphImg = cvs.toDataURL('image/png');
+  } catch (e) {}
+  if (!graphImg) { toast('⚠️ Graph canvas not found', 'wn'); return; }
+
+  const logoHtml = (typeof getPDFLogoHTML === 'function') ? getPDFLogoHTML() : '';
+  const titleText = _isCityMode ? 'PIT TO PIT CURVE / CITY MODE' : 'ZERO DEGREE CROSSING';
+  const cells = [
+    ['PROJECT / KM', proj],
+    ['CLIENT',       (document.getElementById('projC')||{}).value || '—'],
+    ['LOCATION',     (document.getElementById('projL')||{}).value || '—'],
+    ['BORE ID',      (document.getElementById('boreID')||{}).value || '—'],
+    ['BORE LENGTH (countable)', d.bl + ' m'],
+    ['ENTRY / EXIT PIT DEPTH',  d.ed.toFixed(2) + ' / ' + d.xd.toFixed(2) + ' m'],
+    ['TARGET ANGLE', d.ang.toFixed(1) + '% (' + d.angQuality + ')'],
+    ['PIPE OD',      d.odMM + ' mm'],
+    ['DATE',         dateStr],
+  ];
+
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${titleText} Graph — ${proj}</title>
+<style>*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:Arial,sans-serif;background:#fff;color:#111;}
+@page{size:A4 landscape;margin:8mm 10mm;}
+@media print{html,body{height:100%;}body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .page-wrap{page-break-after:avoid;page-break-inside:avoid;}}
+.page-wrap{display:flex;flex-direction:column;height:185mm;overflow:hidden;}
+.gh{display:flex;align-items:center;gap:8px;border-bottom:2px solid #065f46;
+  padding-bottom:3px;margin-bottom:3px;flex-shrink:0;}
+.gl{flex:0 0 auto;}.gl img{height:28px;max-width:80px;object-fit:contain;}
+.gt{flex:1;}.gm{font-size:12px;font-weight:900;color:#065f46;letter-spacing:1px;}
+.gs{font-size:7px;color:#555;margin-top:1px;line-height:1.3;}
+.gb{background:#065f46;color:#fff;padding:2px 7px;border-radius:5px;
+  font-size:7px;font-weight:700;letter-spacing:1px;white-space:nowrap;}
+.gi{display:flex;border:1px solid #a7f3d0;border-radius:4px;overflow:hidden;
+  background:#f0fdf4;margin-bottom:3px;flex-shrink:0;}
+.gc{flex:1;padding:2px 5px;border-right:1px solid #a7f3d0;font-size:6.5px;}
+.gc:last-child{border-right:none;}
+.gcl{color:#888;margin-bottom:1px;font-size:5.5px;text-transform:uppercase;}
+.gcv{font-weight:700;color:#065f46;font-size:7.5px;}
+.gw{border:1.5px solid #a7f3d0;border-radius:6px;padding:3px;
+  background:#f8fffb;flex:1;overflow:hidden;display:flex;
+  align-items:center;justify-content:center;min-height:0;width:100%;}
+.gw img{max-width:100%;max-height:100%;object-fit:contain;display:block;}
+.gf{margin-top:4px;display:flex;align-items:center;justify-content:space-between;
+  padding:4px 7px;background:#f0fdf4;border:1px solid #a7f3d0;
+  border-radius:3px;font-size:6.5px;color:#333;flex-shrink:0;}
+</style></head><body>
+<div class="page-wrap">
+<div class="gh">
+  <div class="gl">${logoHtml||`<div style="font-size:12px;font-weight:900;color:#065f46;">${(document.getElementById('prepB')||{}).value||'HDD Pro'}<br><span style="font-size:7px;color:#888;">HDD SPECIALIST</span></div>`}</div>
+  <div class="gt"><div class="gm">📊 ${titleText} — BORE PROFILE GRAPH</div><div class="gs">Project: ${proj}</div></div>
+  <div class="gb">A4 LANDSCAPE</div>
+</div>
+<div class="gi">${cells.map(([l,val])=>`<div class="gc"><div class="gcl">${l}</div><div class="gcv">${val}</div></div>`).join('')}</div>
+<div class="gw"><img src="${graphImg}" alt="Bore Profile Graph"></div>
+<div class="gf">
+  <span>Target: 0% | Best: ±0.5% | Acceptable: ±1% | Max: ±2% | Min BR=OD×100÷1000</span>
+  <span><strong>Saiyad Hussain</strong> — HDD Driller &amp; Locator · 14+ Yrs · Saudi Arabia</span>
+</div>
+</div>
+</body></html>`;
+
+  let iframe = document.getElementById('zdcPFG');
+  if (!iframe) { iframe = document.createElement('iframe'); iframe.id='zdcPFG';
+    iframe.style.cssText='position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:none;';
+    document.body.appendChild(iframe); }
+  iframe.onload = () => setTimeout(() => iframe.contentWindow.print(), 400);
+  iframe.srcdoc = html;
+  toast('📈 Graph PDF — A4 Landscape ready', 'ok');
 }
 
 // ── ZDC Excel Export ──
@@ -10106,7 +10399,7 @@ function setMode(mode) {
   // ── Restore standard export bar if switching away from Mode 3 (but not to Mode 4) ──
   if (mode !== 3 && mode !== 4) {
     const expBar = document.querySelector('.exp-bar');
-    if (expBar && expBar.querySelector('[onclick="zdcExportPDF()"]')) {
+    if (expBar && expBar.querySelector('[onclick="zdcExportExcel()"]')) {
       expBar.innerHTML = `
         <span class="exp-title">📋 PRE-BORE CHART</span>
         <div class="exp-btns">
@@ -10615,7 +10908,7 @@ function _cwRenderInline(d) {
       <div class="exp-btns">
         <button class="btn-smart" id="smartEditBtn" onclick="toggleSmartEdit()">✏️ Smart Edit: <span id="seState">${SMART_EDIT_ON ? 'ON' : 'OFF'}</span></button>
         <button class="btn-exp" onclick="cwExportExcel()">📊 Excel</button>
-        <button class="btn-exp" onclick="cwExportPDF()">📄 PDF / Print</button>
+        <button class="btn-exp" onclick="doPDF()">📄 PDF / Print</button>
         <button class="btn-exp" onclick="cwExportGraph()">🖼️ Graph PNG</button>
       </div>`;
   }
@@ -12522,7 +12815,7 @@ let _gpsPrevAcc   = null;       // accuracy (m) of last accepted fix — used fo
 let _gpsTotalDist = 0;          // metres
 let _gpsPoints   = [];          // path points for info
 let _gpsLastFix  = null;        // most recent {lat,lon,acc} — used to capture Exit Pit
-let _gpsPendingGeocode = [];    // [{type:'entry'|'exit', lat, lon}] queued while offline
+let _gpsPendingGeocode = [];    // {kind:'pit', type:'entry'|'exit', lat, lon} or {kind:'evidence', id, lat, lon} — queued while offline
 let _gpsEntryFix = null;        // {lat,lon,acc,addr} — reused by Field Report
 let _gpsExitFix  = null;
 
@@ -12637,7 +12930,12 @@ function _gpsOnSuccess(pos) {
     // metres without the user moving at all — require the displacement to
     // clearly exceed the combined uncertainty before counting it.
     const prevAcc = _gpsPrevAcc || acc;
-    const minMove = Math.max(1.0, (acc + prevAcc) * 0.6);
+    // Tuned July 2026: the previous 0.6 multiplier (no cap) produced
+    // thresholds of 10m+ whenever accuracy was only "ok" (not "great"),
+    // silently discarding genuine walking steps and under-reporting total
+    // distance on short bore-length walks. Lower multiplier + a hard cap
+    // keeps standing-still jitter filtered out while letting real steps count.
+    const minMove = Math.min(6, Math.max(1.0, (acc + prevAcc) * 0.35));
     if (d > minMove) {
       _gpsTotalDist += d;
       _gpsPoints.push({lat, lon});
@@ -12729,26 +13027,28 @@ function _gpsSetPitCard(type, fix) {
   } else {
     addrEl.textContent = '📡 Offline — will update when online';
     addrEl.classList.add('pending');
-    _gpsPendingGeocode.push({type, lat: fix.lat, lon: fix.lon});
+    _gpsPendingGeocode.push({kind:'pit', type, lat: fix.lat, lon: fix.lon});
   }
 }
 
 // ════════════════════════════════════════════════════
-// REVERSE GEOCODING — GOOGLE-FREE (production decision, July 2026)
-// Primary & ONLY engine: OpenStreetMap Nominatim — free, no API key,
-//   no billing, no quota risk. Google Cloud Geocoding is permanently
-//   removed from this build (billing/e-mandate risk on the developer's
-//   bank account made it unsafe). Do NOT reintroduce a Google provider
-//   here unless the app has stable ad/revenue income to safely absorb
-//   billing risk (see app notes).
+// REVERSE GEOCODING — GOOGLE-FREE, MULTI-PROVIDER (production decision, July 2026)
+// Three FREE, no-key, no-billing providers are tried in order, and their
+// results are MERGED (each fills in whatever the previous one missed —
+// e.g. Nominatim often has no postcode in Gulf countries, BigDataCloud
+// sometimes does). This maximizes the chance of a complete address
+// without ever touching a paid API. Google Cloud Geocoding is permanently
+// removed from this build (billing/e-mandate risk on the developer's
+// bank account made it unsafe) — do NOT reintroduce a Google provider
+// unless the app has stable ad/revenue income to safely absorb billing risk.
 //
 // LOCAL CACHE — every resolved GPS point is saved to localStorage so
 //   repeat visits to the same spot resolve instantly with ZERO network
 //   calls, and so previously-visited points remain available offline.
-// Both providers/cache normalize to the SAME return shape:
+// All providers/cache normalize to the SAME return shape:
 //   { display_name, address: { village, city, district, state, postcode, country } }
-// so nothing else in the app needs to know whether the answer came
-// from cache or from a live Nominatim lookup.
+// so nothing else in the app needs to know which provider (or cache)
+// the answer came from.
 // ════════════════════════════════════════════════════
 
 const GEOCODE_CACHE_KEY = 'hdd_geocode_cache_v1';
@@ -12775,7 +13075,7 @@ function _geoCacheSet(lat, lon, data) {
   } catch (e) { /* localStorage full/unavailable — cache is best-effort only */ }
 }
 
-// ── Improved structured parsing of Nominatim's raw address object ──
+// ── Structured parsing of Nominatim's raw address object ──
 // Nominatim doesn't have one fixed field for "village" — depending on
 // area it can land in village/hamlet/suburb/neighbourhood etc. This
 // picks the most specific match available so the Field Tools / PDF
@@ -12792,7 +13092,7 @@ function _parseNominatimAddress(addr) {
   };
 }
 
-// ── Provider: OpenStreetMap Nominatim (free, no API key, no limit risk) ──
+// ── Provider 1: OpenStreetMap Nominatim (free, no API key, no limit risk) ──
 async function _geocodeWithNominatim(lat, lon) {
   try {
     const res = await fetch(
@@ -12810,16 +13110,103 @@ async function _geocodeWithNominatim(lat, lon) {
   }
 }
 
-// Shared reverse-geocoding core — both Field Tools and Project Info use this single function.
+// ── Provider 2: Photon (by komoot) — free, OSM-based, no API key ──
+// Used only to FILL GAPS left by Nominatim (e.g. missing postcode/village)
+// for the same point — different indexing sometimes has different tags.
+async function _geocodeWithPhoton(lat, lon) {
+  try {
+    const res = await fetch('https://photon.komoot.io/reverse?lon=' + lon + '&lat=' + lat);
+    const data = await res.json();
+    const p = data && data.features && data.features[0] && data.features[0].properties;
+    if (!p) return null;
+    const parts = [p.name, p.district, p.city, p.county, p.state, p.postcode, p.country].filter(Boolean);
+    return {
+      display_name: parts.length ? parts.join(', ') : null,
+      address: {
+        village:  p.village || p.suburb || p.district || null,
+        city:     p.city || p.town || null,
+        district: p.county || p.state_district || null,
+        state:    p.state || null,
+        postcode: p.postcode || null,
+        country:  p.country || null,
+      },
+    };
+  } catch (e) {
+    return null;
+  }
+}
+
+// ── Provider 3: BigDataCloud client API — free, no API key ──
+// Last resort / gap-filler — different underlying dataset again, occasionally
+// has a postcode where the two OSM-based providers above have none.
+async function _geocodeWithBigDataCloud(lat, lon) {
+  try {
+    const res = await fetch(
+      'https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=' + lat + '&longitude=' + lon + '&localityLanguage=en'
+    );
+    const data = await res.json();
+    if (!data) return null;
+    const parts = [data.locality, data.city, data.principalSubdivision, data.postcode, data.countryName].filter(Boolean);
+    return {
+      display_name: parts.length ? parts.join(', ') : null,
+      address: {
+        village:  data.locality || null,
+        city:     data.city || null,
+        district: (data.localityInfo && data.localityInfo.administrative && data.localityInfo.administrative.length >= 3)
+                    ? data.localityInfo.administrative[2].name : null,
+        state:    data.principalSubdivision || null,
+        postcode: data.postcode || null,
+        country:  data.countryName || null,
+      },
+    };
+  } catch (e) {
+    return null;
+  }
+}
+
+// Fill any blank field in `base` using the corresponding field from `extra` —
+// never overwrites something a higher-priority provider already found.
+function _mergeGeo(base, extra) {
+  if (!extra) return base;
+  if (!base) return extra;
+  const a = base.address || {}, b = extra.address || {};
+  return {
+    display_name: base.display_name || extra.display_name,
+    address: {
+      village:  a.village  || b.village  || null,
+      city:     a.city     || b.city     || null,
+      district: a.district || b.district || null,
+      state:    a.state    || b.state    || null,
+      postcode: a.postcode || b.postcode || null,
+      country:  a.country  || b.country  || null,
+    },
+  };
+}
+
+const GEOCODE_PROVIDER_CHAIN = [_geocodeWithNominatim, _geocodeWithPhoton, _geocodeWithBigDataCloud];
+
+// Shared reverse-geocoding core — Field Tools, Project Info, and Field
+// Evidence Camera all use this single function.
 // Cache-first: works fully offline for any previously-visited point, and
-// avoids re-hitting Nominatim for a coordinate we already resolved.
+// avoids re-hitting any provider for a coordinate we already resolved.
+// If the first provider's answer is incomplete (e.g. no postcode), the
+// next free provider is tried and used ONLY to fill the missing fields —
+// so a location is never left blank just because one provider lacks it.
 async function _gpsReverseGeocodeFull(lat, lon) {
   const cached = _geoCacheGet(lat, lon);
   if (cached) return cached;
 
   if (!navigator.onLine) return null; // nothing cached and no network — caller queues for later
 
-  const result = await _geocodeWithNominatim(lat, lon);
+  let result = null;
+  for (const provider of GEOCODE_PROVIDER_CHAIN) {
+    let r = null;
+    try { r = await provider(lat, lon); } catch (e) { r = null; }
+    result = _mergeGeo(result, r);
+    const a = result && result.address;
+    // Stop early once we have a complete-enough answer — no need to hit every provider every time
+    if (result && result.display_name && a && a.city && a.postcode) break;
+  }
   if (result) _geoCacheSet(lat, lon, result);
   return result;
 }
@@ -12828,6 +13215,46 @@ async function _gpsReverseGeocode(lat, lon) {
   const geo = await _gpsReverseGeocodeFull(lat, lon);
   return geo ? geo.display_name : null;
 }
+
+// ── Offline retry queue ──
+// Anything captured without internet (Entry/Exit Pit GPS fix, or a Field
+// Evidence Camera photo) is pushed here with just enough info to redo the
+// lookup later. When the connection returns, everything queued gets
+// resolved automatically — no manual re-survey or re-shoot needed.
+//   Pit card item:      { kind:'pit',      type:'entry'|'exit', lat, lon }
+//   Evidence photo item:{ kind:'evidence', id, lat, lon }
+
+window.addEventListener('online', async () => {
+  if (!_gpsPendingGeocode.length) return;
+  const queue = _gpsPendingGeocode.slice();
+  _gpsPendingGeocode = [];
+  let updatedAny = false;
+
+  for (const item of queue) {
+    const geo = await _gpsReverseGeocodeFull(item.lat, item.lon);
+    const addr = geo ? geo.display_name : null;
+
+    if (item.kind === 'evidence') {
+      if (typeof _evidenceApplyLateAddress === 'function') {
+        await _evidenceApplyLateAddress(item.id, addr, geo ? geo.address.postcode : null);
+        updatedAny = true;
+      }
+      continue;
+    }
+
+    // Default: pit card item (entry/exit)
+    const addrEl = document.getElementById(item.type + 'Addr');
+    if (addrEl) {
+      addrEl.textContent = addr || 'Address unavailable';
+      addrEl.classList.remove('pending');
+    }
+    const fixRecord = item.type === 'entry' ? _gpsEntryFix : _gpsExitFix;
+    if (fixRecord) fixRecord.addr = addr || null;
+    updatedAny = true;
+  }
+
+  if (updatedAny) toast('✅ Address auto-updated for stored GPS points/photos', 'ok');
+});
 // ════════════════════════════════════════════════════
 // TRACK MAP — live path drawing, turn-by-turn, online/offline
 // (Reads _gpsPoints / _gpsTotalDist / _gpsRunning — does not modify them)
@@ -13178,10 +13605,15 @@ async function evidenceOnFile(input) {
     let fix = null;
     try { fix = await _evidenceGetGPSFix(); } catch(e) { fix = null; }
 
-    let addr = null;
-    if (fix && navigator.onLine) {
+    let addr = null, postcode = null;
+    if (fix) {
       statusEl.textContent = '🏠 Fetching address…';
-      addr = await _gpsReverseGeocode(fix.lat, fix.lon); // reuse GPS Distance module's geocoder
+      // Cache-first inside _gpsReverseGeocodeFull — resolves instantly (even
+      // offline) if this spot was looked up before; otherwise tries the
+      // free provider chain when online, or returns null when offline.
+      const geo = await _gpsReverseGeocodeFull(fix.lat, fix.lon);
+      addr = geo ? geo.display_name : null;
+      postcode = (geo && geo.address) ? geo.address.postcode : null;
     }
 
     statusEl.textContent = '🖊️ Stamping photo…';
@@ -13193,6 +13625,7 @@ async function evidenceOnFile(input) {
       lon: fix ? fix.lon : null,
       acc: fix ? fix.acc : null,
       addr: addr,
+      postcode: postcode,
       project: (document.getElementById('projN') || {}).value || '—',
       boreId: (document.getElementById('boreID') || {}).value || '—',
       capturedBy: sessionStorage.getItem('hdd_cu') || (document.getElementById('prepB') || {}).value || '—',
@@ -13201,10 +13634,17 @@ async function evidenceOnFile(input) {
     };
 
     const stampedUrl = await _evidenceStampImage(imgDataUrl, meta);
-    const record = { id: 'ev_' + Date.now(), dataUrl: stampedUrl, meta };
+    const record = { id: 'ev_' + Date.now(), dataUrl: stampedUrl, rawDataUrl: imgDataUrl, meta };
     _evidencePhotos.unshift(record);
     _evidenceRenderRecent();
     if (typeof _galleryRender === 'function') _galleryRender();
+
+    // Offline (or address lookup failed for some other reason) — queue this
+    // photo so the address (and PIN, if a provider has it) fills in
+    // automatically, with the photo re-stamped, once connection returns.
+    if (fix && !addr) {
+      _gpsPendingGeocode.push({kind:'evidence', id: record.id, lat: fix.lat, lon: fix.lon});
+    }
 
     try { localStorage.setItem('hdd_evidence_seq', String(_evidenceSeq)); } catch(e) {}
     try {
@@ -13224,6 +13664,28 @@ async function evidenceOnFile(input) {
   } finally {
     input.value = '';
   }
+}
+
+// Called from the 'online' listener for any Field Evidence Camera photo that
+// was captured without internet. Re-stamps a fresh copy of the ORIGINAL
+// photo (rawDataUrl) with the now-available address/PIN, so the old
+// "Address pending" text isn't left baked into the saved image.
+async function _evidenceApplyLateAddress(id, addr, postcode) {
+  const record = _evidencePhotos.find(r => r.id === id);
+  if (!record || !addr) return;
+
+  record.meta.addr = addr;
+  record.meta.postcode = postcode || null;
+
+  if (record.rawDataUrl) {
+    try {
+      record.dataUrl = await _evidenceStampImage(record.rawDataUrl, record.meta);
+    } catch (e) { /* keep old stamped image if re-stamping fails */ }
+  }
+
+  _evidenceRenderRecent();
+  if (typeof _galleryRender === 'function') _galleryRender();
+  try { await _evidenceDBPut(record); } catch (e) {}
 }
 
 function _evidenceFileToDataURL(file) {
@@ -13268,7 +13730,7 @@ function _evidenceStampImage(imgDataUrl, meta) {
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, w, h);
 
-      const barH = Math.max(110, Math.round(h * 0.24));
+      const barH = Math.max(125, Math.round(h * 0.27));
       const grad = ctx.createLinearGradient(0, h - barH, 0, h);
       grad.addColorStop(0, 'rgba(5,8,18,0)');
       grad.addColorStop(0.35, 'rgba(5,8,18,0.80)');
@@ -13304,6 +13766,12 @@ function _evidenceStampImage(imgDataUrl, meta) {
         ctx.fillStyle = '#7a9cc8';
         const addrLine = meta.addr ? ('🏠 ' + meta.addr) : '🏠 Address pending — will update when reviewed online';
         ctx.fillText(_evidenceTruncate(ctx, addrLine, w - pad * 2), pad, y); y += lh * 1.3;
+
+        if (meta.postcode) {
+          ctx.fillStyle = '#00ffc8';
+          ctx.fillText('📮 PIN: ' + meta.postcode, pad, y); y += lh * 1.3;
+          ctx.fillStyle = '#7a9cc8';
+        }
 
         ctx.fillText(_evidenceTruncate(ctx,
           '🏗️ ' + meta.project + ' · Bore ' + meta.boreId + ' · By ' + meta.capturedBy +
