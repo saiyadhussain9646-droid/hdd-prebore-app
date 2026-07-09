@@ -6053,7 +6053,7 @@ function renderSafety(){
 // ════════════════════════════════════════════════════
 // PROFILE DRAWING
 // ════════════════════════════════════════════════════
-function drawProfile(){
+function drawProfile(lightMode){
   const cvs=document.getElementById('cvs');if(!cvs||!G)return;
   const W=Math.max(cvs.parentElement.offsetWidth-4,300);
   cvs.width=W;cvs.height=380;
@@ -6064,20 +6064,38 @@ function drawProfile(){
   const sx=d=>pad.l+(parseFloat(d)/G.bl)*cw;
   const sy=d=>pad.t+(Math.max(0,parseFloat(d))/maxDraw)*ch;
 
-  c.fillStyle='#0a0e1a';c.fillRect(0,0,W,380);
-  c.fillStyle='rgba(139,115,85,.11)';c.fillRect(pad.l,pad.t,cw,ch);
-  c.strokeStyle='rgba(30,45,84,.5)';c.lineWidth=.5;
+  // Colour palette only — used ONLY when exporting a PDF while Light Mode is
+  // active (lightMode=true). Normal on-screen calls pass nothing, so
+  // lightMode is undefined/false and every colour below is IDENTICAL to
+  // before this change. No coordinate, scale, or data value is touched.
+  const P = lightMode ? {
+    bg:'#ffffff', field:'rgba(37,99,235,.05)', grid:'rgba(37,99,235,.14)',
+    ground:'rgba(22,24,29,.5)', groundTxt:'rgba(22,24,29,.65)',
+    target:'rgba(180,83,9,.35)', targetTxt:'rgba(180,83,9,.85)',
+    maxLine:'rgba(37,99,235,.3)', maxTxt:'rgba(37,99,235,.9)',
+    axisTxt:'#4b5058', title:'#1d4ed8'
+  } : {
+    bg:'#0a0e1a', field:'rgba(139,115,85,.11)', grid:'rgba(30,45,84,.5)',
+    ground:'rgba(180,200,255,.45)', groundTxt:'rgba(180,200,255,.5)',
+    target:'rgba(255,204,0,.25)', targetTxt:'rgba(255,204,0,.6)',
+    maxLine:'rgba(0,212,255,.2)', maxTxt:'rgba(0,212,255,.75)',
+    axisTxt:'#7a9cc8', title:'#00d4ff'
+  };
+
+  c.fillStyle=P.bg;c.fillRect(0,0,W,380);
+  c.fillStyle=P.field;c.fillRect(pad.l,pad.t,cw,ch);
+  c.strokeStyle=P.grid;c.lineWidth=.5;
   for(let i=0;i<=10;i++){c.beginPath();c.moveTo(pad.l+i*cw/10,pad.t);c.lineTo(pad.l+i*cw/10,pad.t+ch);c.stroke();}
   for(let i=0;i<=5;i++){c.beginPath();c.moveTo(pad.l,pad.t+i*ch/5);c.lineTo(pad.l+cw,pad.t+i*ch/5);c.stroke();}
 
-  c.strokeStyle='rgba(180,200,255,.45)';c.lineWidth=1.5;c.setLineDash([5,4]);
+  c.strokeStyle=P.ground;c.lineWidth=1.5;c.setLineDash([5,4]);
   c.beginPath();c.moveTo(pad.l,pad.t);c.lineTo(pad.l+cw,pad.t);c.stroke();c.setLineDash([]);
-  c.fillStyle='rgba(180,200,255,.5)';c.font='9px Share Tech Mono,monospace';
+  c.fillStyle=P.groundTxt;c.font='9px Share Tech Mono,monospace';
   c.fillText('GROUND LEVEL  0.00m',pad.l+3,pad.t-4);
 
-  c.strokeStyle='rgba(255,204,0,.25)';c.lineWidth=1;c.setLineDash([4,4]);
+  c.strokeStyle=P.target;c.lineWidth=1;c.setLineDash([4,4]);
   c.beginPath();c.moveTo(pad.l,sy(G.maxD));c.lineTo(pad.l+cw,sy(G.maxD));c.stroke();c.setLineDash([]);
-  c.fillStyle='rgba(255,204,0,.6)';c.font='9px Share Tech Mono,monospace';
+  c.fillStyle=P.targetTxt;c.font='9px Share Tech Mono,monospace';
   c.fillText(`Target: ${G.maxD}m`,pad.l+cw-75,sy(G.maxD)-4);
 
   const phC={IN:'#aaddff',FLAT:'#66ccff',HOLD:'#00ff88',RISE:'#ffaa66',OUT:'#ff8844'};
@@ -6093,17 +6111,17 @@ function drawProfile(){
   });
 
   const maxA=Math.max(...G.rows.map(r=>r.depth));
-  c.strokeStyle='rgba(0,212,255,.2)';c.lineWidth=1;c.setLineDash([6,4]);
+  c.strokeStyle=P.maxLine;c.lineWidth=1;c.setLineDash([6,4]);
   c.beginPath();c.moveTo(pad.l,sy(maxA));c.lineTo(pad.l+cw,sy(maxA));c.stroke();c.setLineDash([]);
-  c.fillStyle='rgba(0,212,255,.75)';c.font='9px Share Tech Mono,monospace';
+  c.fillStyle=P.maxTxt;c.font='9px Share Tech Mono,monospace';
   c.fillText(`Max: ${maxA.toFixed(2)}m`,pad.l+3,sy(maxA)-4);
 
-  c.fillStyle='#7a9cc8';c.font='9px Share Tech Mono,monospace';
+  c.fillStyle=P.axisTxt;c.font='9px Share Tech Mono,monospace';
   for(let d=0;d<=Math.ceil(maxDraw);d+=2)c.fillText(d+'m',1,sy(d)+4);
   c.fillText('0',pad.l,pad.t+ch+12);c.fillText(G.bl+'m',pad.l+cw-20,pad.t+ch+12);
   c.fillStyle='#00d4ff';c.font='bold 10px Exo 2,sans-serif';c.fillText('PI  0.00m',pad.l,pad.t+ch+26);
   c.fillStyle='#ff6b35';c.fillText('PO  0.00m',pad.l+cw-72,pad.t+ch+26);
-  c.fillStyle='#00d4ff';c.font='bold 11px Rajdhani,sans-serif';
+  c.fillStyle=P.title;c.font='bold 11px Rajdhani,sans-serif';
   c.fillText(`${v('projN')||'HDD BORE'} | Rod=${G.rl}m | OD=${G.odMM.toFixed(0)}mm | Entry=${G.plan.entPct.toFixed(1)}% | Exit=${G.plan.extPct.toFixed(1)}% | MaxD=${maxA.toFixed(2)}m`,pad.l,17);
 }
 
@@ -6482,10 +6500,11 @@ function _doGraphPDF(){
     // No drawing/formula logic touched — just a bigger render of the same drawProfile().
     const _pe=cvs.parentElement;
     const _prevInlineWidth=_pe?_pe.style.width:null;
+    const _lightPdf = document.body.classList.contains('light-theme');
     let graphImg;
     if(_pe && typeof drawProfile==='function'){
       _pe.style.width='680px';
-      drawProfile();
+      drawProfile(_lightPdf);
       graphImg=cvs.toDataURL('image/png');
       _pe.style.width=_prevInlineWidth||'';
       drawProfile();
@@ -9198,7 +9217,7 @@ function zdcExportGraphPDF() {
 
   let graphImg = '';
   try {
-    const cvs = document.getElementById('zdcGraphCanvas');
+    const cvs = document.getElementById('cvs');
     if (cvs) graphImg = cvs.toDataURL('image/png');
   } catch (e) {}
   if (!graphImg) { toast('⚠️ Graph canvas not found', 'wn'); return; }
