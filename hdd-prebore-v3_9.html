@@ -1546,6 +1546,15 @@ function toggleTheme() {
   if (btn) btn.textContent = _isLightTheme ? '☀️' : '🌙';
   // Store preference
   try { localStorage.setItem('hdd_theme', _isLightTheme ? 'light' : 'dark'); } catch(e){}
+  // ── Redraw the bore-profile graph so it matches the newly selected theme
+  // immediately, instead of only updating on next generate/recalc. ──
+  try {
+    if (typeof CURRENT_MODE !== 'undefined' && CURRENT_MODE === 4 && typeof tbdDrawProfile === 'function') {
+      tbdDrawProfile();
+    } else if (typeof drawProfile === 'function' && typeof G !== 'undefined' && G && G.rows && G.rows.length) {
+      drawProfile(_isLightTheme);
+    }
+  } catch(e){}
 }
 // Restore theme on load
 (function(){
@@ -5254,7 +5263,7 @@ function generate(){
   setTimeout(()=>{
     try{build();renderAll();
       document.getElementById('results').style.display='block';
-      setTimeout(drawProfile,100);
+      setTimeout(()=>drawProfile(_isLightTheme),100);
       hideOv();
       const usedStep = CUSTOM_STEP_VALUE > 0 ? `Custom Step ±${CUSTOM_STEP_VALUE}%` : `Safe Step ±${safeStep(parseFloat(document.getElementById('rodL').value)||9.5)}%`;
       toast(`✅ Chart ready! Step used: ${usedStep}/rod`, 'ok');
@@ -5571,7 +5580,7 @@ function onAngEdit(cell){
   }
   renderCards();
   renderSafety();
-  drawProfile();
+  drawProfile(_isLightTheme);
   checkCurvatureAlert();
 }
 
@@ -5955,7 +5964,7 @@ function recalcAll(){
   // Rebuild all panels
   renderCards();
   renderSafety();
-  drawProfile();
+  drawProfile(_isLightTheme);
   checkCurvatureAlert();
   toast('✅ Recalculated!','ok');
 }
@@ -6074,10 +6083,11 @@ function drawProfile(lightMode){
   const sx=d=>pad.l+(parseFloat(d)/G.bl)*cw;
   const sy=d=>pad.t+(Math.max(0,parseFloat(d))/maxDraw)*ch;
 
-  // Colour palette only — used ONLY when exporting a PDF while Light Mode is
-  // active (lightMode=true). Normal on-screen calls pass nothing, so
-  // lightMode is undefined/false and every colour below is IDENTICAL to
-  // before this change. No coordinate, scale, or data value is touched.
+  // Colour palette — chosen from the currently active app theme.
+  // Both on-screen calls (drawProfile(_isLightTheme)) and the PDF export
+  // call (drawProfile(_lightPdf)) now pass the correct light/dark flag,
+  // so the on-canvas graph always matches whichever theme is active.
+  // No coordinate, scale, or data value is touched.
   const P = lightMode ? {
     bg:'#ffffff', field:'rgba(37,99,235,.05)', grid:'rgba(37,99,235,.14)',
     ground:'rgba(22,24,29,.5)', groundTxt:'rgba(22,24,29,.65)',
@@ -6517,7 +6527,7 @@ function _doGraphPDF(){
       drawProfile(_lightPdf);
       graphImg=cvs.toDataURL('image/png');
       _pe.style.width=_prevInlineWidth||'';
-      drawProfile();
+      drawProfile(_isLightTheme);
     }else{
       graphImg=cvs.toDataURL('image/png');
     }
@@ -6705,7 +6715,7 @@ html,body{height:100%;font-family:Arial,sans-serif;background:#fff;color:#111;}
 
 
 function savePNG(){
-  if (CURRENT_MODE === 4) { tbdDrawProfile(); } else { drawProfile(); }
+  if (CURRENT_MODE === 4) { tbdDrawProfile(); } else { drawProfile(_isLightTheme); }
   const a=document.createElement('a');
   a.href=document.getElementById('cvs').toDataURL('image/png');
   a.download=(v('boreID')||'HDD')+'_profile.png';a.click();
@@ -6957,7 +6967,7 @@ function loadProject(id) {
     renderAll();
     document.getElementById('results').style.display = 'block';
     setTimeout(() => {
-      drawProfile();
+      drawProfile(_isLightTheme);
       // 4. Restore manually edited DOM cells on top
       restoreDOMEdits(proj.domRows);
     }, 120);
