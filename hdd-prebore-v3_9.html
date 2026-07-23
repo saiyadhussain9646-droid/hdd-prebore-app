@@ -1,5 +1,43 @@
 <html lang="en"><head>
 <meta charset="UTF-8">
+<!-- ════════ CACHE-BUSTING / AUTO-UPDATE (added July 2026) ════════
+     Meta tags alone are NOT reliably honoured by Chrome/WebView's actual
+     HTTP disk cache (this is a well-known limitation, not a mistake) — so
+     they're included here as a first line of defence, but the REAL fix is
+     the small version-check script further below, which forces a genuinely
+     fresh download whenever this page's build version has changed. -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<script>
+// ── Auto-update checker (the real fix behind cache-busting) ──────────────
+// HOW TO USE: bump APP_BUILD_VERSION (any change to the string is enough,
+// e.g. today's date) every time this file is edited and pushed to GitHub.
+// On load, this silently re-fetches the SAME page over the network with
+// cache bypassed. If that fresh copy's version differs from what's
+// currently on screen, it means the visitor is looking at a stale cached
+// copy — so it reloads once with a cache-busting query string, which
+// forces a genuinely fresh download. Result: a GitHub push alone reaches
+// every user automatically, no "Clear Cache" or reinstall needed.
+// This never touches any calculation, UI, ID, or existing feature — it
+// only decides whether to silently reload the page.
+const APP_BUILD_VERSION = 'v3.9.2-2026-07-23-geoapify';
+(function(){
+  try {
+    if (location.search.indexOf('_v=') !== -1) return; // just did a fresh cache-busted load — nothing more to do
+    fetch(location.pathname, { cache: 'no-store' })
+      .then(function(res){ return res.text(); })
+      .then(function(html){
+        const m = html.match(/APP_BUILD_VERSION\s*=\s*'([^']+)'/);
+        if (m && m[1] && m[1] !== APP_BUILD_VERSION) {
+          const sep = location.search ? '&' : '?';
+          location.replace(location.pathname + location.search + sep + '_v=' + Date.now());
+        }
+      })
+      .catch(function(){ /* offline, or request blocked — fail silently, app works exactly as before */ });
+  } catch(e) { /* never let this break the app */ }
+})();
+</script>
 <!-- ════════ FIREBASE SDK ════════ -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -1669,6 +1707,15 @@ document.addEventListener('click',function(e){
       <div class="arow"><button class="btn-add" onclick="addUser()">＋ Add User to Firebase</button></div>
       <div class="amsg" id="amsg"></div>
     </div>
+    <div class="admin-add" id="pinChangeBox">
+      <h4>🔑 CHANGE ADMIN PIN</h4>
+      <div class="arow">
+        <input type="password" id="pinOld" placeholder="Current PIN" style="flex:1;min-width:90px;">
+        <input type="password" id="pinNew" placeholder="New PIN (4+ digits)" style="flex:1;min-width:90px;">
+      </div>
+      <div class="arow"><button class="btn-add" onclick="changeAdminPIN()">🔒 Update PIN</button></div>
+      <div class="amsg" id="pinMsg"></div>
+    </div>
     <div class="admin-note">
       ☁️ Users are managed via Firebase — changes apply instantly across all devices.<br>
       New users can login immediately after being added.
@@ -1885,7 +1932,7 @@ document.addEventListener('click',function(e){
       <div class="iu"><input type="number" id="pipOD" placeholder="e.g. 36inch or 914.4 MM" min="1" oninput="onPipeChange()">
       <span class="iu-u" id="odU" style="color:var(--t3)">—</span></div></div>
 
-    <!-- Row 4: OD Unit | Punch-In To Entry Pit Space -->
+    <!-- Row 4: OD Unit | Wall Thickness -->
     <div class="fi" id="fi-odUnit"><label>OD Unit <span class="req">★</span></label>
       <select id="odUnitSel" onchange="onODUnit()">
         <option value="" disabled selected>e.g. Inch or MM</option>
@@ -1894,6 +1941,11 @@ document.addEventListener('click',function(e){
       </select>
       <div class="hint">e.g. mm or inch</div></div>
 
+    <div class="fi" id="fi-pipWT"><label>Wall Thickness <span class="req">★</span></label>
+      <div class="iu"><input type="number" id="pipWT" placeholder="e.g. 8 or 0.315inch" min="0.1" step="0.01" oninput="onIC()">
+      <span class="iu-u" id="wtU" style="color:var(--t3)">—</span></div></div>
+
+    <!-- Row 5: Punch-In To Entry Pit Space (now shifted down one row) -->
     <div class="fi fi-disabled" id="fi-ncSpace">
       <label>Punch-In To Entry Pit Space <span class="opt">optional</span></label>
       <div class="iu"><input type="number" id="pitNcSpace" placeholder="e.g. 30" min="5" max="500" step="0.5" oninput="onPitDepthInput()" disabled>
@@ -1901,7 +1953,7 @@ document.addEventListener('click',function(e){
       <div class="hint">Max space for NC section (auto if empty)</div>
     </div>
 
-    <!-- Row 5: Punch-In Angle | Punch-Out Angle (side-by-side, face-to-face) -->
+    <!-- Row 6: Punch-In Angle | Punch-Out Angle (side-by-side, face-to-face) -->
     <div class="fi"><label>Punch-In Angle <span class="opt">(Optional)</span></label>
       <div class="iu"><input type="number" id="entA" placeholder="e.g. -18%" step="0.5" oninput="onIC()">
       <span class="iu-u" id="eaU">%</span></div>
@@ -4348,7 +4400,23 @@ document.addEventListener('click',function(e){
 // ════════════════════════════════════════════════════
 // FIREBASE AUTH — replaces localStorage auth
 // ════════════════════════════════════════════════════
-const ADMIN_PIN = '786';
+// ADMIN PIN — now stored in Firestore (adminConfig/security), NOT hardcoded
+// in this file. '786' below is only a ONE-TIME bootstrap fallback used the
+// very first time this update runs (before Saiyad has set a real PIN via
+// the new "Change Admin PIN" box in the admin panel). Once a PIN is saved
+// to Firestore, it always wins over this fallback — so change it once and
+// this hardcoded value becomes irrelevant.
+let _cachedAdminPIN = null;
+async function _getAdminPIN() {
+  if (_cachedAdminPIN) return _cachedAdminPIN;
+  try {
+    const doc = await _db.collection('adminConfig').doc('security').get();
+    _cachedAdminPIN = (doc.exists && doc.data().pin) ? String(doc.data().pin) : '786';
+  } catch (e) {
+    _cachedAdminPIN = '786';
+  }
+  return _cachedAdminPIN;
+}
 let CU = null;
 let _cachedUsers = [];
 
@@ -4366,11 +4434,23 @@ const saveUsers = async (arr) => {
 async function _loadAllUsers() {
   try {
     const snap = await _db.collection('user').get();
-    _cachedUsers = snap.docs.map(d => ({
-      uid:d.id, u:d.data().username||'', role:d.data().role||'user',
-      active:d.data().active!==false, ne:d.data().email||'',
-      displayName:d.data().displayName||'', p:'••••••'
-    }));
+    _cachedUsers = snap.docs.map(d => {
+      const data = d.data();
+      // createdAt may be missing on older accounts created before this field
+      // existed — treated as 0 (oldest) so they simply sort to the bottom,
+      // nothing breaks.
+      const ts = data.createdAt && typeof data.createdAt.toMillis === 'function'
+        ? data.createdAt.toMillis() : 0;
+      return {
+        uid:d.id, u:data.username||'', role:data.role||'user',
+        active:data.active!==false, ne:data.email||'',
+        displayName:data.displayName||'', p:'••••••', _createdMs: ts
+      };
+    });
+    // Newest registered user first — Firebase Auth signups, admin-added
+    // users, and any future registration flow all land in this same
+    // /user collection, so this always reflects everyone automatically.
+    _cachedUsers.sort((a,b) => b._createdMs - a._createdMs);
     return _cachedUsers;
   } catch(e) { return []; }
 }
@@ -4454,7 +4534,7 @@ async function doLogout() {
   document.getElementById('adminBtn').style.display='none';
   document.getElementById('results').style.display='none';
   _clearAllBoreData();
-  ['rodL','boreL','maxD','machH','entA','extA','pipOD',
+  ['rodL','boreL','maxD','machH','entA','extA','pipOD','pipWT',
    'pullT','macMod','projN','projC','projL','prepB','projDt','boreID'
   ].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   ['pipT','odUnitSel'].forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0;});
@@ -4469,7 +4549,8 @@ async function openAdmin() {
   if(!CU||CU.role!=='admin'){toast('❌ Not authorized','bad');return;}
   if(sessionStorage.getItem('hdd_pin')!=='ok'){
     const pin=prompt('Enter Admin PIN:');
-    if(pin!==ADMIN_PIN){toast('❌ Wrong PIN','bad');return;}
+    const realPin = await _getAdminPIN();
+    if(pin!==realPin){toast('❌ Wrong PIN','bad');return;}
     sessionStorage.setItem('hdd_pin','ok');
   }
   toast('⏳ Loading users…','ok');
@@ -4478,6 +4559,30 @@ async function openAdmin() {
   document.getElementById('adminPanel').classList.add('show');
 }
 function closeAdmin() { document.getElementById('adminPanel').classList.remove('show'); }
+
+// Change Admin PIN — saved to Firestore (adminConfig/security), so Saiyad
+// can rotate it himself any time he suspects it's been learned by someone,
+// with no code edit or new AAB/upload needed.
+async function changeAdminPIN() {
+  const oldPin = document.getElementById('pinOld').value;
+  const newPin = document.getElementById('pinNew').value;
+  const msg = document.getElementById('pinMsg');
+  if (!CU || CU.role !== 'admin') { msg.textContent = '❌ Not authorized'; msg.style.color = 'var(--danger)'; return; }
+  if (!newPin || newPin.length < 4) { msg.textContent = '⚠️ New PIN must be at least 4 characters'; msg.style.color = 'var(--warn)'; return; }
+  const realPin = await _getAdminPIN();
+  if (oldPin !== realPin) { msg.textContent = '❌ Current PIN is wrong'; msg.style.color = 'var(--danger)'; return; }
+  try {
+    await _db.collection('adminConfig').doc('security').set({ pin: newPin }, { merge: true });
+    _cachedAdminPIN = newPin;
+    document.getElementById('pinOld').value = '';
+    document.getElementById('pinNew').value = '';
+    msg.textContent = '✅ PIN updated! Use the new PIN from now on.';
+    msg.style.color = 'var(--green)';
+  } catch (e) {
+    msg.textContent = '❌ Failed to update PIN: ' + e.message;
+    msg.style.color = 'var(--danger)';
+  }
+}
 // ─────────────────────────────────────────────────────────────────────────
 // _clearAllBoreData — resets ALL bore inputs, ZDC state, canvas, results.
 // Called on every login AND logout so each session always starts fresh.
@@ -4485,7 +4590,7 @@ function closeAdmin() { document.getElementById('adminPanel').classList.remove('
 function _clearAllBoreData() {
   rlClearFields();
   // Bore detail inputs
-  ['rodL','boreL','maxD','machH','entA','extA','pipOD',
+  ['rodL','boreL','maxD','machH','entA','extA','pipOD','pipWT',
    'pullT','macMod','projN','projC','projL','prepB','projDt','boreID'
   ].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
   ['pipT','odUnitSel'].forEach(id => {
@@ -4575,6 +4680,7 @@ function renderUserList() {
 
     rows +=
       '<tr>'
+      +'<td style="text-align:center;color:var(--t2);font-family:\'Share Tech Mono\',monospace">'+(i+1)+'</td>'
       +'<td style="font-family:\'Share Tech Mono\',monospace;color:var(--accent)">'+u.u+'</td>'
       +'<td style="font-size:10px;color:var(--t2)">'+email+'</td>'
       +'<td>'+statusHtml+'</td>'
@@ -4585,13 +4691,16 @@ function renderUserList() {
   });
 
   if (users.length === 0) {
-    rows = '<tr><td colspan="6" style="text-align:center;color:var(--t2);padding:16px;">⏳ Loading users...</td></tr>';
+    rows = '<tr><td colspan="7" style="text-align:center;color:var(--t2);padding:16px;">⏳ Loading users...</td></tr>';
   }
 
   var html =
-    '<div class="admin-table-wrap"><table class="admin-user-tbl">'
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px">'
+    +'<span style="font-size:12px;color:var(--accent);font-family:\'Share Tech Mono\',monospace">👥 Total Users: '+users.length+'</span>'
+    +'</div>'
+    +'<div class="admin-table-wrap"><table class="admin-user-tbl">'
     +'<thead><tr>'
-    +'<th>USERNAME</th><th>EMAIL</th><th>STATUS</th>'
+    +'<th style="text-align:center;width:36px">S.No.</th><th>USERNAME</th><th>EMAIL</th><th>STATUS</th>'
     +'<th>PASSWORD</th><th style="text-align:center">ACCESS</th><th style="text-align:center">RESET PW</th>'
     +'</tr></thead><tbody>'+rows+'</tbody></table></div>'
     +'<div class="admin-note" style="margin-top:8px">☁️ Users managed via Firebase. '
@@ -4797,6 +4906,8 @@ const iToP = str => {
 // ════════════════════════════════════════════════════
 const getODmm = () => { const od=parseFloat(document.getElementById('pipOD').value)||0;
   return document.getElementById('odUnitSel').value==='inch'?od*25.4:od; };
+const getWTmm = () => { const wt=parseFloat(document.getElementById('pipWT').value)||0;
+  return document.getElementById('odUnitSel').value==='inch'?wt*25.4:wt; };
 const getMBR  = odMM => odMM*100/1000;
 function onODUnit(){
   const sel = document.getElementById('odUnitSel');
@@ -4808,6 +4919,13 @@ function onODUnit(){
   if (unit === 'inch') { odU.textContent = 'IN'; odU.style.color = 'var(--text)'; }
   else if (unit === 'mm') { odU.textContent = 'MM'; odU.style.color = 'var(--text)'; }
   else { odU.textContent = '—'; odU.style.color = 'var(--t3)'; }
+  // Wall Thickness unit label follows the same OD Unit selection — no separate box needed
+  const wtU = document.getElementById('wtU');
+  if (wtU) {
+    if (unit === 'inch') { wtU.textContent = 'IN'; wtU.style.color = 'var(--text)'; }
+    else if (unit === 'mm') { wtU.textContent = 'MM'; wtU.style.color = 'var(--text)'; }
+    else { wtU.textContent = '—'; wtU.style.color = 'var(--t3)'; }
+  }
   onPipeChange();
 }
 function onPipeChange(){
@@ -4916,7 +5034,8 @@ function validate(){
   const req = isTrial
     ? [
         {id:'rodL',  l:'Rod Length'},
-        {id:'boreL', l:'Bore Length'}
+        {id:'boreL', l:'Bore Length'},
+        {id:'pipWT', l:'Wall Thickness'}
       ]
     : [
         {id:'rodL',  l:'Rod Length'},
@@ -4924,7 +5043,8 @@ function validate(){
         {id:'maxD',  l:'Max Depth'},
         {id:'pipT',  l:'Pipe Type'},
         {id:'pipOD', l:'Pipe OD'},
-        {id:'odUnitSel', l:'OD Unit'}
+        {id:'odUnitSel', l:'OD Unit'},
+        {id:'pipWT', l:'Wall Thickness'}
       ];
 
   // ── Pit mode extra required fields (modes 2 & 3 only) ──
@@ -6520,7 +6640,12 @@ function _doGraphPDF(){
     // No drawing/formula logic touched — just a bigger render of the same drawProfile().
     const _pe=cvs.parentElement;
     const _prevInlineWidth=_pe?_pe.style.width:null;
-    const _lightPdf = document.body.classList.contains('light-theme');
+    // PDF export always renders the graph in plain/light colours, regardless
+    // of the current on-screen Day/Night theme — this matches how the other
+    // 3 modes' graph PDFs already behave (their canvas never switches to a
+    // dark fill). Fixes the bug where Standard Mode + Night theme produced a
+    // black graph image inside the (already-white) PDF page.
+    const _lightPdf = true;
     let graphImg;
     if(_pe && typeof drawProfile==='function'){
       _pe.style.width='680px';
@@ -6739,7 +6864,7 @@ function saveProjects(arr) {
 
 // Collect all form input values (not calculations)
 function collectFormInputs() {
-  const ids = ['rodL','boreL','maxD','machH','entA','extA','pipT','pipOD','odUnitSel',
+  const ids = ['rodL','boreL','maxD','machH','entA','extA','pipT','pipOD','pipWT','odUnitSel',
                'pullT','macMod','projN','projC','projL','prepB','projDt','boreID'];
   const out = {};
   ids.forEach(id => {
@@ -9521,10 +9646,11 @@ function switchForgotTab(tab) {
   });
 }
 
-function doAdminReset() {
+async function doAdminReset() {
   const pin = document.getElementById('fAdminPin').value;
   const msg = document.getElementById('fmsg');
-  if (pin !== ADMIN_PIN) {
+  const realPin = await _getAdminPIN();
+  if (pin !== realPin) {
     msg.textContent = '❌ Wrong Admin PIN';
     msg.style.color = 'var(--danger)';
     return;
@@ -13053,13 +13179,13 @@ function _gpsSetPitCard(type, fix) {
   const _cachedAddr = _geoCacheGet(fix.lat, fix.lon);
   if (_cachedAddr) {
     // Same spot resolved before (even offline) — zero network calls needed
-    addrEl.textContent = _cachedAddr.display_name || 'Address unavailable';
+    addrEl.textContent = _cachedAddr.display_name || 'Location data unavailable, please try again';
     fixRecord.addr = _cachedAddr.display_name || null;
   } else if (navigator.onLine) {
     addrEl.textContent = '🔄 Fetching address…';
     addrEl.classList.add('pending');
     _gpsReverseGeocode(fix.lat, fix.lon).then(addr => {
-      addrEl.textContent = addr || 'Address unavailable';
+      addrEl.textContent = addr || 'Location data unavailable, please try again';
       addrEl.classList.remove('pending');
       fixRecord.addr = addr || null;
     });
@@ -13091,8 +13217,9 @@ function _gpsSetPitCard(type, fix) {
 // ════════════════════════════════════════════════════
 
 const GEOCODE_CACHE_KEY = 'hdd_geocode_cache_v1';
-const GEOCODE_CACHE_MAX = 500;          // oldest entries dropped beyond this
+const GEOCODE_CACHE_MAX = 1000;         // extended from 500 — oldest entries dropped beyond this
 const GEOCODE_CACHE_PRECISION = 4;      // ~11m grid — good enough to reuse a bore-site fix
+const GEOCODE_GOOD_ENOUGH_SCORE = 3;    // HIGH score — stop trying more providers once reached
 
 function _geoCacheKey(lat, lon) {
   return lat.toFixed(GEOCODE_CACHE_PRECISION) + ',' + lon.toFixed(GEOCODE_CACHE_PRECISION);
@@ -13132,10 +13259,13 @@ function _parseNominatimAddress(addr) {
 }
 
 // ── Provider 1: OpenStreetMap Nominatim (free, no API key, no limit risk) ──
+// zoom=18 + addressdetails=1 + namedetails=1: requests the most detailed
+// address breakdown Nominatim can give, instead of a coarser taluka/town-level
+// match — meaningfully improves village/postcode accuracy in rural India.
 async function _geocodeWithNominatim(lat, lon) {
   try {
     const res = await fetch(
-      'https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lon + '&zoom=16',
+      'https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lon + '&zoom=18&addressdetails=1&namedetails=1',
       { headers: { 'Accept-Language': 'en' } }
     );
     const data = await res.json();
@@ -13203,6 +13333,42 @@ async function _geocodeWithBigDataCloud(lat, lon) {
   }
 }
 
+// ── Provider 4: Geoapify — free tier (~3000 req/day, no credit card) ──
+// Used LAST, only to fill gaps the 3 free-no-key providers above couldn't.
+// SECURITY: this key is visible in the page source (unavoidable for a
+// frontend-only PWA/TWA with no backend). To keep it safe:
+//   1. In the Geoapify dashboard, restrict this key to your own domain
+//      (saiyadhussain9646-droid.github.io) so it can't be used elsewhere.
+//   2. Keep the free-tier daily quota as-is; only raise it later if real
+//      usage genuinely needs more.
+// If no key is set below, this provider is silently skipped — everything
+// else keeps working exactly as before.
+const GEOAPIFY_API_KEY = "f9b32db45abf4e4a87983a14bc05cf59";
+async function _geocodeWithGeoapify(lat, lon) {
+  if (!GEOAPIFY_API_KEY || GEOAPIFY_API_KEY === "PASTE_KEY_HERE") return null;
+  try {
+    const res = await fetch(
+      'https://api.geoapify.com/v1/geocode/reverse?lat=' + lat + '&lon=' + lon + '&format=json&apiKey=' + GEOAPIFY_API_KEY
+    );
+    const data = await res.json();
+    const r = data && data.results && data.results[0];
+    if (!r) return null;
+    return {
+      display_name: r.formatted || null,
+      address: {
+        village:  r.village || r.suburb || r.neighbourhood || r.hamlet || null,
+        city:     r.city || r.town || null,
+        district: r.county || r.state_district || null,
+        state:    r.state || null,
+        postcode: r.postcode || null,
+        country:  r.country || null,
+      },
+    };
+  } catch (e) {
+    return null;
+  }
+}
+
 // Fill any blank field in `base` using the corresponding field from `extra` —
 // never overwrites something a higher-priority provider already found.
 function _mergeGeo(base, extra) {
@@ -13222,7 +13388,25 @@ function _mergeGeo(base, extra) {
   };
 }
 
-const GEOCODE_PROVIDER_CHAIN = [_geocodeWithNominatim, _geocodeWithPhoton, _geocodeWithBigDataCloud];
+// ── Step 3: Smart result scoring ──
+// Instead of blindly accepting whichever provider answers first, each merged
+// result is scored so the loop below knows when it already has a genuinely
+// good answer (and can stop early) versus a weak one (and should keep trying
+// the next free provider). Higher score = more complete/trustworthy address.
+//   HIGH   (3): village/locality + postcode + state all present
+//   MEDIUM (2): town/city + district present, postcode may be missing
+//   LOW    (1): only a district/city name, nothing more specific
+//   NONE   (0): no usable address at all
+function _scoreGeoResult(result) {
+  if (!result || !result.address) return 0;
+  const a = result.address;
+  if (a.village && a.postcode && a.state) return 3;
+  if ((a.city || a.district) && (a.postcode || a.state)) return 2;
+  if (a.city || a.district || a.village) return 1;
+  return 0;
+}
+
+const GEOCODE_PROVIDER_CHAIN = [_geocodeWithNominatim, _geocodeWithPhoton, _geocodeWithBigDataCloud, _geocodeWithGeoapify];
 
 // Shared reverse-geocoding core — Field Tools, Project Info, and Field
 // Evidence Camera all use this single function.
@@ -13242,9 +13426,10 @@ async function _gpsReverseGeocodeFull(lat, lon) {
     let r = null;
     try { r = await provider(lat, lon); } catch (e) { r = null; }
     result = _mergeGeo(result, r);
-    const a = result && result.address;
-    // Stop early once we have a complete-enough answer — no need to hit every provider every time
-    if (result && result.display_name && a && a.city && a.postcode) break;
+    // Stop early only once we have a genuinely HIGH-confidence answer
+    // (village + postcode + state) — a weak/partial result keeps the loop
+    // going so the next free provider gets a chance to fill the gaps.
+    if (_scoreGeoResult(result) >= GEOCODE_GOOD_ENOUGH_SCORE) break;
   }
   if (result) _geoCacheSet(lat, lon, result);
   return result;
@@ -13284,7 +13469,7 @@ window.addEventListener('online', async () => {
     // Default: pit card item (entry/exit)
     const addrEl = document.getElementById(item.type + 'Addr');
     if (addrEl) {
-      addrEl.textContent = addr || 'Address unavailable';
+      addrEl.textContent = addr || 'Location data unavailable, please try again';
       addrEl.classList.remove('pending');
     }
     const fixRecord = item.type === 'entry' ? _gpsEntryFix : _gpsExitFix;
