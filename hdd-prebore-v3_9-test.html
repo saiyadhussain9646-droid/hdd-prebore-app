@@ -14571,10 +14571,36 @@ var DrawingEngine = (function () {
 
     var paddedRange = range * (1 + marginFactor);
 
+    var horizontalScale = innerW / snapshot.boreLength;
+    var rawVerticalScale = innerH / paddedRange;
+
+    // Cap the vertical:horizontal exaggeration ratio.
+    //
+    // Why: this sheet's plot area (A3 minus the right-hand title block)
+    // is nearly square, while a bore profile's natural data aspect ratio
+    // (length vs depth) is usually very wide and shallow. Scaling H and
+    // V independently to fill that near-square area — without a cap —
+    // forces an extreme vertical exaggeration whenever depth is small
+    // relative to length, which visually turns the curve into a sharp
+    // spike ("V") instead of the shallow, well-proportioned "sag" shape
+    // the existing Bore Profile Graph produces. The existing graph
+    // avoids this because its canvas is a wide letterbox shape, not a
+    // near-square one — so the SAME "independent H/V scale" principle
+    // there never needs anywhere near this much vertical exaggeration.
+    //
+    // Capping the ratio (rather than matching the existing graph's raw
+    // pixel scale, which depends on an unpredictable container width)
+    // is what keeps the drawing's proportions visually consistent no
+    // matter whether max depth is 10m, 50m, or 100m for the same bore
+    // length — exactly the requirement: never let depth magnitude alone
+    // reshape the curve into a "C" or "V".
+    var MAX_V_TO_H_RATIO = 10;
+    var verticalScale = Math.min(rawVerticalScale, horizontalScale * MAX_V_TO_H_RATIO);
+
     return {
       minD: minD, maxD: maxD, range: range, marginFactor: marginFactor,
-      horizontalScale: innerW / snapshot.boreLength,
-      verticalScale: innerH / paddedRange,
+      horizontalScale: horizontalScale,
+      verticalScale: verticalScale,
       originX: DRAW_AREA.x + INNER_PAD.left,
       originY: DRAW_AREA.y + INNER_PAD.top
     };
