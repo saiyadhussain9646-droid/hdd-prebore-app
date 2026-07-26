@@ -21,7 +21,7 @@
 // every user automatically, no "Clear Cache" or reinstall needed.
 // This never touches any calculation, UI, ID, or existing feature — it
 // only decides whether to silently reload the page.
-const APP_BUILD_VERSION = 'v3.9.6-2026-07-24-splash-fix';
+const APP_BUILD_VERSION = 'v3.9.7-2026-07-26-geo-crossvalidate';
 (function(){
   try {
     if (location.search.indexOf('_v=') !== -1) return; // just did a fresh cache-busted load — nothing more to do
@@ -13214,7 +13214,7 @@ function _gpsSetPitCard(type, fix) {
 // the answer came from.
 // ════════════════════════════════════════════════════
 
-const GEOCODE_CACHE_KEY = 'hdd_geocode_cache_v1';
+const GEOCODE_CACHE_KEY = 'hdd_geocode_cache_v2'; // bumped from v1 (July 26, 2026) — invalidates any old, possibly-wrong cached addresses so they can never override a freshly cross-validated result;
 const GEOCODE_CACHE_MAX = 1000;         // extended from 500 — oldest entries dropped beyond this
 const GEOCODE_CACHE_PRECISION = 4;      // ~11m grid — good enough to reuse a bore-site fix
 const GEOCODE_GOOD_ENOUGH_SCORE = 3;    // HIGH score — stop trying more providers once reached
@@ -13414,12 +13414,13 @@ function _mergeGeo(base, extra) {
   return {
     display_name: base.display_name || extra.display_name,
     address: {
-      village:  a.village  || b.village  || null,
-      city:     a.city     || b.city     || null,
-      district: a.district || b.district || null,
-      state:    a.state    || b.state    || null,
-      postcode: a.postcode || b.postcode || null,
-      country:  a.country  || b.country  || null,
+      village:    a.village    || b.village    || null,
+      city:       a.city       || b.city       || null,
+      district:   a.district   || b.district   || null,
+      state:      a.state      || b.state      || null,
+      postcode:   a.postcode   || b.postcode   || null,
+      country:    a.country    || b.country    || null,
+      postOffice: a.postOffice || b.postOffice || null,
     },
   };
 }
@@ -13451,22 +13452,83 @@ const GEOCODE_PROVIDER_CHAIN = [_geocodeWithGeoapify, _geocodeWithNominatim, _ge
 // If the first provider's answer is incomplete (e.g. no postcode), the
 // next free provider is tried and used ONLY to fill the missing fields —
 // so a location is never left blank just because one provider lacks it.
+// A single provider's "complete-looking" answer is not necessarily CORRECT
+// (this was exactly how a wrong-but-complete Nominatim/Geoapify result used
+// to slip through before). So now: don't trust an early result just because
+// ONE provider scored HIGH — only stop early once at least 2 independent
+// providers have been asked AND they agree on the postcode.
+function _postcodesAgree(a, b) {
+  return !!(a && b && String(a).trim() === String(b).trim());
+}
+
+// India Post's official, free, public Pincode API — no key required, no
+// quota risk. Given a valid 6-digit Indian PIN, returns the authoritative
+// Post Office name / District / State for that PIN. It cannot confirm
+// whether a PIN is the geographically-correct one for a given GPS point —
+// only that the PIN itself is real, and exactly where it officially
+// belongs — so it's used to VALIDATE/FILL District, State and Post Office
+// once a candidate PIN is already in hand, never to guess a PIN itself.
+async function _validateWithIndiaPost(pincode) {
+  try {
+    const res = await fetch('https://api.postalpincode.in/pincode/' + pincode);
+    const data = await res.json();
+    const entry = data && data[0];
+    if (!entry || entry.Status !== 'Success' || !entry.PostOffice || !entry.PostOffice[0]) return null;
+    const po = entry.PostOffice[0];
+    return {
+      postOffice: po.Name || null,
+      district:   po.District || null,
+      state:      po.State || null,
+    };
+  } catch (e) { return null; } // India Post unreachable — geocoding providers' data is kept as-is
+}
+
 async function _gpsReverseGeocodeFull(lat, lon) {
   const cached = _geoCacheGet(lat, lon);
   if (cached) return cached;
 
   if (!navigator.onLine) return null; // nothing cached and no network — caller queues for later
 
+  const raw = []; // each provider's own unmerged answer, kept for cross-checking
   let result = null;
+
   for (const provider of GEOCODE_PROVIDER_CHAIN) {
     let r = null;
     try { r = await provider(lat, lon); } catch (e) { r = null; }
+    if (r) raw.push(r);
     result = _mergeGeo(result, r);
-    // Stop early only once we have a genuinely HIGH-confidence answer
-    // (village + postcode + state) — a weak/partial result keeps the loop
-    // going so the next free provider gets a chance to fill the gaps.
-    if (_scoreGeoResult(result) >= GEOCODE_GOOD_ENOUGH_SCORE) break;
+
+    // Only stop early once at least 2 providers have answered AND their two
+    // most recent postcodes genuinely AGREE — a lone "complete-looking"
+    // result is never enough by itself anymore.
+    if (raw.length >= 2) {
+      const last = raw[raw.length - 1], prev = raw[raw.length - 2];
+      const agree = _postcodesAgree(
+        last.address && last.address.postcode,
+        prev.address && prev.address.postcode
+      );
+      if (agree && _scoreGeoResult(result) >= GEOCODE_GOOD_ENOUGH_SCORE) break;
+    }
   }
+  // If providers never agreed (or only one answered at all), `result` still
+  // holds the best-scoring merged answer available — an honest best-effort,
+  // not a fabricated one; every field either came from a real provider or
+  // stays null (shown as "—" wherever the UI already does that).
+
+  // ── India Post validation — only for a valid-looking 6-digit Indian PIN.
+  // Fills/corrects Post Office, District and State using the authoritative
+  // government source; never invents a PIN, never runs if no PIN was found.
+  if (result && result.address && result.address.postcode && /^\d{6}$/.test(result.address.postcode)) {
+    try {
+      const ip = await _validateWithIndiaPost(result.address.postcode);
+      if (ip) {
+        result.address.postOffice = ip.postOffice || result.address.postOffice || null;
+        result.address.district   = ip.district   || result.address.district   || null;
+        result.address.state      = ip.state       || result.address.state      || null;
+      }
+    } catch (e) { /* keep geocoding providers' data as-is */ }
+  }
+
   if (result) _geoCacheSet(lat, lon, result);
   return result;
 }
@@ -13960,11 +14022,37 @@ function _evidenceFileToDataURL(file) {
 function _evidenceGetGPSFix() {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) { reject('no geolocation'); return; }
-    navigator.geolocation.getCurrentPosition(
-      pos => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude, acc: pos.coords.accuracy }),
-      err => reject(err),
-      { enableHighAccuracy: true, timeout: 8000, maximumAge: 5000 }
+    // Previously this used a single getCurrentPosition() call with only an
+    // 8s timeout — indoors / weak-signal spots (exactly where evidence
+    // photos are often taken) commonly need longer than that for the GPS
+    // chip to settle, so it was failing with "GPS unavailable" too easily.
+    // Fix: watch position updates for up to 15s, keep the BEST-accuracy fix
+    // seen, and resolve early only once accuracy is already good (≤20m) —
+    // otherwise use whatever the best fix was once the window elapses. Only
+    // rejects if truly no fix at all came back in that time.
+    const GOOD_ACCURACY_M = 20;
+    const MAX_WAIT_MS = 15000;
+    let best = null, watchId = null, done = false;
+
+    function finish(pos, err) {
+      if (done) return;
+      done = true;
+      if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+      const use = pos || best;
+      if (use) resolve({ lat: use.coords.latitude, lon: use.coords.longitude, acc: use.coords.accuracy });
+      else reject(err || 'timeout');
+    }
+
+    watchId = navigator.geolocation.watchPosition(
+      pos => {
+        if (!best || pos.coords.accuracy < best.coords.accuracy) best = pos;
+        if (pos.coords.accuracy <= GOOD_ACCURACY_M) finish(pos);
+      },
+      err => { if (!best) finish(null, err); }, // keep waiting if we already have SOME fix, even if a later update errors
+      { enableHighAccuracy: true, timeout: MAX_WAIT_MS, maximumAge: 0 }
     );
+
+    setTimeout(() => finish(null), MAX_WAIT_MS); // use best fix seen (or fail) once the window elapses
   });
 }
 
