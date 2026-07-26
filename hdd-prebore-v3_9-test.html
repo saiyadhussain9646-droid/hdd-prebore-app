@@ -14594,7 +14594,10 @@ var DrawingEngine = (function () {
     // matter whether max depth is 10m, 50m, or 100m for the same bore
     // length — exactly the requirement: never let depth magnitude alone
     // reshape the curve into a "C" or "V".
-    var MAX_V_TO_H_RATIO = 10;
+    var MAX_V_TO_H_RATIO = 12.5; // increased 25% per user feedback (was 10) — brings the curve's
+    // visual proportion closer to the reference Bore Profile Graph's screen coverage. Note: this
+    // is a DRAWING, not a graph — depth values remain the source of truth via the Depth Dimension
+    // label/arrow (buildDepthDimensionSVG), never read off the curve's visual slope.
     var verticalScale = Math.min(rawVerticalScale, horizontalScale * MAX_V_TO_H_RATIO);
 
     return {
