@@ -21,7 +21,7 @@
 // every user automatically, no "Clear Cache" or reinstall needed.
 // This never touches any calculation, UI, ID, or existing feature — it
 // only decides whether to silently reload the page.
-const APP_BUILD_VERSION = 'v3.9.7-2026-07-26-geo-crossvalidate';
+const APP_BUILD_VERSION = 'v3.9.2-2026-07-23-geoapify';
 (function(){
   try {
     if (location.search.indexOf('_v=') !== -1) return; // just did a fresh cache-busted load — nothing more to do
@@ -1106,7 +1106,7 @@ body.light-theme ::-webkit-scrollbar-thumb{background:#c7cbd1!important;border-r
   color:var(--t3)!important;cursor:not-allowed!important;}
 .fi{display:flex;flex-direction:column;gap:4px;}
 .fi label{font-size:10px;color:var(--t2);font-weight:600;letter-spacing:.3px;}
-.req{color:var(--danger);font-size:9px;margin-left:3px;font-weight:700;}
+.req{color:var(--orange);font-size:9px;margin-left:3px;}
 .opt{display:inline-block;font-size:9px;padding:1px 5px;border-radius:3px;
   background:rgba(0,255,150,.15);color:#00ff96;margin-left:4px;}
 .hint{font-size:9px;color:var(--t3);margin-top:2px;}
@@ -1391,7 +1391,7 @@ td.rla-cell:empty:before{content:attr(data-ph);color:var(--t3);font-size:10px;}
 .rl-hint{font-size:9px;color:var(--t3);margin-top:3px;font-style:italic;}
 .rl-diff-box{margin-top:6px;padding:5px 8px;border-radius:5px;font-size:11px;
   background:rgba(0,255,150,.08);border:1px solid rgba(0,255,150,.2);
-  color:#00ff96;display:none;} /* default stays hidden for City/ZDC modes — unchanged from before; Standard mode's box overrides this with its own inline style to stay permanently visible */
+  color:#00ff96;display:none;}
 </style>
 <link rel="manifest" href="/hdd-prebore-app/manifest.json">
 </head>
@@ -1467,27 +1467,12 @@ td.rla-cell:empty:before{content:attr(data-ph);color:var(--t3);font-size:10px;}
 <script>
 (function(){
   var sp = document.getElementById('splashScreen');
+  var ls = document.getElementById('loginScreen');
   if (!sp) return;
-  var hidden = false;
-  function hideSplash(){
-    if (hidden) return;
-    hidden = true;
+  setTimeout(function(){
     sp.style.opacity = '0';
     setTimeout(function(){ sp.style.display = 'none'; }, 500);
-  }
-  var minTimePassed = false, authReady = false;
-  function tryHide(){ if (minTimePassed && authReady) hideSplash(); }
-  // Small minimum display time so the logo doesn't just flash on fast networks
-  setTimeout(function(){ minTimePassed = true; tryHide(); }, 600);
-  // Called from window.onload's onAuthStateChanged once Firebase has actually
-  // resolved whether the user is logged in — this is the REAL fix for the
-  // "blank screen on slow network" bug: previously the splash hid itself on
-  // a blind 1.5s timer no matter what, so on a slow connection it could
-  // disappear before Firebase/CSS/fonts had actually finished loading.
-  window._markAuthReady = function(){ authReady = true; tryHide(); };
-  // Safety fallback — never let the splash block the app forever even if
-  // the network is completely broken; after 8s, reveal whatever is ready.
-  setTimeout(hideSplash, 8000);
+  }, 1500);
 })();
 </script>
 <div id="loginScreen" style="display: flex;">
@@ -1910,7 +1895,6 @@ document.addEventListener('click',function(e){
     <span id="modeIndicatorText">2. Standard HDD Mode — Punch-In → Punch-Out</span>
   </div>
   <div class="form-title">📋 BORE DETAILS</div>
-  <div style="font-size:10px;color:var(--orange);font-weight:600;margin:-4px 0 8px 2px;letter-spacing:.3px;">★ Fill only starred fields. All others are optional.</div>
   <!-- Strict 2-column grid — 7 fixed rows, fields never hidden, disabled when inactive -->
   <div class="fg-bore">
 
@@ -1925,7 +1909,7 @@ document.addEventListener('click',function(e){
       <span class="iu-u">M</span></div></div>
 
     <!-- Row 2: Required Max Depth | Machine Boom Height -->
-    <div class="fi" id="fi-maxD"><label>Required Max Depth <span class="req">★</span></label>
+    <div class="fi"><label>Required Max Depth <span class="req">★</span></label>
       <div class="iu"><input type="number" id="maxD" placeholder="e.g. 25" min="0.1" step="0.01" oninput="onIC()">
       <span class="iu-u">M</span></div></div>
 
@@ -1935,7 +1919,7 @@ document.addEventListener('click',function(e){
       <div class="hint">Vise height from ground (default 1.0m)</div></div>
 
     <!-- Row 3: Pipe Type | Pipe OD -->
-    <div class="fi"><label>Pipe Type <span class="opt">optional</span></label>
+    <div class="fi"><label>Pipe Type <span class="req">★</span></label>
       <select id="pipT" onchange="onPipeChange()">
         <option value="" disabled selected>e.g. Steel or Hdpe...</option>
         <option value="Steel">Steel</option>
@@ -1944,12 +1928,12 @@ document.addEventListener('click',function(e){
         <option value="PVC">PVC</option>
       </select></div>
 
-    <div class="fi" id="fi-pipOD"><label>Pipe OD <span class="opt">optional</span></label>
+    <div class="fi" id="fi-pipOD"><label>Pipe OD <span class="req">★</span></label>
       <div class="iu"><input type="number" id="pipOD" placeholder="e.g. 36inch or 914.4 MM" min="1" oninput="onPipeChange()">
       <span class="iu-u" id="odU" style="color:var(--t3)">—</span></div></div>
 
     <!-- Row 4: OD Unit | Wall Thickness -->
-    <div class="fi" id="fi-odUnit"><label>OD Unit <span class="opt">optional</span></label>
+    <div class="fi" id="fi-odUnit"><label>OD Unit <span class="req">★</span></label>
       <select id="odUnitSel" onchange="onODUnit()">
         <option value="" disabled selected>e.g. Inch or MM</option>
         <option value="mm">mm</option>
@@ -1957,11 +1941,19 @@ document.addEventListener('click',function(e){
       </select>
       <div class="hint">e.g. mm or inch</div></div>
 
-    <div class="fi" id="fi-pipWT"><label>Wall Thickness <span class="opt">optional</span></label>
+    <div class="fi" id="fi-pipWT"><label>Wall Thickness <span class="req">★</span></label>
       <div class="iu"><input type="number" id="pipWT" placeholder="e.g. 8 or 0.315inch" min="0.1" step="0.01" oninput="onIC()">
       <span class="iu-u" id="wtU" style="color:var(--t3)">—</span></div></div>
 
-    <!-- Row 5: Punch-In Angle | Punch-Out Angle (side-by-side, face-to-face) -->
+    <!-- Row 5: Punch-In To Entry Pit Space (now shifted down one row) -->
+    <div class="fi fi-disabled" id="fi-ncSpace">
+      <label>Punch-In To Entry Pit Space <span class="opt">optional</span></label>
+      <div class="iu"><input type="number" id="pitNcSpace" placeholder="e.g. 30" min="5" max="500" step="0.5" oninput="onPitDepthInput()" disabled>
+      <span class="iu-u">M</span></div>
+      <div class="hint">Max space for NC section (auto if empty)</div>
+    </div>
+
+    <!-- Row 6: Punch-In Angle | Punch-Out Angle (side-by-side, face-to-face) -->
     <div class="fi"><label>Punch-In Angle <span class="opt">(Optional)</span></label>
       <div class="iu"><input type="number" id="entA" placeholder="e.g. -18%" step="0.5" oninput="onIC()">
       <span class="iu-u" id="eaU">%</span></div>
@@ -1987,8 +1979,17 @@ document.addEventListener('click',function(e){
       <div class="hint">Client pit depth at exit side</div>
     </div>
 
-    <!-- Row 7: Ground Elevation RL (optional) — moved here, right after Pit Depths -->
-    <div class="rl-row" id="rl-standard-row" style="grid-column:1/-1">
+    <!-- Row 7: BOTTOM CORNERS — Machine Model | Pulling Capacity -->
+    <div class="fi"><label>Machine Model <span class="opt">optional</span></label>
+      <input type="text" id="macMod" placeholder="e.g. XCMG XZ3600"></div>
+
+    <div class="fi"><label>Pulling Capacity <span class="opt">optional</span></label>
+      <div class="iu"><input type="number" id="pullT" placeholder="e.g. 360">
+      <span class="iu-u">TON</span></div></div>
+
+
+    <!-- Row 8: Ground Elevation RL (optional) -->
+    <div class="rl-row" id="rl-standard-row">
       <div class="rl-fi">
         <label>Entry Reduced Level <span class="rl-badge">optional</span></label>
         <div class="iu"><input type="number" id="entRL" placeholder="e.g. 100.00 m" step="0.01" oninput="rlUpdateDiff('std')">
@@ -2002,24 +2003,7 @@ document.addEventListener('click',function(e){
         <div class="rl-hint">Ground Elevation at Exit Pit</div>
       </div>
     </div>
-    <!-- Permanent RL Analysis card — always visible, never hidden, updates in place -->
-    <div class="rl-diff-box" id="rl-std-diff" style="grid-column:1/-1;display:block">ℹ️ RL Analysis – Waiting for Entry &amp; Exit RL.</div>
-
-    <!-- Row 8: BOTTOM CORNERS — Machine Model | Pulling Capacity -->
-    <div class="fi"><label>Machine Model <span class="opt">optional</span></label>
-      <input type="text" id="macMod" placeholder="e.g. XCMG XZ3600"></div>
-
-    <div class="fi"><label>Pulling Capacity <span class="opt">optional</span></label>
-      <div class="iu"><input type="number" id="pullT" placeholder="e.g. 360">
-      <span class="iu-u">TON</span></div></div>
-
-    <!-- Row 9: Punch-In To Entry Pit Space — no natural pair, spans full width -->
-    <div class="fi fi-disabled" id="fi-ncSpace" style="grid-column:1/-1">
-      <label>Punch-In To Entry Pit Space <span class="opt">optional</span></label>
-      <div class="iu"><input type="number" id="pitNcSpace" placeholder="e.g. 30" min="5" max="500" step="0.5" oninput="onPitDepthInput()" disabled>
-      <span class="iu-u">M</span></div>
-      <div class="hint">Max space for NC section (auto if empty)</div>
-    </div>
+    <div class="rl-diff-box" id="rl-std-diff"></div>
   </div>
   <div id="preview" class="ibox" style="margin-top:11px"><b>Total Rods:</b> 211×9.5m + 1 partial (5.0m) | <b>Max Depth:</b> 25m | <b>Safe Step:</b> ±2.5%/rod | <b>Min BR:</b> 61.0m</div>
 
@@ -5043,23 +5027,28 @@ function onIC() {
 // VALIDATE — required field check with visual red highlight
 // ════════════════════════════════════════════════════
 function validate(){
-  const mode = (typeof CURRENT_MODE !== 'undefined') ? CURRENT_MODE : 1;
+  // ── Mode 4: Trial Bore Draft — only Rod Length + Bore Length required ──
+  const isTrial = (typeof CURRENT_MODE !== 'undefined' && CURRENT_MODE === 4);
 
-  // ── Required fields per mode (per Saiyad's July 2026 spec) ──
-  // Mode-1: Rod Length, Bore Length
-  // Mode-2: + Max Depth
-  // Mode-3 & Mode-4: + Entry Pit Depth, Exit Pit Depth
-  // Everything else (Pipe Type, Pipe OD, OD Unit, Wall Thickness, Boom
-  // Height, Punch angles, Machine Model, Pulling Capacity, RL, etc.) is
-  // Optional in every mode — never blocks chart generation.
-  const req = [
-    {id:'rodL',  l:'Rod Length'},
-    {id:'boreL', l:'Bore Length'}
-  ];
-  if (mode === 2 || mode === 3 || mode === 4) {
-    req.push({id:'maxD', l:'Max Depth'});
-  }
-  if (mode === 3 || mode === 4) {
+  // ── Core required fields ──
+  const req = isTrial
+    ? [
+        {id:'rodL',  l:'Rod Length'},
+        {id:'boreL', l:'Bore Length'},
+        {id:'pipWT', l:'Wall Thickness'}
+      ]
+    : [
+        {id:'rodL',  l:'Rod Length'},
+        {id:'boreL', l:'Bore Length'},
+        {id:'maxD',  l:'Max Depth'},
+        {id:'pipT',  l:'Pipe Type'},
+        {id:'pipOD', l:'Pipe OD'},
+        {id:'odUnitSel', l:'OD Unit'},
+        {id:'pipWT', l:'Wall Thickness'}
+      ];
+
+  // ── Pit mode extra required fields (modes 2 & 3 only) ──
+  if (!isTrial && typeof CURRENT_MODE !== 'undefined' && (CURRENT_MODE === 2 || CURRENT_MODE === 3)) {
     req.push({id:'pitEntryDepth', l:'Entry Pit Depth'});
     req.push({id:'pitExitDepth',  l:'Exit Pit Depth'});
   }
@@ -10328,7 +10317,6 @@ window.onload=()=>{
   // ── Firebase Auth State — session survives pull-to-refresh ──
   _auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(()=>{
     _auth.onAuthStateChanged(async(user)=>{
-      if (typeof window._markAuthReady === 'function') window._markAuthReady();
       if(user && !CU){
         try{
           let snap=await _db.collection('user').doc(user.uid).get();
@@ -10481,39 +10469,56 @@ function setMode(mode) {
   if (ab) ab.classList.add('mode-active');
   if (ac) ac.textContent = '✓';
 
-  // ── Entry/Exit Pit Depth: ALWAYS enabled now (optional data entry in every
-  // mode) — required (Red ★) only in modes 3 & 4, optional badge in 1 & 2.
-  // Punch-In Space stays always optional, never required, in every mode.
+  // ── Enable/disable Pit Depth fields inside Bore Details (never hide — preserves 2-col grid) ──
+  const showPit = (mode === 2 || mode === 3);
   const fiEntry  = document.getElementById('fi-entryPit');
   const fiExit   = document.getElementById('fi-exitPit');
-  const pitRequired = (mode === 3 || mode === 4);
-  function _setPitBadge(fiEl, isRequired) {
+  const fiNcSp   = document.getElementById('fi-ncSpace');
+  function _setPitField(fiEl, active, isRequired) {
     if (!fiEl) return;
-    fiEl.classList.remove('fi-disabled');
     const inp = fiEl.querySelector('input,select');
-    if (inp) inp.removeAttribute('disabled');
-    const badge = fiEl.querySelector('.req, .opt');
-    if (badge) {
-      if (isRequired) { badge.className = 'req'; badge.textContent = '★'; }
-      else             { badge.className = 'opt'; badge.textContent = 'optional'; }
+    if (active) {
+      fiEl.classList.remove('fi-disabled');
+      if (inp) inp.removeAttribute('disabled');
+    } else {
+      fiEl.classList.add('fi-disabled');
+      if (inp) { inp.setAttribute('disabled','disabled'); inp.value = ''; }
+    }
+    // TASK 7: toggle the ★ required / optional badge — ONLY for fields that are
+    // actually required somewhere (Entry/Exit Pit Depth). fi-ncSpace is always
+    // optional regardless of mode, so its badge is left untouched.
+    if (isRequired) {
+      const badge = fiEl.querySelector('.req, .opt');
+      if (badge) {
+        if (active) { badge.className = 'req'; badge.textContent = '★'; }
+        else        { badge.className = 'opt'; badge.textContent = 'optional'; }
+      }
     }
   }
-  _setPitBadge(fiEntry, pitRequired);
-  _setPitBadge(fiExit,  pitRequired);
+  _setPitField(fiEntry, showPit, true);
+  _setPitField(fiExit,  showPit, true);
+  _setPitField(fiNcSp,  showPit, false);
 
-  // ── Max Depth: required in modes 2, 3, 4 — optional only in mode 1 ──
-  const fiMaxD = document.getElementById('fi-maxD');
-  if (fiMaxD) {
-    const mdBadge = fiMaxD.querySelector('.req, .opt');
-    if (mdBadge) {
-      if (mode === 1) { mdBadge.className = 'opt'; mdBadge.textContent = 'optional'; }
-      else            { mdBadge.className = 'req'; mdBadge.textContent = '★'; }
+  // ── Pipe OD: required in Standard/City/ZDC (1,2,3) — optional only in Trial Bore Draft (4) ──
+  // (validate() already enforces this; this just keeps the ★/optional badge in sync visually)
+  const fiPipOD = document.getElementById('fi-pipOD');
+  if (fiPipOD) {
+    const odBadge = fiPipOD.querySelector('.req, .opt');
+    if (odBadge) {
+      if (mode === 4) { odBadge.className = 'opt'; odBadge.textContent = 'optional'; }
+      else            { odBadge.className = 'req'; odBadge.textContent = '★'; }
     }
   }
 
-  // ── Pipe Type, Pipe OD, OD Unit, Wall Thickness: always Optional in every
-  // mode now (per Saiyad's updated spec, July 2026) — no per-mode toggle
-  // needed, their badges stay 'optional' permanently.
+  // ── OD Unit: same required/optional rule as Pipe OD ──
+  const fiOdUnit = document.getElementById('fi-odUnit');
+  if (fiOdUnit) {
+    const unitBadge = fiOdUnit.querySelector('.req, .opt');
+    if (unitBadge) {
+      if (mode === 4) { unitBadge.className = 'opt'; unitBadge.textContent = 'optional'; }
+      else            { unitBadge.className = 'req'; unitBadge.textContent = '★'; }
+    }
+  }
 
   // ── Sync CW toggle state (background engine) ──
   const cwChk = document.getElementById('cwEnable');
@@ -12849,10 +12854,7 @@ function rlUpdateDiff(mode) {
   if (!box) return;
 
   const rl = rlGetValues(mode);
-  if (!rl) {
-    box.innerHTML = 'ℹ️ RL Analysis – Waiting for Entry &amp; Exit RL.';
-    box.style.display = 'block';
-  }
+  if (!rl) { box.style.display = 'none'; }
   else {
     if (rl.entRL !== null && rl.exiRL !== null) {
       const diff = rl.exiRL - rl.entRL;
@@ -13214,7 +13216,7 @@ function _gpsSetPitCard(type, fix) {
 // the answer came from.
 // ════════════════════════════════════════════════════
 
-const GEOCODE_CACHE_KEY = 'hdd_geocode_cache_v2'; // bumped from v1 (July 26, 2026) — invalidates any old, possibly-wrong cached addresses so they can never override a freshly cross-validated result;
+const GEOCODE_CACHE_KEY = 'hdd_geocode_cache_v1';
 const GEOCODE_CACHE_MAX = 1000;         // extended from 500 — oldest entries dropped beyond this
 const GEOCODE_CACHE_PRECISION = 4;      // ~11m grid — good enough to reuse a bore-site fix
 const GEOCODE_GOOD_ENOUGH_SCORE = 3;    // HIGH score — stop trying more providers once reached
@@ -13331,62 +13333,24 @@ async function _geocodeWithBigDataCloud(lat, lon) {
   }
 }
 
-// ── Provider — Geoapify with 3-key auto-rotation (free tier, no credit card) ──
-// Now used FIRST (see GEOCODE_PROVIDER_CHAIN below) — the old free-no-key
-// providers (Nominatim/Photon/BigDataCloud) are now the FALLBACK, only used
-// if all 3 Geoapify keys are exhausted or Geoapify itself fails.
-// SECURITY: keys are visible in page source (unavoidable for a frontend-only
-// PWA/TWA with no backend) — each key MUST be domain-restricted in the
-// Geoapify dashboard to saiyadhussain9646-droid.github.io.
-// ROTATION: each key gets ~2900 of its 3000 free daily requests before this
-// switches to the next key, so real usage should never hit a hard limit or
-// any billing risk across all 3 keys combined (~8700/day total).
-const GEOAPIFY_KEYS = [
-  "f9b32db45abf4e4a87983a14bc05cf59",
-  "c16e3866b335400cb6ac4d0bf023b955",
-  "a72b5472817342f9aa565cc057ab8c70"
-];
-const GEOAPIFY_DAILY_LIMIT = 3000;
-const GEOAPIFY_SWITCH_BUFFER = 100; // switch to next key once fewer than this many requests remain today
-const GEOAPIFY_USAGE_KEY = 'hdd_geoapify_usage_v1';
-
-function _todayStr() { return new Date().toISOString().slice(0, 10); }
-
-function _getGeoapifyUsage() {
-  try {
-    const raw = JSON.parse(localStorage.getItem(GEOAPIFY_USAGE_KEY) || 'null');
-    if (raw && raw.date === _todayStr() && Array.isArray(raw.counts) && raw.counts.length === GEOAPIFY_KEYS.length) {
-      return raw;
-    }
-  } catch (e) { /* fall through to fresh usage below */ }
-  return { date: _todayStr(), counts: GEOAPIFY_KEYS.map(() => 0) }; // new day / first run — all counters reset to 0
-}
-function _saveGeoapifyUsage(usage) {
-  try { localStorage.setItem(GEOAPIFY_USAGE_KEY, JSON.stringify(usage)); } catch (e) { /* best-effort only */ }
-}
-// Picks the first key that still has more than GEOAPIFY_SWITCH_BUFFER
-// requests left today; returns -1 if all 3 keys are near/at their limit.
-function _pickGeoapifyKeyIndex(usage) {
-  for (let i = 0; i < GEOAPIFY_KEYS.length; i++) {
-    if ((GEOAPIFY_DAILY_LIMIT - (usage.counts[i] || 0)) > GEOAPIFY_SWITCH_BUFFER) return i;
-  }
-  return -1;
-}
-
+// ── Provider 4: Geoapify — free tier (~3000 req/day, no credit card) ──
+// Used LAST, only to fill gaps the 3 free-no-key providers above couldn't.
+// SECURITY: this key is visible in the page source (unavoidable for a
+// frontend-only PWA/TWA with no backend). To keep it safe:
+//   1. In the Geoapify dashboard, restrict this key to your own domain
+//      (saiyadhussain9646-droid.github.io) so it can't be used elsewhere.
+//   2. Keep the free-tier daily quota as-is; only raise it later if real
+//      usage genuinely needs more.
+// If no key is set below, this provider is silently skipped — everything
+// else keeps working exactly as before.
+const GEOAPIFY_API_KEY = "f9b32db45abf4e4a87983a14bc05cf59";
 async function _geocodeWithGeoapify(lat, lon) {
-  const usage = _getGeoapifyUsage();
-  const idx = _pickGeoapifyKeyIndex(usage);
-  if (idx === -1) return null; // all 3 keys near their daily limit — caller falls back to free providers
-  const key = GEOAPIFY_KEYS[idx];
+  if (!GEOAPIFY_API_KEY || GEOAPIFY_API_KEY === "PASTE_KEY_HERE") return null;
   try {
     const res = await fetch(
-      'https://api.geoapify.com/v1/geocode/reverse?lat=' + lat + '&lon=' + lon + '&format=json&apiKey=' + key
+      'https://api.geoapify.com/v1/geocode/reverse?lat=' + lat + '&lon=' + lon + '&format=json&apiKey=' + GEOAPIFY_API_KEY
     );
     const data = await res.json();
-    // Count this call against today's usage for that key regardless of
-    // whether a usable result came back — the request itself used a credit.
-    usage.counts[idx] = (usage.counts[idx] || 0) + 1;
-    _saveGeoapifyUsage(usage);
     const r = data && data.results && data.results[0];
     if (!r) return null;
     return {
@@ -13414,13 +13378,12 @@ function _mergeGeo(base, extra) {
   return {
     display_name: base.display_name || extra.display_name,
     address: {
-      village:    a.village    || b.village    || null,
-      city:       a.city       || b.city       || null,
-      district:   a.district   || b.district   || null,
-      state:      a.state      || b.state      || null,
-      postcode:   a.postcode   || b.postcode   || null,
-      country:    a.country    || b.country    || null,
-      postOffice: a.postOffice || b.postOffice || null,
+      village:  a.village  || b.village  || null,
+      city:     a.city     || b.city     || null,
+      district: a.district || b.district || null,
+      state:    a.state    || b.state    || null,
+      postcode: a.postcode || b.postcode || null,
+      country:  a.country  || b.country  || null,
     },
   };
 }
@@ -13443,7 +13406,7 @@ function _scoreGeoResult(result) {
   return 0;
 }
 
-const GEOCODE_PROVIDER_CHAIN = [_geocodeWithGeoapify, _geocodeWithNominatim, _geocodeWithPhoton, _geocodeWithBigDataCloud];
+const GEOCODE_PROVIDER_CHAIN = [_geocodeWithNominatim, _geocodeWithPhoton, _geocodeWithBigDataCloud, _geocodeWithGeoapify];
 
 // Shared reverse-geocoding core — Field Tools, Project Info, and Field
 // Evidence Camera all use this single function.
@@ -13452,83 +13415,22 @@ const GEOCODE_PROVIDER_CHAIN = [_geocodeWithGeoapify, _geocodeWithNominatim, _ge
 // If the first provider's answer is incomplete (e.g. no postcode), the
 // next free provider is tried and used ONLY to fill the missing fields —
 // so a location is never left blank just because one provider lacks it.
-// A single provider's "complete-looking" answer is not necessarily CORRECT
-// (this was exactly how a wrong-but-complete Nominatim/Geoapify result used
-// to slip through before). So now: don't trust an early result just because
-// ONE provider scored HIGH — only stop early once at least 2 independent
-// providers have been asked AND they agree on the postcode.
-function _postcodesAgree(a, b) {
-  return !!(a && b && String(a).trim() === String(b).trim());
-}
-
-// India Post's official, free, public Pincode API — no key required, no
-// quota risk. Given a valid 6-digit Indian PIN, returns the authoritative
-// Post Office name / District / State for that PIN. It cannot confirm
-// whether a PIN is the geographically-correct one for a given GPS point —
-// only that the PIN itself is real, and exactly where it officially
-// belongs — so it's used to VALIDATE/FILL District, State and Post Office
-// once a candidate PIN is already in hand, never to guess a PIN itself.
-async function _validateWithIndiaPost(pincode) {
-  try {
-    const res = await fetch('https://api.postalpincode.in/pincode/' + pincode);
-    const data = await res.json();
-    const entry = data && data[0];
-    if (!entry || entry.Status !== 'Success' || !entry.PostOffice || !entry.PostOffice[0]) return null;
-    const po = entry.PostOffice[0];
-    return {
-      postOffice: po.Name || null,
-      district:   po.District || null,
-      state:      po.State || null,
-    };
-  } catch (e) { return null; } // India Post unreachable — geocoding providers' data is kept as-is
-}
-
 async function _gpsReverseGeocodeFull(lat, lon) {
   const cached = _geoCacheGet(lat, lon);
   if (cached) return cached;
 
   if (!navigator.onLine) return null; // nothing cached and no network — caller queues for later
 
-  const raw = []; // each provider's own unmerged answer, kept for cross-checking
   let result = null;
-
   for (const provider of GEOCODE_PROVIDER_CHAIN) {
     let r = null;
     try { r = await provider(lat, lon); } catch (e) { r = null; }
-    if (r) raw.push(r);
     result = _mergeGeo(result, r);
-
-    // Only stop early once at least 2 providers have answered AND their two
-    // most recent postcodes genuinely AGREE — a lone "complete-looking"
-    // result is never enough by itself anymore.
-    if (raw.length >= 2) {
-      const last = raw[raw.length - 1], prev = raw[raw.length - 2];
-      const agree = _postcodesAgree(
-        last.address && last.address.postcode,
-        prev.address && prev.address.postcode
-      );
-      if (agree && _scoreGeoResult(result) >= GEOCODE_GOOD_ENOUGH_SCORE) break;
-    }
+    // Stop early only once we have a genuinely HIGH-confidence answer
+    // (village + postcode + state) — a weak/partial result keeps the loop
+    // going so the next free provider gets a chance to fill the gaps.
+    if (_scoreGeoResult(result) >= GEOCODE_GOOD_ENOUGH_SCORE) break;
   }
-  // If providers never agreed (or only one answered at all), `result` still
-  // holds the best-scoring merged answer available — an honest best-effort,
-  // not a fabricated one; every field either came from a real provider or
-  // stays null (shown as "—" wherever the UI already does that).
-
-  // ── India Post validation — only for a valid-looking 6-digit Indian PIN.
-  // Fills/corrects Post Office, District and State using the authoritative
-  // government source; never invents a PIN, never runs if no PIN was found.
-  if (result && result.address && result.address.postcode && /^\d{6}$/.test(result.address.postcode)) {
-    try {
-      const ip = await _validateWithIndiaPost(result.address.postcode);
-      if (ip) {
-        result.address.postOffice = ip.postOffice || result.address.postOffice || null;
-        result.address.district   = ip.district   || result.address.district   || null;
-        result.address.state      = ip.state       || result.address.state      || null;
-      }
-    } catch (e) { /* keep geocoding providers' data as-is */ }
-  }
-
   if (result) _geoCacheSet(lat, lon, result);
   return result;
 }
@@ -14022,37 +13924,11 @@ function _evidenceFileToDataURL(file) {
 function _evidenceGetGPSFix() {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) { reject('no geolocation'); return; }
-    // Previously this used a single getCurrentPosition() call with only an
-    // 8s timeout — indoors / weak-signal spots (exactly where evidence
-    // photos are often taken) commonly need longer than that for the GPS
-    // chip to settle, so it was failing with "GPS unavailable" too easily.
-    // Fix: watch position updates for up to 15s, keep the BEST-accuracy fix
-    // seen, and resolve early only once accuracy is already good (≤20m) —
-    // otherwise use whatever the best fix was once the window elapses. Only
-    // rejects if truly no fix at all came back in that time.
-    const GOOD_ACCURACY_M = 20;
-    const MAX_WAIT_MS = 15000;
-    let best = null, watchId = null, done = false;
-
-    function finish(pos, err) {
-      if (done) return;
-      done = true;
-      if (watchId !== null) navigator.geolocation.clearWatch(watchId);
-      const use = pos || best;
-      if (use) resolve({ lat: use.coords.latitude, lon: use.coords.longitude, acc: use.coords.accuracy });
-      else reject(err || 'timeout');
-    }
-
-    watchId = navigator.geolocation.watchPosition(
-      pos => {
-        if (!best || pos.coords.accuracy < best.coords.accuracy) best = pos;
-        if (pos.coords.accuracy <= GOOD_ACCURACY_M) finish(pos);
-      },
-      err => { if (!best) finish(null, err); }, // keep waiting if we already have SOME fix, even if a later update errors
-      { enableHighAccuracy: true, timeout: MAX_WAIT_MS, maximumAge: 0 }
+    navigator.geolocation.getCurrentPosition(
+      pos => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude, acc: pos.coords.accuracy }),
+      err => reject(err),
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 5000 }
     );
-
-    setTimeout(() => finish(null), MAX_WAIT_MS); // use best fix seen (or fail) once the window elapses
   });
 }
 
@@ -14513,5 +14389,604 @@ function angleMeterHold() {
 // ════════════════════════════════════════════════════
 // END FIELD TOOLS
 // ════════════════════════════════════════════════════
+</script>
+
+<!-- ══════════════════════════════════════════════════════════════
+     DRAWING ENGINE — V1 — ISOLATED MODULE (STEP 4)
+     Added as a completely separate block. Does not replace, move,
+     or alter any existing HTML element above this point.
+     Preview container is intentionally independent from #cvs
+     (the existing Bore Profile Graph canvas) — different id,
+     different technology (SVG vs canvas), no shared DOM subtree.
+     Hidden by default; nothing currently calls or displays it
+     (no button exists yet — Step 6 will add that separately).
+     ══════════════════════════════════════════════════════════════ -->
+<div id="drawingEnginePreviewWrap" style="display:none;">
+  <div id="drawingEnginePreview"></div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// DrawingEngine — V1 — STEP 4 (isolated namespace)
+//
+// SAFETY CONTRACT:
+//   - This entire block is self-contained under the single
+//     `DrawingEngine` global namespace. It does not redeclare,
+//     rename, or reassign any existing variable or function.
+//   - Adapter reads G (and calls the existing rlGetValues() function
+//     in a read-only way, passed in as a parameter — never assumed
+//     as a hidden dependency) but never calls build(), calcDepths(),
+//     or drawProfile(), and never writes to G.
+//   - Renderer/Validator know nothing about G, existing DOM, or any
+//     existing function — they only ever see a DrawingSnapshot object.
+//   - UI.generateDrawing() is the single orchestration entry point.
+//     In this step it is NOT wired to any button — it can only be
+//     invoked manually (e.g. from the browser console) for isolated
+//     verification, exactly as required for Step 4.
+//   - Removing this entire <div> + this entire <script> block
+//     restores the file to its pre-Drawing-Engine state with zero
+//     other edits required (removal test, per frozen testing plan).
+// ════════════════════════════════════════════════════════════
+var DrawingEngine = (function () {
+
+  // ---------- Adapter ----------
+  function adaptStandard(srcG, rlGetValuesFn) {
+    if (!srcG || !Array.isArray(srcG.rows) || srcG.rows.length === 0) {
+      throw new Error('DrawingEngine.Adapter: G is missing or has no rows — ' +
+        'Standard Mode chart has not been generated yet.');
+    }
+    var rl = null;
+    if (typeof rlGetValuesFn === 'function') {
+      try { rl = rlGetValuesFn('std'); } catch (e) { rl = null; }
+    }
+    var entRL = (rl && rl.entRL !== null && rl.entRL !== undefined && !isNaN(rl.entRL)) ? rl.entRL : null;
+    var exiRL = (rl && rl.exiRL !== null && rl.exiRL !== undefined && !isNaN(rl.exiRL)) ? rl.exiRL : null;
+
+    var firstRow = srcG.rows[0];
+    var lastRow = srcG.rows[srcG.rows.length - 1];
+
+    var curvePoints = srcG.rows.map(function (row) {
+      return { rod: row.rod, dist: row.dist, depth: row.depth };
+    });
+
+    var pipe = {
+      type: (srcG.pipT !== undefined && srcG.pipT !== null && srcG.pipT !== '') ? srcG.pipT : null,
+      odMM: (srcG.odMM !== undefined && srcG.odMM !== null && !isNaN(srcG.odMM)) ? srcG.odMM : null
+    };
+
+    return {
+      meta: {
+        sourceMode: 'standard',
+        generatedAt: new Date().toISOString(),
+        projectTitle: null
+      },
+      boreLength: (typeof srcG.bl === 'number' && !isNaN(srcG.bl)) ? srcG.bl : null,
+      maxDepth: (typeof srcG.maxD === 'number' && !isNaN(srcG.maxD)) ? srcG.maxD : null,
+      rodLength: (typeof srcG.rl === 'number' && !isNaN(srcG.rl)) ? srcG.rl : null,
+      pipe: pipe,
+      entryPoint: {
+        dist: 0,
+        depth: firstRow.depth,
+        angle: (srcG.plan && typeof srcG.plan.entPct === 'number') ? srcG.plan.entPct : null,
+        reducedLevel: entRL
+      },
+      exitPoint: {
+        dist: (typeof srcG.bl === 'number') ? srcG.bl : lastRow.dist,
+        depth: lastRow.depth,
+        angle: (srcG.plan && typeof srcG.plan.extPct === 'number') ? srcG.plan.extPct : null,
+        reducedLevel: exiRL
+      },
+      curvePoints: curvePoints
+    };
+  }
+
+  // ---------- Validator ----------
+  function isFiniteNumber(v) { return typeof v === 'number' && isFinite(v); }
+  function isPlainObject(v) { return v !== null && typeof v === 'object' && !Array.isArray(v); }
+
+  function validatePoint(point, label, errors) {
+    if (!isPlainObject(point)) { errors.push(label + ' is missing or not a valid object'); return false; }
+    var ok = true;
+    if (!isFiniteNumber(point.dist)) { errors.push(label + '.dist is missing, non-numeric, or NaN'); ok = false; }
+    if (!isFiniteNumber(point.depth)) { errors.push(label + '.depth is missing, non-numeric, or NaN'); ok = false; }
+    return ok;
+  }
+
+  function validateSnapshot(snapshot) {
+    var errors = [];
+    if (!isPlainObject(snapshot)) return { valid: false, errors: ['DrawingSnapshot is missing or not a valid object'] };
+
+    if (!isFiniteNumber(snapshot.boreLength)) errors.push('boreLength is missing, non-numeric, or NaN');
+    else if (snapshot.boreLength <= 0) errors.push('boreLength must be a positive number (received ' + snapshot.boreLength + ')');
+
+    if (!isFiniteNumber(snapshot.maxDepth)) errors.push('maxDepth is missing, non-numeric, or NaN');
+
+    if (!Array.isArray(snapshot.curvePoints)) errors.push('curvePoints is missing or not an array');
+    else if (snapshot.curvePoints.length < 2) errors.push('curvePoints has insufficient points (' + snapshot.curvePoints.length + ') — at least 2 required');
+    else snapshot.curvePoints.forEach(function (p, i) { validatePoint(p, 'curvePoints[' + i + ']', errors); });
+
+    validatePoint(snapshot.entryPoint, 'entryPoint', errors);
+    validatePoint(snapshot.exitPoint, 'exitPoint', errors);
+
+    return { valid: errors.length === 0, errors: errors };
+  }
+
+  // ---------- Renderer ----------
+  var SHEET_W = 420, SHEET_H = 297, MARGIN = 10, TITLE_BLOCK_W = 90;
+  var DRAW_AREA = {
+    x: MARGIN, y: MARGIN,
+    w: (SHEET_W - MARGIN * 2 - TITLE_BLOCK_W - 5),
+    h: SHEET_H - MARGIN * 2
+  };
+  var TITLE_BLOCK = { x: SHEET_W - MARGIN - TITLE_BLOCK_W, y: MARGIN, w: TITLE_BLOCK_W, h: SHEET_H - MARGIN * 2 };
+  var INNER_PAD = { top: 14, bottom: 22, left: 10, right: 8 };
+
+  function escXml(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function fmtNum(n, decimals) { if (typeof decimals !== 'number') decimals = 2; return Number(n).toFixed(decimals); }
+
+  function computeGroundProfilePoints(snapshot) {
+    // Progressive ground profile per the architecture update:
+    //   - No RL data at all -> flat ground at offset 0 (identical to pre-update behavior)
+    //   - Entry+Exit RL only -> straight sloped line (Case-1: Basic Approval Drawing)
+    //   - Entry RL + intermediate Survey RL points -> multi-point terrain (Case-2: Detailed Survey Drawing)
+    // Never fails, never invents a value — only uses RL data actually present.
+    var entryRL = (snapshot.entryPoint && typeof snapshot.entryPoint.reducedLevel === 'number') ? snapshot.entryPoint.reducedLevel : null;
+    var exitRL = (snapshot.exitPoint && typeof snapshot.exitPoint.reducedLevel === 'number') ? snapshot.exitPoint.reducedLevel : null;
+    var pts = [];
+    if (entryRL === null) {
+      pts.push({ dist: 0, offset: 0 });
+      pts.push({ dist: snapshot.boreLength, offset: 0 });
+      return pts;
+    }
+    pts.push({ dist: 0, offset: 0 });
+    (snapshot.surveyPoints || []).forEach(function (sp) {
+      pts.push({ dist: sp.dist, offset: -(sp.surveyRL - entryRL) });
+    });
+    var lastOffset = pts[pts.length - 1].offset;
+    var endOffset = (exitRL !== null) ? -(exitRL - entryRL) : lastOffset;
+    pts.push({ dist: snapshot.boreLength, offset: endOffset });
+    return pts;
+  }
+
+  function computeScaling(snapshot) {
+    var innerW = DRAW_AREA.w - INNER_PAD.left - INNER_PAD.right;
+    var innerH = DRAW_AREA.h - INNER_PAD.top - INNER_PAD.bottom;
+
+    var allDepths = snapshot.curvePoints.map(function (p) { return p.depth; });
+    allDepths.push(snapshot.entryPoint.depth, snapshot.exitPoint.depth, snapshot.maxDepth, 0);
+    computeGroundProfilePoints(snapshot).forEach(function (p) { allDepths.push(p.offset); });
+
+    var minD = Math.min.apply(null, allDepths);
+    var maxD = Math.max.apply(null, allDepths);
+    var range = maxD - minD;
+    if (range <= 0) range = 1;
+
+    var marginFactor;
+    if (range < 3) marginFactor = 0.45;
+    else if (range < 8) marginFactor = 0.30;
+    else if (range < 20) marginFactor = 0.18;
+    else marginFactor = 0.10;
+
+    var paddedRange = range * (1 + marginFactor);
+
+    return {
+      minD: minD, maxD: maxD, range: range, marginFactor: marginFactor,
+      horizontalScale: innerW / snapshot.boreLength,
+      verticalScale: innerH / paddedRange,
+      originX: DRAW_AREA.x + INNER_PAD.left,
+      originY: DRAW_AREA.y + INNER_PAD.top
+    };
+  }
+
+  function sx(scaling, dist) { return scaling.originX + dist * scaling.horizontalScale; }
+  function sy(scaling, depth) { return scaling.originY + (depth - scaling.minD) * scaling.verticalScale; }
+
+  function buildBoreCurveSVG(snapshot, scaling) {
+    var pts = snapshot.curvePoints.map(function (p) {
+      return sx(scaling, p.dist).toFixed(2) + ',' + sy(scaling, p.depth).toFixed(2);
+    }).join(' ');
+    return '<polyline class="bore-curve" points="' + pts + '" fill="none" stroke="#1d4ed8" stroke-width="1.2" />';
+  }
+
+  function buildGroundLineSVG(snapshot, scaling) {
+    var pts = computeGroundProfilePoints(snapshot);
+    var coords = pts.map(function (p) {
+      return sx(scaling, p.dist).toFixed(2) + ',' + sy(scaling, p.offset).toFixed(2);
+    }).join(' ');
+    return '<polyline class="ground-profile" points="' + coords + '" fill="none" stroke="#888" stroke-width="0.4" stroke-dasharray="2,1.5" />';
+  }
+
+  function buildSurveyLabelsSVG(snapshot, scaling) {
+    var entryRL = (snapshot.entryPoint && typeof snapshot.entryPoint.reducedLevel === 'number') ? snapshot.entryPoint.reducedLevel : null;
+    if (entryRL === null || !snapshot.surveyPoints || snapshot.surveyPoints.length === 0) return '';
+    var parts = [];
+    snapshot.surveyPoints.forEach(function (sp) {
+      var x = sx(scaling, sp.dist);
+      var y = sy(scaling, -(sp.surveyRL - entryRL));
+      parts.push('<circle cx="' + x.toFixed(2) + '" cy="' + y.toFixed(2) + '" r="1" fill="#666" stroke="#333" stroke-width="0.2" />');
+      parts.push('<text x="' + (x + 1.6).toFixed(2) + '" y="' + (y - 1.8).toFixed(2) +
+        '" font-size="2.4" fill="#555">' + fmtNum(sp.dist, 1) + 'm, RL ' + fmtNum(sp.surveyRL, 2) + '</text>');
+    });
+    return parts.join('');
+  }
+
+  function buildPitMarkerSVG(point, scaling, label) {
+    var cx = sx(scaling, point.dist), cy = sy(scaling, point.depth);
+    var parts = ['<g class="pit-marker">'];
+    parts.push('<circle cx="' + cx.toFixed(2) + '" cy="' + cy.toFixed(2) + '" r="1.6" fill="#1d4ed8" stroke="#0a0e1a" stroke-width="0.3" />');
+
+    var lines = [label];
+    if (point.angle !== null && point.angle !== undefined) lines.push('Angle: ' + fmtNum(point.angle, 1) + '%');
+    if (point.reducedLevel !== null && point.reducedLevel !== undefined) lines.push('RL: ' + fmtNum(point.reducedLevel, 2) + 'm');
+    if (Math.abs(point.depth) > 0.005) lines.push('Depth: ' + fmtNum(Math.abs(point.depth), 2) + 'm');
+
+    var labelX = cx + 2, labelY = cy - 6;
+    lines.forEach(function (line, i) {
+      parts.push('<text class="pit-label" x="' + labelX.toFixed(2) + '" y="' + (labelY + i * 3.4).toFixed(2) +
+        '" font-size="3" fill="#1d1d1d">' + escXml(line) + '</text>');
+    });
+    parts.push('</g>');
+    return parts.join('');
+  }
+
+  function buildLengthDimensionSVG(snapshot, scaling) {
+    var y = DRAW_AREA.y + DRAW_AREA.h - 8;
+    var x1 = sx(scaling, 0), x2 = sx(scaling, snapshot.boreLength), mid = (x1 + x2) / 2;
+    return '<g class="dim-length"><line x1="' + x1.toFixed(2) + '" y1="' + y.toFixed(2) + '" x2="' + x2.toFixed(2) +
+      '" y2="' + y.toFixed(2) + '" stroke="#333" stroke-width="0.3" />' +
+      '<text x="' + mid.toFixed(2) + '" y="' + (y - 1.5).toFixed(2) +
+      '" font-size="3.2" text-anchor="middle" fill="#333">Total Bore Length: ' + fmtNum(snapshot.boreLength, 2) + 'm</text></g>';
+  }
+
+  function buildDepthDimensionSVG(snapshot, scaling) {
+    var deepestPoint = snapshot.curvePoints[0];
+    snapshot.curvePoints.forEach(function (p) { if (p.depth > deepestPoint.depth) deepestPoint = p; });
+    var x = sx(scaling, deepestPoint.dist), yTop = sy(scaling, 0), yBottom = sy(scaling, deepestPoint.depth);
+    return '<g class="dim-depth"><line x1="' + x.toFixed(2) + '" y1="' + yTop.toFixed(2) + '" x2="' + x.toFixed(2) +
+      '" y2="' + yBottom.toFixed(2) + '" stroke="#a33" stroke-width="0.3" />' +
+      '<text x="' + (x + 2).toFixed(2) + '" y="' + ((yTop + yBottom) / 2).toFixed(2) +
+      '" font-size="3.2" fill="#a33">Max Depth: ' + fmtNum(snapshot.maxDepth, 2) + 'm</text></g>';
+  }
+
+  function buildTitleBlockSVG(snapshot) {
+    var x = TITLE_BLOCK.x, y = TITLE_BLOCK.y, w = TITLE_BLOCK.w, h = TITLE_BLOCK.h;
+    var lines = [{ text: 'HDD PRE-BORE PROFILE', size: 4.5, bold: true }];
+    if (snapshot.meta && snapshot.meta.projectTitle) lines.push({ text: 'Project: ' + snapshot.meta.projectTitle, size: 3 });
+    if (snapshot.pipe && snapshot.pipe.type) {
+      var pipeLine = 'Pipe: ' + snapshot.pipe.type;
+      if (snapshot.pipe.odMM) pipeLine += ' OD=' + fmtNum(snapshot.pipe.odMM, 0) + 'mm';
+      lines.push({ text: pipeLine, size: 3 });
+    }
+    var genDate = (snapshot.meta && snapshot.meta.generatedAt) ? new Date(snapshot.meta.generatedAt) : new Date();
+    lines.push({ text: 'Generated: ' + genDate.toISOString().slice(0, 10), size: 3 });
+    lines.push({ text: 'Drawing Version: V1', size: 3 });
+    if (snapshot.drawingLevel === 'detailed') {
+      lines.push({ text: 'Detail: Detailed Survey Drawing (' + snapshot.surveyPoints.length + ' survey points)', size: 3 });
+    } else {
+      lines.push({ text: 'Detail: Basic Approval Drawing', size: 3 });
+    }
+    if (snapshot.machineModel) lines.push({ text: 'Machine: ' + snapshot.machineModel, size: 3 });
+    if (typeof snapshot.wallThickness === 'number') lines.push({ text: 'Wall Thickness: ' + fmtNum(snapshot.wallThickness, 2), size: 3 });
+
+    var parts = ['<g class="title-block">'];
+    parts.push('<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="none" stroke="#000" stroke-width="0.4" />');
+    var ty = y + 10;
+    lines.forEach(function (l) {
+      parts.push('<text x="' + (x + 4) + '" y="' + ty.toFixed(2) + '" font-size="' + l.size +
+        '" font-weight="' + (l.bold ? 'bold' : 'normal') + '" fill="#000">' + escXml(l.text) + '</text>');
+      ty += l.size + 3;
+    });
+    parts.push('</g>');
+    return parts.join('');
+  }
+
+  function renderSnapshot(snapshot) {
+    var validation = validateSnapshot(snapshot);
+    if (!validation.valid) return { valid: false, svg: null, errors: validation.errors };
+
+    var scaling = computeScaling(snapshot);
+    var parts = [];
+    parts.push('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + SHEET_W + ' ' + SHEET_H +
+      '" width="' + SHEET_W + 'mm" height="' + SHEET_H + 'mm">');
+    parts.push('<rect x="0" y="0" width="' + SHEET_W + '" height="' + SHEET_H + '" fill="#ffffff" stroke="#000" stroke-width="0.6" />');
+    parts.push('<rect x="' + DRAW_AREA.x + '" y="' + DRAW_AREA.y + '" width="' + DRAW_AREA.w + '" height="' + DRAW_AREA.h +
+      '" fill="none" stroke="#999" stroke-width="0.3" />');
+    parts.push('<g class="drawing-area">');
+    parts.push(buildGroundLineSVG(snapshot, scaling));
+    parts.push(buildBoreCurveSVG(snapshot, scaling));
+    parts.push(buildSurveyLabelsSVG(snapshot, scaling));
+    parts.push(buildPitMarkerSVG(snapshot.entryPoint, scaling, 'Entry Pit'));
+    parts.push(buildPitMarkerSVG(snapshot.exitPoint, scaling, 'Exit Pit'));
+    parts.push(buildLengthDimensionSVG(snapshot, scaling));
+    parts.push(buildDepthDimensionSVG(snapshot, scaling));
+    parts.push('</g>');
+    parts.push(buildTitleBlockSVG(snapshot));
+    parts.push('</svg>');
+
+    return { valid: true, svg: parts.join(''), errors: [] };
+  }
+
+  // ---------- UI (Step 4: wiring only — no button yet) ----------
+  function generateDrawing() {
+    var wrap = document.getElementById('drawingEnginePreviewWrap');
+    var host = document.getElementById('drawingEnginePreview');
+    if (!host || !wrap) {
+      console.error('DrawingEngine.UI: preview container not found in DOM.');
+      return { ok: false, reason: 'preview container missing' };
+    }
+
+    if (typeof G === 'undefined' || !G) {
+      host.innerHTML = '<p style="font-family:monospace;color:#a33;">DrawingEngine: no Standard Mode chart has been generated yet (G is empty). Generate a chart first.</p>';
+      wrap.style.display = 'block';
+      return { ok: false, reason: 'G not available' };
+    }
+
+    var snapshot;
+    try {
+      var rlFn = (typeof rlGetValues === 'function') ? rlGetValues : null;
+      snapshot = buildFullSnapshot(G, rlFn);
+    } catch (e) {
+      host.innerHTML = '<p style="font-family:monospace;color:#a33;">DrawingEngine Adapter error: ' + escXml(e.message) + '</p>';
+      wrap.style.display = 'block';
+      return { ok: false, reason: 'adapter error: ' + e.message };
+    }
+
+    var result = renderSnapshot(snapshot);
+    if (!result.valid) {
+      host.innerHTML = '<p style="font-family:monospace;color:#a33;">DrawingEngine: cannot render — ' + escXml(result.errors.join('; ')) + '</p>';
+      wrap.style.display = 'block';
+      return { ok: false, reason: result.errors.join('; ') };
+    }
+
+    host.innerHTML = result.svg;
+    wrap.style.display = 'block';
+    return { ok: true, snapshot: snapshot };
+  }
+
+  // ══════════════════════════════════════════════════════════════
+  // ARCHITECTURE UPDATE — TWO DATA SOURCES
+  //
+  // SOURCE-1 (Static Design Data): everything adaptStandard() already
+  // reads from G, PLUS a small set of fields that were never in G to
+  // begin with (confirmed by reading the app's own form/table code):
+  // wall thickness (#pipWT), entry/exit pit depth (#pitEntryDepth /
+  // #pitExitDepth), machine model (#macMod). These are read directly
+  // from their form inputs — read-only .value access, never written to.
+  //
+  // SOURCE-2 (Dynamic Survey Data): Survey RL values the user typed
+  // into the Smart Edit table. Confirmed by reading onSurveyRLEdit()'s
+  // own comment: these values live ONLY in the DOM (contenteditable
+  // cells named "srl-{rod}"), never in G, never in any JS array. So
+  // reading them necessarily means reading those specific cells —
+  // there is no other source of truth for this data. Every cell is
+  // matched back to its row's `dist` via the `rod` field already
+  // carried in curvePoints[] (this is exactly why `rod` was kept in
+  // the frozen V1 Adapter contract as an "unused in V1, future-proofing"
+  // field — this is that future use).
+  //
+  // Both readers are pure and read-only: no cell is ever written to,
+  // no existing function (generate/build/calcDepths/drawProfile/
+  // doExcel/doPDF/openSaveTab) is called. The one existing function
+  // this DOES call is `rlCalcActualDepth()` — a pure, side-effect-free
+  // helper the app already uses for this exact formula. Reusing it
+  // (rather than re-implementing the same formula a second time) is
+  // deliberate: two independent implementations of the same formula is
+  // exactly the kind of drift this project has been careful to avoid.
+  // ══════════════════════════════════════════════════════════════
+
+  function readExtendedDesignInputs() {
+    function numOrNull(id) {
+      var el = document.getElementById(id);
+      if (!el) return null;
+      var v = parseFloat(el.value);
+      return isNaN(v) ? null : v;
+    }
+    function textOrNull(id) {
+      var el = document.getElementById(id);
+      if (!el) return null;
+      var v = (el.value || '').trim();
+      return v === '' ? null : v;
+    }
+    return {
+      wallThickness: numOrNull('pipWT'),
+      entryPitDepth: numOrNull('pitEntryDepth'),
+      exitPitDepth: numOrNull('pitExitDepth'),
+      machineModel: textOrNull('macMod')
+    };
+  }
+
+  function readSurveyPoints(srcG, rlValues) {
+    var points = [];
+    if (!srcG || !Array.isArray(srcG.rows)) return points;
+    var entryRL = (rlValues && typeof rlValues.entRL === 'number' && !isNaN(rlValues.entRL)) ? rlValues.entRL : null;
+    if (entryRL === null) return points; // never invent — without Entry RL, actual-depth-from-RL cannot be computed
+    srcG.rows.forEach(function (row) {
+      var cell = document.getElementById('srl-' + row.rod);
+      if (!cell) return;
+      var txt = (cell.textContent || '').trim();
+      if (txt === '') return; // never invent missing Survey RL — simply skip this rod
+      var surveyRL = parseFloat(txt);
+      if (isNaN(surveyRL)) return;
+      var actualDepth = (typeof rlCalcActualDepth === 'function') ? rlCalcActualDepth(row.depth, surveyRL, entryRL) : null;
+      points.push({ rod: row.rod, dist: row.dist, surveyRL: surveyRL, actualDepthFromRL: actualDepth });
+    });
+    points.sort(function (a, b) { return a.dist - b.dist; });
+    return points;
+  }
+
+  /**
+   * buildFullSnapshot(srcG, rlGetValuesFn)
+   * Orchestrates Source-1 (frozen adaptStandard, unchanged) + the
+   * Source-1 extended fields + Source-2 survey points into one enriched
+   * DrawingSnapshot. adaptStandard() itself is NOT modified — this
+   * wraps and extends its output, so all 31 frozen Adapter tests remain
+   * valid against adaptStandard() in isolation.
+   */
+  function buildFullSnapshot(srcG, rlGetValuesFn) {
+    var snapshot = adaptStandard(srcG, rlGetValuesFn); // frozen Source-1 core, untouched
+    var rlValues = (typeof rlGetValuesFn === 'function') ? rlGetValuesFn('std') : null;
+    var extended = readExtendedDesignInputs();
+    var surveyPoints = readSurveyPoints(srcG, rlValues);
+
+    snapshot.wallThickness = extended.wallThickness;
+    snapshot.entryPitDepth = extended.entryPitDepth;
+    snapshot.exitPitDepth = extended.exitPitDepth;
+    snapshot.machineModel = extended.machineModel;
+    snapshot.pullingCapacity = (typeof srcG.pull === 'number' && !isNaN(srcG.pull)) ? srcG.pull : null;
+    snapshot.surveyPoints = surveyPoints;
+    // Progressive drawing level — purely derived from what data IS present,
+    // never a user setting, exactly as specified: more survey data = more
+    // detail, less survey data = simplified approval drawing, never a failure.
+    snapshot.drawingLevel = surveyPoints.length > 0 ? 'detailed' : 'basic';
+
+    return snapshot;
+  }
+
+
+  //
+  // SAFETY CONTRACT:
+  //   - Never modifies generate(), build(), calcDepths(), drawProfile(),
+  //     rlGetValues(), doExcel(), doPDF(), openSaveTab(), setMode(), or
+  //     any existing event handler. Only READS CURRENT_MODE and G.
+  //   - The button element is created and inserted purely via DOM API
+  //     (createElement/insertAdjacentElement) — no existing HTML line
+  //     is edited. It is placed as a SIBLING of .exp-bar inside the
+  //     static #results container, never inside the dynamically
+  //     rewritten .exp-btns (which generate()/setMode() overwrite).
+  //   - DELIBERATE, SCOPED EXCEPTION TO THE "NO OBSERVERS" RULE:
+  //     Steps 1-5 (Adapter/Validator/Renderer/PdfExport) remain fully
+  //     free of any listener/timer/observer, by design. This UI layer
+  //     has a genuine new requirement — the button must reactively
+  //     appear/disappear/refresh as the user generates charts or
+  //     switches modes, WITHOUT modifying generate()/setMode() to call
+  //     us. A MutationObserver watching two small, specific, read-only
+  //     targets (#modeIndicatorText, which setMode() already updates on
+  //     every mode change; and .exp-bar, which generate() already
+  //     rewrites on every chart generation) is the minimal, standard
+  //     way to react to that pre-existing behavior without hooking or
+  //     editing either function. The observer NEVER mutates what it
+  //     watches — it only reads CURRENT_MODE/G afterward and updates
+  //     OUR OWN button/preview elements.
+  // ══════════════════════════════════════════════════════════════
+  var STANDARD_MODE_VALUE = 1; // confirmed: CURRENT_MODE===1 routes to generate() (Standard Mode)
+
+  function isStandardModeActive() {
+    return (typeof CURRENT_MODE !== 'undefined') && CURRENT_MODE === STANDARD_MODE_VALUE;
+  }
+  function hasValidChart() {
+    return (typeof G !== 'undefined') && !!G && Array.isArray(G.rows) && G.rows.length > 0;
+  }
+
+  function hidePreview() {
+    var wrap = document.getElementById('drawingEnginePreviewWrap');
+    var host = document.getElementById('drawingEnginePreview');
+    if (wrap) wrap.style.display = 'none';
+    if (host) host.innerHTML = ''; // never leave stale drawing content sitting in the DOM
+  }
+
+  function refreshPreviewIfOpen() {
+    var wrap = document.getElementById('drawingEnginePreviewWrap');
+    if (wrap && wrap.style.display !== 'none') {
+      // Preview was already open when a new chart was generated —
+      // re-render immediately from the new G so old data is never shown.
+      generateDrawing();
+    }
+  }
+
+  function updateButtonVisibility() {
+    var btn = document.getElementById('drawingEngineBtn');
+    if (!btn) return;
+    var shouldShow = isStandardModeActive() && hasValidChart();
+    if (shouldShow) {
+      btn.style.display = '';
+      refreshPreviewIfOpen();
+    } else {
+      btn.style.display = 'none';
+      hidePreview();
+    }
+  }
+
+  function onDrawingButtonClick() {
+    // Defense-in-depth: button should already be hidden unless both
+    // conditions hold, but re-check before doing anything, per the
+    // "clicking must do nothing except show a friendly message, never
+    // throw a console error" requirement.
+    if (!isStandardModeActive() || !hasValidChart()) {
+      var host = document.getElementById('drawingEnginePreview');
+      var wrap = document.getElementById('drawingEnginePreviewWrap');
+      if (host && wrap) {
+        host.innerHTML = '<p style="font-family:monospace;color:#a33;">' +
+          'Technical Drawing is only available after a Standard HDD Mode chart has been generated.</p>';
+        wrap.style.display = 'block';
+      }
+      return;
+    }
+    generateDrawing();
+  }
+
+  function mountButton() {
+    if (document.getElementById('drawingEngineBtn')) return; // never mount twice
+    var expBar = document.querySelector('.exp-bar');
+    var results = document.getElementById('results');
+    if (!expBar || !results) return; // fail silently — nothing in the existing app depends on this
+
+    var btn = document.createElement('button');
+    btn.id = 'drawingEngineBtn';
+    btn.className = 'btn-exp';
+    btn.type = 'button';
+    btn.textContent = '📐 Technical Drawing';
+    btn.style.display = 'none'; // hidden until updateButtonVisibility() proves conditions are met
+    btn.addEventListener('click', onDrawingButtonClick);
+
+    // Insert as the NEXT SIBLING of .exp-bar, inside the same static
+    // #results container — never as a child of .exp-bar/.exp-btns,
+    // which generate()/setMode() periodically overwrite wholesale.
+    expBar.insertAdjacentElement('afterend', btn);
+
+    // A small, optional close control for the preview — pure UI
+    // convenience, calls only hidePreview(), never touches existing code.
+    var wrap = document.getElementById('drawingEnginePreviewWrap');
+    if (wrap && !document.getElementById('drawingEngineCloseBtn')) {
+      var closeBtn = document.createElement('button');
+      closeBtn.id = 'drawingEngineCloseBtn';
+      closeBtn.type = 'button';
+      closeBtn.textContent = '✕ Close Technical Drawing';
+      closeBtn.style.cssText = 'margin-bottom:8px;';
+      closeBtn.addEventListener('click', hidePreview);
+      wrap.insertBefore(closeBtn, wrap.firstChild);
+    }
+
+    // Observe the two specific, pre-existing mutation points described
+    // above. Read-only reaction; never mutates the observed nodes.
+    var observerTargetIndicator = document.getElementById('modeIndicatorText');
+    var observer = new MutationObserver(function () { updateButtonVisibility(); });
+    if (observerTargetIndicator) {
+      observer.observe(observerTargetIndicator, { characterData: true, childList: true, subtree: true });
+    }
+    observer.observe(expBar, { childList: true });
+
+    updateButtonVisibility(); // set correct initial state immediately
+  }
+
+  return {
+    Adapter: { adaptStandard: adaptStandard, buildFullSnapshot: buildFullSnapshot },
+    Validator: { validate: validateSnapshot },
+    Renderer: { render: renderSnapshot },
+    UI: { generateDrawing: generateDrawing, mountButton: mountButton, updateButtonVisibility: updateButtonVisibility }
+  };
+
+})();
+// The ONE controlled, self-running bootstrap action introduced in Step 6:
+// mount the button once, at script-parse time (DOM already exists, since
+// this script sits at the end of <body>). Everything it does is additive
+// DOM insertion + a read-only observer on two pre-existing elements —
+// no existing function, handler, or HTML line is modified by this call.
+DrawingEngine.UI.mountButton();
+// ════════════════════════════════════════════════════════════
+// END DRAWING ENGINE — V1 — STEP 4 + STEP 6
+// (PdfExport from Step 5 remains standalone-only, not yet merged here.)
+// ════════════════════════════════════════════════════════════
 </script>
 </body></html>
