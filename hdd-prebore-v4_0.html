@@ -21,7 +21,7 @@
 // every user automatically, no "Clear Cache" or reinstall needed.
 // This never touches any calculation, UI, ID, or existing feature — it
 // only decides whether to silently reload the page.
-const APP_BUILD_VERSION = 'v3.9.9-2026-07-28-mode-label-and-lock-fix';
+const APP_BUILD_VERSION = 'v4.0-2026-07-30-version-rename';
 (function(){
   try {
     if (location.search.indexOf('_v=') !== -1) return; // just did a fresh cache-busted load — nothing more to do
@@ -1424,7 +1424,7 @@ td.rla-cell:empty:before{content:attr(data-ph);color:var(--t3);font-size:10px;}
     <button class="smenu-item" id="smenu-guide" onclick="closeSideMenu();openQuickGuide&&openQuickGuide()">
       <span class="sm-ico">📘</span><span class="sm-txt"> Quick Guide</span>
     </button>
-    <a href="mailto:saiyadhussain9646@gmail.com?subject=HDD%20Pre-Bore%20Designer%20Pro%20-%20Technical%20Support%20Required&body=Hello%20Admin%2C%20I%20am%20using%20the%20HDD%20Pre-Bore%20Designer%20Pro%20App%20%28v3.9%29.%20I%20need%20technical%20assistance%20with%20my%20bore%20profile%20calculation.%20Kindly%20contact%20me.%0A%0A%E0%A4%A8%E0%A4%AE%E0%A4%B8%E0%A5%8D%E0%A4%A4%E0%A5%87%20%E0%A4%8F%E0%A4%A1%E0%A4%AE%E0%A4%BF%E0%A4%A8%2C%20%E0%A4%AE%E0%A5%88%E0%A4%82%20HDD%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%80-%E0%A4%AC%E0%A5%8B%E0%A4%B0%20%E0%A4%A1%E0%A4%BC%E0%A4%BF%E0%A4%9C%E0%A4%BC%E0%A4%BE%E0%A4%87%E0%A4%A8%E0%A4%B0%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%8B%20%E0%A4%90%E0%A4%AA%20%E0%A4%95%E0%A4%BE%20%E0%A4%89%E0%A4%AA%E0%A4%AF%E0%A5%8B%E0%A4%97%20%E0%A4%95%E0%A4%B0%20%E0%A4%B0%E0%A4%B9%E0%A4%BE%20%E0%A4%B9%E0%A5%82%E0%A4%81%E0%A5%A4%20%E0%A4%AE%E0%A5%81%E0%A4%9D%E0%A5%87%20%E0%A4%85%E0%A4%AA%E0%A4%A8%E0%A5%87%20%E0%A4%AC%E0%A5%8B%E0%A4%B0%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%8B%E0%A4%AB%E0%A4%BC%E0%A4%BE%E0%A4%87%E0%A4%B2%20%E0%A4%95%E0%A5%88%E0%A4%B2%E0%A4%95%E0%A5%81%E0%A4%B2%E0%A5%87%E0%A4%B6%E0%A4%A8%20%E0%A4%95%E0%A5%87%20%E0%A4%B2%E0%A4%BF%E0%A4%8F%20%E0%A4%A4%E0%A4%95%E0%A4%A8%E0%A5%80%E0%A4%95%E0%A5%80%20%E0%A4%B8%E0%A4%B9%E0%A4%BE%E0%A4%AF%E0%A4%A4%E0%A4%BE%20%E0%A4%9A%E0%A4%BE%E0%A4%B9%E0%A4%BF%E0%A4%8F%E0%A5%A4%20%E0%A4%95%E0%A5%83%E0%A4%AA%E0%A4%AF%E0%A4%BE%20%E0%A4%AE%E0%A5%81%E0%A4%9D%E0%A4%B8%E0%A5%87%20%E0%A4%B8%E0%A4%82%E0%A4%AA%E0%A4%B0%E0%A5%8D%E0%A4%95%20%E0%A4%95%E0%A4%B0%E0%A5%87%E0%A4%82%E0%A5%A4" class="smenu-item" id="smenu-email" onclick="closeSideMenu()">
+    <a href="mailto:saiyadhussain9646@gmail.com?subject=HDD%20Pre-Bore%20Designer%20Pro%20-%20Technical%20Support%20Required&body=Hello%20Admin%2C%20I%20am%20using%20the%20HDD%20Pre-Bore%20Designer%20Pro%20App%20%28v4.0%29.%20I%20need%20technical%20assistance%20with%20my%20bore%20profile%20calculation.%20Kindly%20contact%20me.%0A%0A%E0%A4%A8%E0%A4%AE%E0%A4%B8%E0%A5%8D%E0%A4%A4%E0%A5%87%20%E0%A4%8F%E0%A4%A1%E0%A4%AE%E0%A4%BF%E0%A4%A8%2C%20%E0%A4%AE%E0%A5%88%E0%A4%82%20HDD%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%80-%E0%A4%AC%E0%A5%8B%E0%A4%B0%20%E0%A4%A1%E0%A4%BC%E0%A4%BF%E0%A4%9C%E0%A4%BC%E0%A4%BE%E0%A4%87%E0%A4%A8%E0%A4%B0%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%8B%20%E0%A4%90%E0%A4%AA%20%E0%A4%95%E0%A4%BE%20%E0%A4%89%E0%A4%AA%E0%A4%AF%E0%A5%8B%E0%A4%97%20%E0%A4%95%E0%A4%B0%20%E0%A4%B0%E0%A4%B9%E0%A4%BE%20%E0%A4%B9%E0%A5%82%E0%A4%81%E0%A5%A4%20%E0%A4%AE%E0%A5%81%E0%A4%9D%E0%A5%87%20%E0%A4%85%E0%A4%AA%E0%A4%A8%E0%A5%87%20%E0%A4%AC%E0%A5%8B%E0%A4%B0%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%8B%E0%A4%AB%E0%A4%BC%E0%A4%BE%E0%A4%87%E0%A4%B2%20%E0%A4%95%E0%A5%88%E0%A4%B2%E0%A4%95%E0%A5%81%E0%A4%B2%E0%A5%87%E0%A4%B6%E0%A4%A8%20%E0%A4%95%E0%A5%87%20%E0%A4%B2%E0%A4%BF%E0%A4%8F%20%E0%A4%A4%E0%A4%95%E0%A4%A8%E0%A5%80%E0%A4%95%E0%A5%80%20%E0%A4%B8%E0%A4%B9%E0%A4%BE%E0%A4%AF%E0%A4%A4%E0%A4%BE%20%E0%A4%9A%E0%A4%BE%E0%A4%B9%E0%A4%BF%E0%A4%8F%E0%A5%A4%20%E0%A4%95%E0%A5%83%E0%A4%AA%E0%A4%AF%E0%A4%BE%20%E0%A4%AE%E0%A5%81%E0%A4%9D%E0%A4%B8%E0%A5%87%20%E0%A4%B8%E0%A4%82%E0%A4%AA%E0%A4%B0%E0%A5%8D%E0%A4%95%20%E0%A4%95%E0%A4%B0%E0%A5%87%E0%A4%82%E0%A5%A4" class="smenu-item" id="smenu-email" onclick="closeSideMenu()">
       <span class="sm-ico">📧</span><span class="sm-txt"> Email Support</span>
     </a>
     <button class="smenu-item" id="smenu-contact" onclick="closeSideMenu();openContactModal()">
@@ -1445,7 +1445,7 @@ td.rla-cell:empty:before{content:attr(data-ph);color:var(--t3);font-size:10px;}
       <span class="sm-ico">🚪</span><span class="sm-txt"> Logout</span>
     </button>
   </div>
-  <div class="smenu-version">HDD PRE-BORE DESIGNER PRO · v3.9 · Built by Saiyad Hussain</div>
+  <div class="smenu-version">HDD PRE-BORE DESIGNER PRO · v4.0 · Built by Saiyad Hussain</div>
 </div>
 
 <!-- ═══════ LOGIN ═══════ -->
@@ -1666,7 +1666,7 @@ document.addEventListener('click',function(e){
       <button class="cmenu-close" onclick="closeContactModal()">✕</button>
     </div>
     <div class="cmenu-opts">
-      <a href="https://wa.me/966573133634?text=Hello%20Admin%2C%20I%20am%20using%20the%20HDD%20Pre-Bore%20Designer%20Pro%20App%20%28v3.9%29.%20I%20need%20technical%20assistance%20with%20my%20bore%20profile%20calculation.%20Kindly%20contact%20me.%0A%0A%E0%A4%A8%E0%A4%AE%E0%A4%B8%E0%A5%8D%E0%A4%A4%E0%A5%87%20%E0%A4%8F%E0%A4%A1%E0%A4%AE%E0%A4%BF%E0%A4%A8%2C%20%E0%A4%AE%E0%A5%88%E0%A4%82%20HDD%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%80-%E0%A4%AC%E0%A5%8B%E0%A4%B0%20%E0%A4%A1%E0%A4%BF%E0%A4%9C%E0%A4%BC%E0%A4%BE%E0%A4%87%E0%A4%A8%E0%A4%B0%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%8B%20%E0%A4%90%E0%A4%AA%20%E0%A4%95%E0%A4%BE%20%E0%A4%89%E0%A4%AA%E0%A4%AF%E0%A5%8B%E0%A4%97%20%E0%A4%95%E0%A4%B0%20%E0%A4%B0%E0%A4%B9%E0%A4%BE%20%E0%A4%B9%E0%A5%82%E0%A4%81%E0%A5%A4%20%E0%A4%AE%E0%A5%81%E0%A4%9D%E0%A5%87%20%E0%A4%85%E0%A4%AA%E0%A4%A8%E0%A5%87%20%E0%A4%AC%E0%A5%8B%E0%A4%B0%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%8B%E0%A4%AB%E0%A4%BE%E0%A4%87%E0%A4%B2%20%E0%A4%95%E0%A5%88%E0%A4%B2%E0%A4%95%E0%A5%81%E0%A4%B2%E0%A5%87%E0%A4%B6%E0%A4%A8%20%E0%A4%95%E0%A5%87%20%E0%A4%B2%E0%A4%BF%E0%A4%8F%20%E0%A4%A4%E0%A4%95%E0%A4%A8%E0%A5%80%E0%A4%95%E0%A5%80%20%E0%A4%B8%E0%A4%B9%E0%A4%BE%E0%A4%AF%E0%A4%A4%E0%A4%BE%20%E0%A4%9A%E0%A4%BE%E0%A4%B9%E0%A4%BF%E0%A4%8F%E0%A5%A4%20%E0%A4%95%E0%A5%83%E0%A4%AA%E0%A4%AF%E0%A4%BE%20%E0%A4%AE%E0%A5%81%E0%A4%9D%E0%A4%B8%E0%A5%87%20%E0%A4%B8%E0%A4%82%E0%A4%AA%E0%A4%B0%E0%A5%8D%E0%A4%95%20%E0%A4%95%E0%A4%B0%E0%A5%87%E0%A4%82%E0%A5%A4"
+      <a href="https://wa.me/966573133634?text=Hello%20Admin%2C%20I%20am%20using%20the%20HDD%20Pre-Bore%20Designer%20Pro%20App%20%28v4.0%29.%20I%20need%20technical%20assistance%20with%20my%20bore%20profile%20calculation.%20Kindly%20contact%20me.%0A%0A%E0%A4%A8%E0%A4%AE%E0%A4%B8%E0%A5%8D%E0%A4%A4%E0%A5%87%20%E0%A4%8F%E0%A4%A1%E0%A4%AE%E0%A4%BF%E0%A4%A8%2C%20%E0%A4%AE%E0%A5%88%E0%A4%82%20HDD%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%80-%E0%A4%AC%E0%A5%8B%E0%A4%B0%20%E0%A4%A1%E0%A4%BF%E0%A4%9C%E0%A4%BC%E0%A4%BE%E0%A4%87%E0%A4%A8%E0%A4%B0%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%8B%20%E0%A4%90%E0%A4%AA%20%E0%A4%95%E0%A4%BE%20%E0%A4%89%E0%A4%AA%E0%A4%AF%E0%A5%8B%E0%A4%97%20%E0%A4%95%E0%A4%B0%20%E0%A4%B0%E0%A4%B9%E0%A4%BE%20%E0%A4%B9%E0%A5%82%E0%A4%81%E0%A5%A4%20%E0%A4%AE%E0%A5%81%E0%A4%9D%E0%A5%87%20%E0%A4%85%E0%A4%AA%E0%A4%A8%E0%A5%87%20%E0%A4%AC%E0%A5%8B%E0%A4%B0%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%8B%E0%A4%AB%E0%A4%BE%E0%A4%87%E0%A4%B2%20%E0%A4%95%E0%A5%88%E0%A4%B2%E0%A4%95%E0%A5%81%E0%A4%B2%E0%A5%87%E0%A4%B6%E0%A4%A8%20%E0%A4%95%E0%A5%87%20%E0%A4%B2%E0%A4%BF%E0%A4%8F%20%E0%A4%A4%E0%A4%95%E0%A4%A8%E0%A5%80%E0%A4%95%E0%A5%80%20%E0%A4%B8%E0%A4%B9%E0%A4%BE%E0%A4%AF%E0%A4%A4%E0%A4%BE%20%E0%A4%9A%E0%A4%BE%E0%A4%B9%E0%A4%BF%E0%A4%8F%E0%A5%A4%20%E0%A4%95%E0%A5%83%E0%A4%AA%E0%A4%AF%E0%A4%BE%20%E0%A4%AE%E0%A5%81%E0%A4%9D%E0%A4%B8%E0%A5%87%20%E0%A4%B8%E0%A4%82%E0%A4%AA%E0%A4%B0%E0%A5%8D%E0%A4%95%20%E0%A4%95%E0%A4%B0%E0%A5%87%E0%A4%82%E0%A5%A4"
          target="_blank" class="cmenu-opt cmenu-opt-wa" onclick="closeContactModal()">
         <span class="cmenu-opt-ico">🟢</span>
         <div><div>WhatsApp Support</div>
@@ -1937,34 +1937,7 @@ document.addEventListener('click',function(e){
       <span class="iu-u">M</span></div>
       <div class="hint">Vise height from ground (default 1.0m)</div></div>
 
-    <!-- Row 3: Pipe Type | Pipe OD -->
-    <div class="fi"><label>Pipe Type <span class="opt">optional</span></label>
-      <select id="pipT" onchange="onPipeChange()">
-        <option value="" disabled selected>e.g. Steel or Hdpe...</option>
-        <option value="Steel">Steel</option>
-        <option value="HDPE">Hdpe</option>
-        <option value="GRP">GRP / FRP</option>
-        <option value="PVC">PVC</option>
-      </select></div>
-
-    <div class="fi" id="fi-pipOD"><label>Pipe OD <span class="opt">optional</span></label>
-      <div class="iu"><input type="number" id="pipOD" placeholder="e.g. 36inch or 914.4 MM" min="1" oninput="onPipeChange()">
-      <span class="iu-u" id="odU" style="color:var(--t3)">—</span></div></div>
-
-    <!-- Row 4: OD Unit | Wall Thickness -->
-    <div class="fi" id="fi-odUnit"><label>OD Unit <span class="opt">optional</span></label>
-      <select id="odUnitSel" onchange="onODUnit()">
-        <option value="" disabled selected>e.g. Inch or MM</option>
-        <option value="mm">mm</option>
-        <option value="inch">inch</option>
-      </select>
-      <div class="hint">e.g. mm or inch</div></div>
-
-    <div class="fi" id="fi-pipWT"><label>Wall Thickness <span class="opt">optional</span></label>
-      <div class="iu"><input type="number" id="pipWT" placeholder="e.g. 8 or 0.315inch" min="0.1" step="0.01" oninput="onIC()">
-      <span class="iu-u" id="wtU" style="color:var(--t3)">—</span></div></div>
-
-    <!-- Row 5: Punch-In Angle | Punch-Out Angle (side-by-side, face-to-face) -->
+    <!-- Row 3: Punch-In Angle | Punch-Out Angle (side-by-side, face-to-face) -->
     <div class="fi"><label>Punch-In Angle <span class="opt">(Optional)</span></label>
       <div class="iu"><input type="number" id="entA" placeholder="e.g. -18%" step="0.5" oninput="onIC()">
       <span class="iu-u" id="eaU">%</span></div>
@@ -1975,7 +1948,7 @@ document.addEventListener('click',function(e){
       <span class="iu-u" id="xaU">%</span></div>
       <div class="hint">Negative = coming up. Leave empty for auto.</div></div>
 
-    <!-- Row 6: Entry Pit Depth | Exit Pit Depth (side-by-side, face-to-face) -->
+    <!-- Row 4: Entry Pit Depth | Exit Pit Depth (side-by-side, face-to-face) -->
     <div class="fi fi-disabled" id="fi-entryPit">
       <label>Entry Pit Depth <span class="req">★</span></label>
       <div class="iu"><input type="number" id="pitEntryDepth" placeholder="e.g. 4.00" min="0.5" max="30" step="0.01" oninput="onPitDepthInput()" disabled>
@@ -1990,7 +1963,7 @@ document.addEventListener('click',function(e){
       <div class="hint">Client pit depth at exit side</div>
     </div>
 
-    <!-- Row 7: Ground Elevation RL (optional) — moved here, right after Pit Depths -->
+    <!-- Row 5: Ground Elevation RL (optional) — Entry RL | Exit RL -->
     <div class="rl-row" id="rl-standard-row" style="grid-column:1/-1">
       <div class="rl-fi">
         <label>Entry Reduced Level <span class="rl-badge">optional</span></label>
@@ -2008,7 +1981,34 @@ document.addEventListener('click',function(e){
     <!-- Permanent RL Analysis card — always visible, never hidden, updates in place -->
     <div class="rl-diff-box" id="rl-std-diff" style="grid-column:1/-1;display:block">ℹ️ RL Analysis – Waiting for Entry &amp; Exit RL.</div>
 
-    <!-- Row 8: BOTTOM CORNERS — Machine Model | Pulling Capacity -->
+    <!-- ══ RL DATA SECTION — always visible (Row 6): Pipe Type | Pipe OD ══ -->
+    <div class="fi"><label>Pipe Type <span class="opt">optional</span></label>
+      <select id="pipT" onchange="onPipeChange()">
+        <option value="" disabled selected>e.g. Steel or Hdpe...</option>
+        <option value="Steel">Steel</option>
+        <option value="HDPE">Hdpe</option>
+        <option value="GRP">GRP / FRP</option>
+        <option value="PVC">PVC</option>
+      </select></div>
+
+    <div class="fi" id="fi-pipOD"><label>Pipe OD <span class="opt">optional</span></label>
+      <div class="iu"><input type="number" id="pipOD" placeholder="e.g. 36inch or 914.4 MM" min="1" oninput="onPipeChange()">
+      <span class="iu-u" id="odU" style="color:var(--t3)">—</span></div></div>
+
+    <!-- Row 7: OD Unit | Wall Thickness -->
+    <div class="fi" id="fi-odUnit"><label>OD Unit <span class="opt">optional</span></label>
+      <select id="odUnitSel" onchange="onODUnit()">
+        <option value="" disabled selected>e.g. Inch or MM</option>
+        <option value="mm">mm</option>
+        <option value="inch">inch</option>
+      </select>
+      <div class="hint">e.g. mm or inch</div></div>
+
+    <div class="fi" id="fi-pipWT"><label>Wall Thickness <span class="opt">optional</span></label>
+      <div class="iu"><input type="number" id="pipWT" placeholder="e.g. 8 or 0.315inch" min="0.1" step="0.01" oninput="onIC()">
+      <span class="iu-u" id="wtU" style="color:var(--t3)">—</span></div></div>
+
+    <!-- Row 8: Machine Model | Pulling Capacity -->
     <div class="fi"><label>Machine Model <span class="opt">optional</span></label>
       <input type="text" id="macMod" placeholder="e.g. XCMG XZ3600"></div>
 
@@ -6664,7 +6664,8 @@ function _doGraphPDF(){
     const cvs=document.getElementById('cvs');
     if(!cvs){toast('⚠️ Graph canvas not found','wn');return;}
     // Temporarily widen canvas to A4-landscape proportions so the exported
-    // graph image fills ~90% of the printed page instead of appearing small.
+    // graph image fills the printed page's full horizontal width instead of
+    // appearing small with wasted side margins.
     // No drawing/formula logic touched — just a bigger render of the same drawProfile().
     const _pe=cvs.parentElement;
     const _prevInlineWidth=_pe?_pe.style.width:null;
@@ -6676,7 +6677,7 @@ function _doGraphPDF(){
     const _lightPdf = true;
     let graphImg;
     if(_pe && typeof drawProfile==='function'){
-      _pe.style.width='680px';
+      _pe.style.width='1050px';
       drawProfile(_lightPdf);
       graphImg=cvs.toDataURL('image/png');
       _pe.style.width=_prevInlineWidth||'';
@@ -6776,7 +6777,7 @@ function _doGraphPDF_TBD(){
     const _prevInlineWidth=_pe?_pe.style.width:null;
     let graphImg;
     if(_pe && typeof tbdDrawProfile==='function'){
-      _pe.style.width='680px';
+      _pe.style.width='1050px';
       tbdDrawProfile();
       graphImg=cvs.toDataURL('image/png');
       _pe.style.width=_prevInlineWidth||'';
@@ -9422,7 +9423,20 @@ function zdcExportGraphPDF() {
   let graphImg = '';
   try {
     const cvs = document.getElementById('cvs');
-    if (cvs) graphImg = cvs.toDataURL('image/png');
+    if (cvs) {
+      const _pe = cvs.parentElement;
+      const _prevInlineWidth = _pe ? _pe.style.width : null;
+      const _drawFn = _isCityMode ? _cwDrawProfile : _zdcDrawProfile;
+      if (_pe && typeof _drawFn === 'function') {
+        _pe.style.width = '1050px';
+        _drawFn(d);
+        graphImg = cvs.toDataURL('image/png');
+        _pe.style.width = _prevInlineWidth || '';
+        _drawFn(d);
+      } else {
+        graphImg = cvs.toDataURL('image/png');
+      }
+    }
   } catch (e) {}
   if (!graphImg) { toast('⚠️ Graph canvas not found', 'wn'); return; }
 
@@ -10312,7 +10326,9 @@ function tbdDrawProfile() {
   const cvs = document.getElementById('cvs');
   if (!cvs || !_tbdRows.length) return;
   const ctx = cvs.getContext('2d');
-  const W = cvs.width, H = cvs.height;
+  const W = Math.max(cvs.parentElement.offsetWidth - 4, 300);
+  cvs.width = W;
+  const H = cvs.height;
   ctx.clearRect(0, 0, W, H);
 
   const maxDist  = Math.max(..._tbdRows.map(r => r.dist), 1);
