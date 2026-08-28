@@ -2,7 +2,7 @@
   "name": "HDD Pre-Bore Designer Pro",
   "short_name": "HDD Pre-Bore",
   "description": "Professional HDD bore profile calculator for Horizontal Directional Drilling",
-  "start_url": "/hdd-prebore-app/hdd-prebore-v7_8_6-80-test.html",
+  "start_url": "/hdd-prebore-app/app.html",
   "scope": "/hdd-prebore-app/",
   "display": "standalone",
   "background_color": "#0a0e1a",
