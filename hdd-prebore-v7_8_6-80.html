@@ -21,7 +21,7 @@
 // every user automatically, no "Clear Cache" or reinstall needed.
 // This never touches any calculation, UI, ID, or existing feature — it
 // only decides whether to silently reload the page.
-const APP_BUILD_VERSION = 'v7.8.6-80-2026-08-28-version-consolidation-pwa-package';
+const APP_BUILD_VERSION = 'v7.8.6-80-2026-09-01-quick-angle-converter';
 (function(){
   try {
     if (location.search.indexOf('_v=') !== -1) return; // just did a fresh cache-busted load — nothing more to do
@@ -1431,7 +1431,8 @@ td.rla-cell:empty:before{content:attr(data-ph);color:var(--t3);font-size:10px;}
 .safety-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;
   padding:14px;margin-bottom:12px;}
 .shdr{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;
-  color:var(--green);letter-spacing:1px;margin-bottom:12px;}
+  color:var(--green);letter-spacing:1px;margin:0 0 12px 0;padding:4px 0;
+  display:block;width:100%;box-sizing:border-box;border-radius:6px;}
 .srow{display:flex;justify-content:space-between;align-items:center;padding:7px 0;
   border-bottom:1px solid rgba(30,45,84,.5);gap:8px;flex-wrap:wrap;}
 .srow:last-child{border-bottom:none;}
@@ -1617,6 +1618,7 @@ td.rla-cell:empty:before{content:attr(data-ph);color:var(--t3);font-size:10px;}
     </button>
   </div>
   <div class="smenu-version">HDD PRE-BORE DESIGNER PRO · v7_8_6-80 Built by Saiyad Hussain</div>
+  <div id="smenuTestBuildTag" style="padding:0 20px 12px;font-size:9px;color:rgba(255,255,255,.22)">Build: v7_8_6-80-test</div>
 </div>
 
 <!-- ═══════ LOGIN ═══════ -->
@@ -2162,14 +2164,29 @@ document.addEventListener('click',function(e){
       <div class="hint">Client Tie-In pit depth at exit side</div>
     </div>
 
-    <!-- Row: Punch-In To Entry Pit Space — no natural pair, spans full width
-         (moved here, directly above Entry/Exit Reduced Level, per explicit
-         request — same element, same id/classes/listeners, position only) -->
-    <div class="fi" id="fi-ncSpace" style="grid-column:1/-1">
+    <!-- Row: Punch-In To Entry Pit Space | Quick Angle Converter — shrunk
+         back to standard half-width so it can pair with the new converter
+         box to its right, same row (grid-column span removed; everything
+         else about this box — id/classes/listener — is unchanged). -->
+    <div class="fi" id="fi-ncSpace">
       <label>Punch-In To Entry Pit Space <span class="opt">optional</span></label>
       <div class="iu"><input type="number" id="pitNcSpace" placeholder="e.g. 30" min="5" max="500" step="0.5" oninput="onPitDepthInput()">
       <span class="iu-u">M</span></div>
       <div class="hint">Max space for NC section (auto if empty)</div>
+    </div>
+
+    <!-- Quick Angle Converter — standalone tool, same pattern as the
+         existing Quick Unit Converter (Inch↔MM) below: the selected unit
+         is what the TYPED number represents; the hint line live-shows the
+         converted value in the other unit. Never touches any calculation
+         or any other field. -->
+    <div class="fi" id="fi-qac"><label>Quick Angle Converter <span class="opt">optional</span></label>
+      <div class="iu"><input type="number" id="qacValue" placeholder="e.g. 10" style="padding-right:58px" oninput="onQuickAngleConvert()">
+      <select id="qacUnit" class="iu-sel" onchange="onQuickAngleConvert()">
+        <option value="pct" selected>%</option>
+        <option value="deg">°</option>
+      </select></div>
+      <div class="hint" id="qacResult">Standalone tool — does not affect any calculation</div>
     </div>
 
     <!-- Row 5: Ground Elevation RL (optional) — Entry RL | Exit RL -->
@@ -2212,14 +2229,16 @@ document.addEventListener('click',function(e){
     </div>
 
     <!-- ══ RL DATA SECTION — always visible (Row 6): Pipe Type | Pipe OD ══ -->
-    <div class="fi"><label>Pipe Type <span class="opt">optional</span></label>
-      <select id="pipT" onchange="onPipeChange()">
-        <option value="" disabled selected>e.g. Steel or Hdpe...</option>
-        <option value="Steel">Steel</option>
-        <option value="HDPE">Hdpe</option>
-        <option value="GRP">GRP / FRP</option>
-        <option value="PVC">PVC</option>
-      </select></div>
+    <div class="fi" style="position:relative;"><label>Pipe Type <span class="opt">optional</span></label>
+      <div style="position:relative;">
+        <input type="text" id="pipT" autocomplete="off" placeholder="e.g. Steel or HDPE... ▼"
+          style="padding-right:26px;box-sizing:border-box;"
+          onfocus="_dcdShowList('pipTDropdown','pipT',PIPE_TYPE_OPTIONS,this.value)"
+          oninput="_dcdShowList('pipTDropdown','pipT',PIPE_TYPE_OPTIONS,this.value);onPipeChange()">
+        <span onclick="_dcdToggle('pipTDropdown','pipT',PIPE_TYPE_OPTIONS)" style="position:absolute;right:9px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--t3);font-size:10px;">▼</span>
+      </div>
+      <div id="pipTDropdown" class="dcd-dropdown" data-input="pipT"></div>
+    </div>
 
     <div class="fi" id="fi-pipOD"><label>Pipe OD <span class="opt">optional</span></label>
       <div class="iu"><input type="number" id="pipOD" placeholder="e.g. 36 or 914.4" min="1" style="padding-right:58px" oninput="onPipeChange()">
@@ -2290,9 +2309,10 @@ document.addEventListener('click',function(e){
 </div>
 
 <div class="form-card" style="padding:12px 16px;">
-  <details>
-    <summary style="cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:13px;
-      font-weight:700;color:var(--accent);letter-spacing:1px;list-style:none;">
+  <details id="lrpDetails">
+    <summary style="cursor:pointer;user-select:none;display:block;width:100%;box-sizing:border-box;
+      font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;color:var(--accent);
+      letter-spacing:1px;list-style:none;padding:4px 0;margin:0 0 12px 0;border-radius:6px;">
       PIPE PULLING LOAD REPORT PACKAGE <span class="lr-arrow">▾</span>
     </summary>
     <div class="fg" style="margin-top:12px;">
@@ -2332,21 +2352,16 @@ document.addEventListener('click',function(e){
       <!-- ══ Load Report Package — new fields only (lr- prefix), Step 3 ══ -->
       <div class="fi"><label>Engineer Name <span class="opt">for Load Report</span></label>
         <input type="text" id="lrEngineer" placeholder="e.g. Eng. Ahmed Al-Sayed"></div>
-      <div class="fi"><label>Soil Type <span class="opt">for Load Report</span></label>
-        <select id="lrSoilType">
-          <option value="" selected>— Select —</option>
-          <option value="Sand">Sand</option>
-          <option value="Clay">Clay</option>
-          <option value="Silt">Silt</option>
-          <option value="Gravel">Gravel</option>
-          <option value="Mixed / Composite Soil">Mixed / Composite Soil</option>
-          <option value="Cobbles / Boulders">Cobbles / Boulders</option>
-          <option value="Fill / Made Ground">Fill / Made Ground</option>
-          <option value="Weathered Rock">Weathered Rock</option>
-          <option value="Fractured Rock">Fractured Rock</option>
-          <option value="Hard Rock">Hard Rock</option>
-          <option value="Other">Other</option>
-        </select></div>
+      <div class="fi" style="position:relative;"><label>Soil Type <span class="opt">for Load Report</span></label>
+        <div style="position:relative;">
+          <input type="text" id="lrSoilType" autocomplete="off" placeholder="e.g. Sand, Clay, Rock... ▼"
+            style="padding-right:26px;box-sizing:border-box;"
+            onfocus="_dcdShowList('lrSoilTypeDropdown','lrSoilType',SOIL_TYPE_OPTIONS,this.value)"
+            oninput="_dcdShowList('lrSoilTypeDropdown','lrSoilType',SOIL_TYPE_OPTIONS,this.value)">
+          <span onclick="_dcdToggle('lrSoilTypeDropdown','lrSoilType',SOIL_TYPE_OPTIONS)" style="position:absolute;right:9px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--t3);font-size:10px;">▼</span>
+        </div>
+        <div id="lrSoilTypeDropdown" class="dcd-dropdown" data-input="lrSoilType"></div>
+      </div>
       <div class="fi"><label>Mud Density <span class="opt">optional</span></label>
         <div class="iu"><input type="number" id="lrMudDensity" placeholder="e.g. 1.05" min="0" step="0.01">
         <span class="iu-u">g/cm³</span></div></div>
@@ -2355,13 +2370,16 @@ document.addEventListener('click',function(e){
         <span class="iu-u" style="padding:0 2px 0 0;pointer-events:none"><select id="lrMudPressureUnit" style="background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.35);border-radius:4px;color:inherit;font:inherit;padding:2px 4px;cursor:pointer;pointer-events:auto">
           <option value="PSI">PSI ▾</option><option value="Bar">Bar ▾</option><option value="MPa">MPa ▾</option>
         </select></span></div></div>
-      <div class="fi"><label>Hole Condition <span class="opt">for Load Report</span></label>
-        <select id="lrHoleCondition">
-          <option value="Not Recorded" selected>Not Recorded</option>
-          <option value="Good">Good</option>
-          <option value="Normal">Normal</option>
-          <option value="Difficult">Difficult</option>
-        </select></div>
+      <div class="fi" style="position:relative;"><label>Hole Condition <span class="opt">for Load Report</span></label>
+        <div style="position:relative;">
+          <input type="text" id="lrHoleCondition" autocomplete="off" placeholder="e.g. Good, Normal, Difficult... ▼" value="Not Recorded"
+            style="padding-right:26px;box-sizing:border-box;"
+            onfocus="_dcdShowList('lrHoleConditionDropdown','lrHoleCondition',HOLE_CONDITION_OPTIONS,this.value)"
+            oninput="_dcdShowList('lrHoleConditionDropdown','lrHoleCondition',HOLE_CONDITION_OPTIONS,this.value)">
+          <span onclick="_dcdToggle('lrHoleConditionDropdown','lrHoleCondition',HOLE_CONDITION_OPTIONS)" style="position:absolute;right:9px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--t3);font-size:10px;">▼</span>
+        </div>
+        <div id="lrHoleConditionDropdown" class="dcd-dropdown" data-input="lrHoleCondition"></div>
+      </div>
       <div class="fi"><label>Pullback Force <span class="opt">optional</span></label>
         <div class="iu"><input type="number" id="lrPullback" placeholder="e.g. 25" min="0" step="0.1">
         <span class="iu-u">Ton</span></div></div>
@@ -2390,7 +2408,7 @@ document.addEventListener('click',function(e){
      and the 3 separate headers were merged into 1 header + 3 sub-headings.
      ══════════════════════════════════════════ -->
 <div class="form-card" style="padding:14px 16px;">
-  <div class="form-title" id="dcdTitle" onclick="toggleCollapseSection('dcdBody','dcdArrow')" style="cursor:pointer;user-select:none">
+  <div class="form-title" id="dcdTitle" onclick="toggleCollapseSection('dcdBody','dcdArrow')" style="cursor:pointer;user-select:none;display:block;width:100%;box-sizing:border-box;font-size:13px;margin:0 0 12px 0;padding:4px 0;border-radius:6px;">
     <span id="dcdTitleText">DRAWING &amp; CROSSING DETAILS</span> <span id="dcdArrow" style="font-size:11px">▾</span>
   </div>
   <div class="collapse-body" id="dcdBody">
@@ -2458,6 +2476,12 @@ document.addEventListener('click',function(e){
       <div class="fi"><label>Sub Contractor <span class="opt">optional</span></label>
         <input type="text" id="drwSubContractor" placeholder="e.g. Thrustboring Construction Co."></div>
     </div>
+    <div class="fg" style="margin-top:10px;">
+      <div class="fi"><label>Tie-In to Tie-In Length <span class="opt">optional</span></label>
+        <input type="text" id="drwTieInLength" placeholder="e.g.500.0M"></div>
+      <div class="fi"><label>Crossing Width <span class="opt">optional</span></label>
+        <input type="number" id="drwCrossWidth" placeholder="e.g. 30.0M" step="0.01"></div>
+    </div>
   </div>
 
   <div class="dcd-divider"></div>
@@ -2488,7 +2512,7 @@ document.addEventListener('click',function(e){
         <div id="drwCrossNameDropdown" class="dcd-dropdown"></div>
       </div>
       <div class="fi">
-        <label>Actual Crossing Point</label>
+        <label>Actual Crossing Midpoint</label>
         <input type="number" id="drwCrossChainage" placeholder="e.g.45.0M" step="0.01">
       </div>
     </div>
@@ -4535,8 +4559,8 @@ document.addEventListener('click',function(e){
     </div>
   </div>
   <div class="profile-card">
-    <div class="phdr">
-      <span onclick="bpdToggleMaster()" style="cursor:pointer;user-select:none">📐 BORE PROFILE GRAPH &amp; AUTO CAD DRAWING <span id="bpdMasterIcon" style="font-size:11px">▼</span></span>
+    <div class="phdr" style="margin-bottom:12px;">
+      <span onclick="bpdToggleMaster()" style="cursor:pointer;user-select:none;display:block;width:100%;box-sizing:border-box;font-size:13px;padding:4px 0;border-radius:6px;">📐 BORE PROFILE GRAPH &amp; AUTO CAD DRAWING <span id="bpdMasterIcon" style="font-size:11px">▼</span></span>
     </div>
     <div id="bpdMasterBody" style="display:none">
       <!-- Left(Graph)/Right(Drawing) switch — purely a view selector; the
@@ -5191,10 +5215,10 @@ async function doLogout() {
   document.getElementById('adminBtn').style.display='none';
   document.getElementById('results').style.display='none';
   _clearAllBoreData();
-  ['rodL','boreL','maxD','machH','entA','extA','pipOD','pipWT',
+  ['rodL','boreL','maxD','machH','entA','extA','pipT','pipOD','pipWT',
    'pullT','macMod','projN','projC','projL','prepB','projDt','boreID'
   ].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  ['pipT','odUnitSel','pipODUnit','pipWTUnit'].forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0;});
+  ['odUnitSel','pipODUnit','pipWTUnit'].forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0;});
   const pv=document.getElementById('preview');
   if(pv) pv.textContent='';
   // Clear GPS capture state so the next login session starts fresh.
@@ -5264,10 +5288,10 @@ async function changeAdminPIN() {
 function _clearAllBoreData() {
   rlClearFields();
   // Bore detail inputs
-  ['rodL','boreL','maxD','machH','entA','extA','pipOD','pipWT',
+  ['rodL','boreL','maxD','machH','entA','extA','pipT','pipOD','pipWT',
    'pullT','macMod','projN','projC','projL','prepB','projDt','boreID'
   ].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-  ['pipT','odUnitSel','pipODUnit','pipWTUnit'].forEach(id => {
+  ['odUnitSel','pipODUnit','pipWTUnit'].forEach(id => {
     const el = document.getElementById(id); if (el) el.selectedIndex = 0;
   });
   // ZDC fields
@@ -5355,8 +5379,8 @@ function renderUserList() {
     rows +=
       '<tr>'
       +'<td style="text-align:center;color:var(--t2);font-family:\'Share Tech Mono\',monospace">'+(i+1)+'</td>'
-      +'<td style="font-family:\'Share Tech Mono\',monospace;color:var(--accent)">'+u.u+'</td>'
-      +'<td style="font-size:10px;color:var(--t2)">'+email+'</td>'
+      +'<td style="font-family:\'Share Tech Mono\',monospace;color:var(--accent)">'+esc(u.u)+'</td>'
+      +'<td style="font-size:10px;color:var(--t2)">'+esc(email)+'</td>'
       +'<td>'+statusHtml+'</td>'
       +'<td>'+pwCell+'</td>'
       +'<td style="text-align:center">'+switchHtml+'</td>'
@@ -5929,6 +5953,30 @@ function onQuickUnitConvert() {
     out.textContent = val + ' Inch = ' + (val * 25.4).toFixed(1) + ' MM';
   } else {
     out.textContent = val + ' MM = ' + (val / 25.4).toFixed(3) + ' Inch';
+  }
+}
+
+// Quick Angle Converter — standalone, same pattern as onQuickUnitConvert()
+// above; reuses the app's own existing %<->° formulas (identical to the
+// ones already used everywhere else for angle conversion) so this tool's
+// numbers always agree with the rest of the app. Never writes to any
+// other field, never touches any calculation.
+function onQuickAngleConvert() {
+  const out = document.getElementById('qacResult');
+  if (!out) return;
+  const raw = (document.getElementById('qacValue') || {}).value;
+  const unit = (document.getElementById('qacUnit') || {}).value || 'pct';
+  const val = parseFloat(raw);
+  if (raw === '' || isNaN(val)) {
+    out.textContent = 'Standalone tool — does not affect any calculation';
+    return;
+  }
+  if (unit === 'pct') {
+    const deg = Math.atan(val / 100) * 180 / Math.PI;
+    out.textContent = val + '% = ' + deg.toFixed(2) + '°';
+  } else {
+    const pct = Math.tan(val * Math.PI / 180) * 100;
+    out.textContent = val + '° = ' + pct.toFixed(2) + '%';
   }
 }
 
@@ -9061,7 +9109,7 @@ function collectFormInputs() {
   const ids = ['rodL','boreL','maxD','machH','entA','extA','pipT','pipOD','pipWT','odUnitSel',
                'pipODUnit','pipWTUnit',
                'pullT','macMod','projN','projC','projL','prepB','projDt','boreID',
-               'drwDrawingTitle','drwContractor','drwSubContractor','drwStartChainage',
+               'drwDrawingTitle','drwTieInLength','drwCrossWidth','drwContractor','drwSubContractor','drwStartChainage',
                'entGps','exiGps'];
   const out = {};
   ids.forEach(id => {
@@ -12112,7 +12160,7 @@ async function doAdminReset() {
   }
   const sel = document.getElementById('fUserSel');
   sel.innerHTML = users.map(u =>
-    `<option value="${u.u}">${u.u} [${u.role}] (${u.active ? 'active' : 'disabled'})</option>`
+    `<option value="${esc(u.u)}">${esc(u.u)} [${esc(u.role)}] (${u.active ? 'active' : 'disabled'})</option>`
   ).join('');
   document.getElementById('fUserSelectWrap').style.display = 'block';
   document.getElementById('fNewPwWrap').style.display = 'block';
@@ -12197,6 +12245,32 @@ function exportUpdatedFile() {
 
 
 // ════════════════════════════════════════════════════
+// 📍 PROACTIVE LOCATION-PERMISSION REQUEST (v7_8_6-87)
+// Fires the native OS "Allow location?" prompt the FIRST time the user
+// expands the Pipe Pulling Load Report Package panel — before they ever
+// tap "Get GPS". Purely additive: never touches/prefills anything
+// getGPS() already does — its own result is discarded on purpose; real
+// GPS capture still only happens via the existing "Get GPS" button,
+// unchanged. Guarded to run at most once per page load.
+// ════════════════════════════════════════════════════
+let _lrpGpsPromptDone = false;
+(function () {
+  const det = document.getElementById('lrpDetails');
+  if (!det) return;
+  det.addEventListener('toggle', function () {
+    if (!det.open || _lrpGpsPromptDone) return;
+    _lrpGpsPromptDone = true;
+    if (!navigator.geolocation) return;
+    try {
+      navigator.geolocation.getCurrentPosition(
+        function () { /* discarded — user still taps Get GPS to actually capture */ },
+        function () { /* denied/unavailable — getGPS() explains clearly when tapped */ },
+        { enableHighAccuracy: false, timeout: 6000, maximumAge: 60000 }
+      );
+    } catch (e) { /* no-op */ }
+  });
+}());
+
 // 📍 GPS LOCATION TAG
 // Only reads navigator.geolocation — zero impact on
 // any existing calculation or form field except projL.
@@ -12271,11 +12345,21 @@ function getGPS() {
       function(err) {
         btn.disabled = false;
         if (err.code === 1) {
-          // Permission denied — give the user a clear next step since the
-          // browser/WebView will not show the prompt again automatically.
-          sta.innerHTML = '❌ Location permission denied. Please allow location access for this app in your browser/device settings, then tap "Get GPS" again.';
+          // Permission denied — the browser/WebView will not show the OS
+          // prompt again automatically once blocked, and once this site is
+          // Digital-Asset-Link-verified, the installed app hides Chrome's
+          // normal 3-dot menu / address bar, so the old "tap 3-dot > Site
+          // Settings" path is gone. Give the ONE path that still always
+          // works instead: open the same website directly in the Chrome
+          // browser app (not this installed app) and fix it from there.
+          sta.innerHTML = '❌ Location permission is blocked for this app.<br>' +
+            'To fix it:<br>' +
+            '1) Open Chrome browser (not this app)<br>' +
+            '2) Go to: saiyadhussain9646-droid.github.io<br>' +
+            '3) Tap the 🔒/ⓘ icon next to the address bar<br>' +
+            '4) Set Location to "Allow", then come back here and tap "Get GPS" again';
           sta.className = 'gps-status err';
-          toast('📍 Please allow location permission in Settings, then try again.', 'bad');
+          toast('📍 Location blocked — open the site in Chrome to allow it (see instructions below).', 'bad');
         } else if (err.code === 2) {
           sta.textContent = '❌ Location unavailable — move to an open area or check GPS/network signal.';
           sta.className = 'gps-status err';
@@ -12294,25 +12378,15 @@ function getGPS() {
     );
   }
 
-  if (navigator.permissions && navigator.permissions.query) {
-    navigator.permissions.query({ name: 'geolocation' }).then(function(status) {
-      if (status.state === 'denied') {
-        btn.disabled = false;
-        sta.innerHTML = '⚠️ Location permission is currently blocked. Please allow location access for this app in your browser/device settings, then tap "Get GPS" again.';
-        sta.className = 'gps-status err';
-        toast('📍 Location permission blocked — please allow it in Settings.', 'bad');
-        return;
-      }
-      // 'granted' or 'prompt' — proceed; browser will show the OS prompt if needed
-      runRequest();
-    }).catch(function() {
-      // permissions API not fully supported — fall back to direct request
-      runRequest();
-    });
-  } else {
-    // permissions API unavailable on this browser — fall back to direct request
-    runRequest();
-  }
+  // v7_8_6-86 / FIX: the navigator.permissions.query() pre-check below was
+  // removed — on many Android WebViews it reports geolocation as "denied"
+  // even when the OS has never actually shown the prompt, which silently
+  // skipped runRequest() entirely and so the permission dialog never
+  // opened at all. Always attempt the real request now; genuine denial is
+  // still caught and clearly explained by the err.code===1 handler already
+  // inside runRequest() above (unchanged) — same instructions, triggered
+  // from the actual, reliable getCurrentPosition() result instead.
+  runRequest();
 }
 
 // ════════════════════════════════════════════════════
@@ -15852,6 +15926,66 @@ document.addEventListener('click', function (e) {
 });
 
 // ════════════════════════════════════════════════════
+// v7_8_6-84 / GENERIC TYPE-OR-SELECT COMBO DROPDOWN — same visual/behaviour
+// pattern as Crossing/Utility Name above (small styled scrollable panel,
+// type to filter, tap to pick, typed text also accepted as-is), made
+// reusable for any field. Does NOT touch drwCrossName*/drwCrossLabel at
+// all — those keep working exactly as before, completely independently.
+// Reuses the existing .dcd-dropdown/.dcd-dropdown-item CSS and the
+// existing _drwCrossNameEsc() escaper (pure utility, unchanged).
+// ════════════════════════════════════════════════════
+function _dcdShowList(dropId, inputId, options, filter) {
+  const box = document.getElementById(dropId);
+  if (!box) return;
+  const f = (filter || '').trim().toLowerCase();
+  const items = options.filter(o => !f || o.toLowerCase().includes(f));
+  box.innerHTML = items.length
+    ? items.map(o => '<div class="dcd-dropdown-item" onclick="_dcdPick(\'' + inputId + '\',\'' +
+        dropId + '\',\'' + o.replace(/'/g, "\\'") + '\')">' + _drwCrossNameEsc(o) + '</div>').join('')
+    : '<div class="dcd-dropdown-empty">No match — your typed text will be used as-is</div>';
+  box.style.display = 'block';
+}
+function _dcdToggle(dropId, inputId, options) {
+  const box = document.getElementById(dropId);
+  if (box && box.style.display === 'block') { _dcdHide(dropId); }
+  else {
+    const inp = document.getElementById(inputId);
+    if (inp) inp.focus();
+    _dcdShowList(dropId, inputId, options, inp ? inp.value : '');
+  }
+}
+function _dcdPick(inputId, dropId, val) {
+  const inp = document.getElementById(inputId);
+  if (inp) {
+    inp.value = val;
+    // Fire real input+change events so any existing oninput/onchange handler
+    // on this field (e.g. Pipe Type's onPipeChange()) runs exactly as if the
+    // user had typed/selected it — no separate/duplicate trigger logic.
+    inp.dispatchEvent(new Event('input', { bubbles: true }));
+    inp.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+  _dcdHide(dropId);
+}
+function _dcdHide(dropId) {
+  const box = document.getElementById(dropId);
+  if (box) box.style.display = 'none';
+}
+document.addEventListener('click', function (e) {
+  ['lrSoilTypeDropdown', 'lrHoleConditionDropdown', 'pipTDropdown'].forEach(function (dropId) {
+    const box = document.getElementById(dropId);
+    if (!box || box.style.display !== 'block') return;
+    const inputId = box.getAttribute('data-input');
+    const inp = inputId ? document.getElementById(inputId) : null;
+    if (e.target === inp || box.contains(e.target)) return;
+    _dcdHide(dropId);
+  });
+});
+const SOIL_TYPE_OPTIONS = ['Sand', 'Clay', 'Silt', 'Gravel', 'Mixed / Composite Soil',
+  'Cobbles / Boulders', 'Fill / Made Ground', 'Weathered Rock', 'Fractured Rock', 'Hard Rock', 'Other'];
+const HOLE_CONDITION_OPTIONS = ['Not Recorded', 'Good', 'Normal', 'Difficult'];
+const PIPE_TYPE_OPTIONS = ['Steel', 'HDPE', 'GRP', 'PVC'];
+
+// ════════════════════════════════════════════════════
 // DRAWING MODULE — PART 1 / PROMPT 1: CROSSING / UTILITY DATA FOUNDATION
 // Fully isolated drw- namespace. Does NOT touch any of the 4 mode engines,
 // UNIT/toD, RL system, 8/10-column chart, Smart Edit, PDF/Excel exporters,
@@ -16273,7 +16407,15 @@ function drwCollectData() {
   const drawingInfo = {
     drawingTitle:  v('drwDrawingTitle'),
     contractor:    v('drwContractor'),
-    subContractor: v('drwSubContractor')
+    subContractor: v('drwSubContractor'),
+    // v7_8_6-82: manual Tie-In to Tie-In Length override (Priority 1) and
+    // the two Bore Details pit-depth boxes (Priority 2, calculated from
+    // the bore chart when the manual field is blank). Raw values only —
+    // parsing/priority logic happens entirely in the Drawing renderer.
+    tieInLengthRaw:  v('drwTieInLength'),
+    crossWidthRaw:   v('drwCrossWidth'),
+    entryPitDepthRaw: v('pitEntryDepth'),
+    exitPitDepthRaw:  v('pitExitDepth')
   };
 
   return {
@@ -16627,6 +16769,164 @@ function _drwTitleBlockFields(snapshot) {
 }
 
 
+// ════════════════════════════════════════════════════
+// DRAWING MODULE — v7_8_6-81 / CROSSING REFERENCE PANEL (REPLACES ON-
+// PROFILE CROSSING PLOTTING). Pipeline/client Chainage is a reference
+// identifier only (see removal note above section G/K) — these helpers
+// format it purely as text (splitting a raw metre value into "KM+m"
+// notation, e.g. 4660 -> "4+660"), with NO relationship whatsoever to
+// bore-local distance, plot geometry, or _drwMapX(). Pure functions;
+// never read the DOM, never invent a value that wasn't already on the
+// crossing record.
+// ════════════════════════════════════════════════════
+function _drwFmtChainageRef(n) {
+  if (typeof n !== 'number' || !isFinite(n)) return '';
+  const sign = n < 0 ? '-' : '';
+  const absN = Math.abs(n);
+  const km = Math.floor(absN / 1000);
+  const m = absN - km * 1000;
+  const mTxt = (Math.abs(m % 1) < 0.005) ? String(Math.round(m)) : m.toFixed(1);
+  return sign + km + '+' + mTxt;
+}
+
+// Builds the ordered list of display lines for one crossing record —
+// ONLY fields actually present are included (rule: never show an empty
+// label, never fabricate). Shared by the height calculator and the
+// renderer below so the two can never disagree with each other.
+function _drwCrossRefLines(c, autoBoreDepth) {
+  const lines = [];
+  const name = (c && c.label || '').trim();
+  lines.push({ text: (name || 'CROSSING').toUpperCase(), head: true });
+
+  const hasZone = c && typeof c.startChainage === 'number' && isFinite(c.startChainage) &&
+                  typeof c.endChainage === 'number' && isFinite(c.endChainage);
+  if (hasZone) {
+    lines.push({ text: 'CH: ' + _drwFmtChainageRef(c.startChainage) + ' \u2013 ' + _drwFmtChainageRef(c.endChainage) });
+  } else if (c && typeof c.chainage === 'number' && isFinite(c.chainage)) {
+    lines.push({ text: 'CH: ' + _drwFmtChainageRef(c.chainage) });
+  }
+  if (c && typeof c.depth === 'number' && isFinite(c.depth)) {
+    lines.push({ text: 'Utility Depth: ' + _drwFmtNum(c.depth, 2) + ' m' });
+  }
+  // v7_8_6-88 / BORE DEPTH — prefer the REAL value read from the Pre-Bore
+  // Chart at this crossing's own station (authoritative, auto-computed —
+  // never a guess); the manually-typed Bore Crossing Depth field is used
+  // ONLY as a fallback when the crossing's station falls outside the
+  // chart's real plotted range (e.g. an absolute km-chainage) — in which
+  // case there's no real chart depth to read, and the field itself is
+  // never altered either way, only what's shown here.
+  if (typeof autoBoreDepth === 'number' && isFinite(autoBoreDepth)) {
+    lines.push({ text: 'Bore Depth: ' + _drwFmtNum(autoBoreDepth, 2) + ' m (chart)' });
+  } else if (c && typeof c.offset === 'number' && isFinite(c.offset)) {
+    lines.push({ text: 'Bore Depth: ' + _drwFmtNum(c.offset, 2) + ' m' });
+  }
+  if (c && typeof c.gl === 'number' && isFinite(c.gl)) {
+    lines.push({ text: 'RL: ' + _drwFmtCoord(c.gl) });
+  }
+  if (c && typeof c.northing === 'number' && isFinite(c.northing)) {
+    lines.push({ text: 'N ' + _drwFmtCoord(c.northing) });
+  }
+  if (c && typeof c.easting === 'number' && isFinite(c.easting)) {
+    lines.push({ text: 'E ' + _drwFmtCoord(c.easting) });
+  }
+  return lines;
+}
+
+// Only crossings with at least a real Name/Label are shown — matches
+// drwCrossAddOrUpdate()'s own save rule (a crossing cannot be saved
+// without a label), so every stored record is always usable here.
+function _drwCrossRefUsable(crossings) {
+  return (Array.isArray(crossings) ? crossings : []).filter(function (c) {
+    return c && typeof c.label === 'string' && c.label.trim();
+  });
+}
+
+// ════════════════════════════════════════════════════
+// CROSSING SYMBOL TYPE + PICTOGRAM (v7_8_6-87) — reads only the
+// Crossing/Utility Name text to pick a compact, recognizable technical
+// symbol (never a photorealistic drawing, per instruction: "बहुत हूबहू
+// नहीं बस समझ आ जाए"). Pure functions — no DOM reads, no calculation
+// impact, easy to extend with more keywords later without touching
+// anything else.
+// ════════════════════════════════════════════════════
+function _drwCrossSymbolType(label) {
+  const s = (label || '').toLowerCase();
+  if (s.indexOf('rail') !== -1) return 'railway';
+  if (s.indexOf('road') !== -1 || s.indexOf('highway') !== -1 || s.indexOf('street') !== -1) return 'road';
+  if (s.indexOf('pipe') !== -1) return 'pipeline';
+  if (s.indexOf('cable') !== -1 || s.indexOf('power') !== -1 || s.indexOf('electric') !== -1) return 'cable';
+  if (s.indexOf('canal') !== -1 || s.indexOf('drain') !== -1 || s.indexOf('nala') !== -1 ||
+      s.indexOf('river') !== -1 || s.indexOf('water') !== -1) return 'water';
+  return 'generic';
+}
+
+function _drwCrossSymbolDraw(parts, type, cx0, cx1, cy) {
+  if (!(cx1 > cx0)) return;
+  if (type === 'road') {
+    // short diagonal hatch ticks across the span — matches the standard
+    // road-crossing hatch convention (Aramco/HDD reference style).
+    for (let x = cx0; x <= cx1; x += 7) {
+      const x2 = Math.min(x + 5, cx1);
+      parts.push('<line x1="' + x.toFixed(2) + '" y1="' + (cy + 5).toFixed(2) +
+        '" x2="' + x2.toFixed(2) + '" y2="' + (cy - 5).toFixed(2) +
+        '" stroke="#8a2a20" stroke-width="0.8"/>');
+    }
+  } else if (type === 'railway') {
+    // two parallel rails + perpendicular sleeper ticks
+    parts.push('<line x1="' + cx0.toFixed(2) + '" y1="' + (cy - 3).toFixed(2) +
+      '" x2="' + cx1.toFixed(2) + '" y2="' + (cy - 3).toFixed(2) + '" stroke="#333" stroke-width="0.7"/>');
+    parts.push('<line x1="' + cx0.toFixed(2) + '" y1="' + (cy + 3).toFixed(2) +
+      '" x2="' + cx1.toFixed(2) + '" y2="' + (cy + 3).toFixed(2) + '" stroke="#333" stroke-width="0.7"/>');
+    for (let x = cx0; x <= cx1; x += 6) {
+      parts.push('<line x1="' + x.toFixed(2) + '" y1="' + (cy - 4.5).toFixed(2) +
+        '" x2="' + x.toFixed(2) + '" y2="' + (cy + 4.5).toFixed(2) + '" stroke="#333" stroke-width="0.6"/>');
+    }
+  } else if (type === 'pipeline') {
+    parts.push('<line x1="' + cx0.toFixed(2) + '" y1="' + cy.toFixed(2) +
+      '" x2="' + cx1.toFixed(2) + '" y2="' + cy.toFixed(2) +
+      '" stroke="#1a6fb0" stroke-width="1.4" stroke-dasharray="4,2"/>');
+    [cx0, cx1].forEach(function (x) {
+      parts.push('<circle cx="' + x.toFixed(2) + '" cy="' + cy.toFixed(2) + '" r="1.6" fill="#1a6fb0"/>');
+    });
+  } else if (type === 'cable') {
+    let d = 'M ' + cx0.toFixed(2) + ' ' + cy.toFixed(2);
+    let up = true;
+    for (let x = cx0 + 5; x <= cx1; x += 5) {
+      d += ' L ' + x.toFixed(2) + ' ' + (cy + (up ? -3 : 3)).toFixed(2);
+      up = !up;
+    }
+    parts.push('<path d="' + d + '" stroke="#8a5a1a" stroke-width="0.9" fill="none"/>');
+  } else if (type === 'water') {
+    let d = 'M ' + cx0.toFixed(2) + ' ' + cy.toFixed(2);
+    for (let x = cx0 + 3; x <= cx1; x += 6) {
+      d += ' Q ' + x.toFixed(2) + ' ' + (cy - 3).toFixed(2) + ' ' + Math.min(x + 3, cx1).toFixed(2) + ' ' + cy.toFixed(2);
+    }
+    parts.push('<path d="' + d + '" stroke="#1a6fb0" stroke-width="0.9" fill="none"/>');
+  } else {
+    parts.push('<line x1="' + cx0.toFixed(2) + '" y1="' + cy.toFixed(2) +
+      '" x2="' + cx1.toFixed(2) + '" y2="' + cy.toFixed(2) +
+      '" stroke="#555" stroke-width="0.8" stroke-dasharray="3,2"/>');
+  }
+}
+
+// Pure height calculator — used by _drwComputeLayout() so the sheet
+// (vbH) always reserves exactly enough room for this panel BEFORE
+// anything is drawn, the same additive-only approach already used for
+// the Drawing Title band (marginT) elsewhere in this layout function.
+// Zero crossings -> 0 extra height -> zero visual change from before.
+function _drwCrossRefHeight(crossings) {
+  const usable = _drwCrossRefUsable(crossings);
+  if (!usable.length) return 0;
+  let h = 24; // section header + rule line
+  usable.forEach(function (c) {
+    const lines = _drwCrossRefLines(c);
+    h += 10; // name/header line
+    h += Math.max(0, lines.length - 1) * 8.5; // remaining detail lines
+    h += 6; // gap before next crossing block
+  });
+  return h;
+}
+
 // per render, derived only from the scene's own real bounds (already
 // computed by drwBuildScene()) — never invents data, only plot geometry.
 function _drwComputeLayout(scene, hasTitle) {
@@ -16694,7 +16994,8 @@ function _drwComputeLayout(scene, hasTitle) {
   // the grid's own row content, or any calculation.
   const gridH = 96;
   const marginB = 90;
-  const vbH = marginT + plotH + gridGap + gridH + marginB;
+  const crossRefH = _drwCrossRefHeight(scene && scene.crossings);
+  const vbH = marginT + plotH + gridGap + gridH + marginB + crossRefH;
   const titleBlockX = plotAreaW;
   const gridY0 = marginT + plotH + gridGap;
 
@@ -16821,6 +17122,88 @@ function _drwCalcDrillingLength(scene) {
   return isFinite(total) && total > 0 ? total : null;
 }
 
+// v7_8_6-82 / TIE-IN TO TIE-IN LENGTH — Priority 2 (calculated from the
+// real bore chart when no manual override is given). Given a sorted list
+// of real {distance, depth} points and a target depth, walks from ONE end
+// of the bore and returns the interpolated distance of the FIRST point
+// where the profile reaches that depth — i.e. "how far from Punch-In
+// until the bore is at Entry Pit Depth", or symmetrically from Punch-Out
+// for Exit Pit Depth. Pure linear interpolation between the two real
+// points that bracket the crossing — never a new/independent curve,
+// never extrapolated past the ends of the real data.
+// v7_8_6-88 / BORE DEPTH AT ANY STATION — pure linear interpolation
+// between the two real, adjacent {distance, depth} chart points that
+// bracket the given station (mirror of _drwFindDepthCrossing, which
+// walks the other direction — depth-to-distance instead of
+// distance-to-depth). Never extrapolates past the real chart's own
+// ends, never touches the frozen SVG curve itself — this only READS
+// the same real points already driving that curve.
+function _drwDepthAtStation(pts, station) {
+  if (!Array.isArray(pts) || pts.length < 2 || typeof station !== 'number' || !isFinite(station)) return null;
+  if (station < pts[0].distance || station > pts[pts.length - 1].distance) return null;
+  for (let i = 1; i < pts.length; i++) {
+    const a = pts[i - 1], b = pts[i];
+    if (station >= a.distance && station <= b.distance) {
+      const span = b.distance - a.distance;
+      if (!isFinite(span) || span === 0) return a.depth;
+      const t = (station - a.distance) / span;
+      return a.depth + t * (b.depth - a.depth);
+    }
+  }
+  return null;
+}
+
+function _drwFindDepthCrossing(pts, targetDepth, fromStart) {
+  if (!Array.isArray(pts) || pts.length < 2 || !(targetDepth > 0)) return null;
+  const seq = fromStart ? pts : pts.slice().reverse();
+  for (let i = 1; i < seq.length; i++) {
+    const a = seq[i - 1], b = seq[i];
+    const aBelow = a.depth < targetDepth, bBelow = b.depth < targetDepth;
+    if (aBelow === bBelow) continue; // no crossing in this segment
+    const span = b.depth - a.depth;
+    if (!isFinite(span) || span === 0) continue;
+    const t = (targetDepth - a.depth) / span;
+    if (t < 0 || t > 1) continue;
+    return a.distance + t * (b.distance - a.distance);
+  }
+  return null; // profile never reaches targetDepth from this end — not fabricated
+}
+
+function _drwCalcTieInFromPitDepths(scene, entryPitDepth, exitPitDepth) {
+  if (!scene || !Array.isArray(scene.points)) return null;
+  const pts = scene.points
+    .filter(function (p) { return typeof p.distance === 'number' && isFinite(p.distance) && typeof _drwPointDepth(p) === 'number'; })
+    .map(function (p) { return { distance: p.distance, depth: _drwPointDepth(p) }; })
+    .sort(function (a, b) { return a.distance - b.distance; });
+  if (pts.length < 2) return null;
+  const entryTieInDist = _drwFindDepthCrossing(pts, entryPitDepth, true);
+  const exitTieInDist  = _drwFindDepthCrossing(pts, exitPitDepth, false);
+  if (entryTieInDist === null || exitTieInDist === null) return null;
+  const len = exitTieInDist - entryTieInDist;
+  return (isFinite(len) && len > 0) ? len : null;
+}
+
+// v7_8_6-82 / TIE-IN TO TIE-IN LENGTH — 3-priority rule (approved):
+//  1) Manual "Tie-In to Tie-In Length" box on Drawing & Crossing Details
+//     — if filled, always wins outright.
+//  2) Else, if BOTH Entry (Tie-In) Pit Depth and Exit (Tie-In) Pit Depth
+//     (Bore Details page) are filled, calculate from the real bore chart.
+//  3) Else, no value — caller does not draw the line at all.
+function _drwGetTieInLength(scene, snapshot) {
+  const di = (snapshot && snapshot.drawingInfo) || {};
+  const manualRaw = (di.tieInLengthRaw || '').toString().trim();
+  if (manualRaw) {
+    const num = parseFloat(manualRaw.replace(/[^0-9.\-]/g, ''));
+    if (isFinite(num) && num > 0) return num;
+  }
+  const entryPD = parseFloat(di.entryPitDepthRaw);
+  const exitPD  = parseFloat(di.exitPitDepthRaw);
+  if (isFinite(entryPD) && entryPD > 0 && isFinite(exitPD) && exitPD > 0) {
+    return _drwCalcTieInFromPitDepths(scene, entryPD, exitPD);
+  }
+  return null;
+}
+
 function drwRenderSVG(scene, snapshot) {
   // Empty/invalid scene → minimal, deterministic placeholder. Never
   // throws, never fabricates chart content.
@@ -16836,6 +17219,14 @@ function drwRenderSVG(scene, snapshot) {
   const layout = _drwComputeLayout(scene, !!(snapshot && snapshot.drawingInfo &&
     typeof snapshot.drawingInfo.drawingTitle === 'string' && snapshot.drawingInfo.drawingTitle.trim()));
   const parts = [];
+
+  // v7_8_6-88 / shared real chart points (sorted), used to auto-read the
+  // real bore depth at any crossing's station — same source data as the
+  // curve itself, never a second/independent dataset.
+  const _drwSortedRealPts = scene.points
+    .filter(function (p) { return typeof p.distance === 'number' && isFinite(p.distance) && typeof _drwPointDepth(p) === 'number'; })
+    .map(function (p) { return { distance: p.distance, depth: _drwPointDepth(p) }; })
+    .sort(function (a, b) { return a.distance - b.distance; });
 
   parts.push(
     '<svg viewBox="0 0 ' + layout.vbW + ' ' + layout.vbH + '" ' +
@@ -16883,20 +17274,38 @@ function drwRenderSVG(scene, snapshot) {
     if (_dimX0 === null || _dimX1 === null || _dimX1 <= _dimX0) return;
     const _dimTop = layout.marginT - layout.dimBandH;
     const _drillingLen = _drwCalcDrillingLength(scene);
+    const _tieInLen = _drwGetTieInLength(scene, snapshot);
     const _dimRows = [
-      { label: 'HORIZONTAL LENGTH', value: (typeof scene.meta.boreLength === 'number') ? _drwFmtNum(scene.meta.boreLength, 2) + ' m' : '\u2014' },
-      { label: 'DRILLING LENGTH', value: (typeof _drillingLen === 'number') ? _drwFmtNum(_drillingLen, 2) + ' m' : '\u2014' },
-      { label: 'TIE-IN TO TIE-IN LENGTH', value: '\u2014' }
+      { text: 'TOTAL HORIZONTAL LENGTH:' + ((typeof scene.meta.boreLength === 'number') ? _drwFmtNum(scene.meta.boreLength, 2) + 'M' : '\u2014') },
+      { text: 'TOTAL CURVE LENGTH:' + ((typeof _drillingLen === 'number') ? _drwFmtNum(_drillingLen, 2) + 'M' : '\u2014') },
+      (typeof _tieInLen === 'number') ? { text: 'TIE-IN TO TIE-IN LENGTH:' + _drwFmtNum(_tieInLen, 2) + 'M' } : null
     ];
     _dimRows.forEach(function (row, ri) {
+      if (!row) return; // Priority 3: no manual value and no pit-depth pair -> line not drawn at all
       const rowTop = _dimTop + ri * 18;
       const lineY = rowTop + 13;
-      const labelY = rowTop + 8;
-      parts.push('<text x="' + ((_dimX0 + _dimX1) / 2).toFixed(2) + '" y="' + labelY.toFixed(2) +
+      const midX = (_dimX0 + _dimX1) / 2;
+      // v7_8_6-83 / TASK 1: text sits ON the dimension line, with the line
+      // broken around it (reference-drawing style) instead of floating
+      // above a continuous line. Text width is approximated from character
+      // count (~0.55x font-size per char, bold 7.5px sans-serif) since
+      // server-side SVG generation has no real text-measurement API.
+      const _approxTextW = row.text.length * 7.5 * 0.72;
+      const _halfGap = _approxTextW / 2 + 6;
+      const _leftEnd = midX - _halfGap, _rightStart = midX + _halfGap;
+      const _canBreak = (_leftEnd > _dimX0 + 5) && (_rightStart < _dimX1 - 5);
+      parts.push('<text x="' + midX.toFixed(2) + '" y="' + (lineY + 2.6).toFixed(2) +
         '" text-anchor="middle" font-family="sans-serif" font-size="7.5" font-weight="700" fill="#333">' +
-        _drwSvgEsc(row.label + ' = ' + row.value) + '</text>');
-      parts.push('<line x1="' + _dimX0.toFixed(2) + '" y1="' + lineY.toFixed(2) +
-        '" x2="' + _dimX1.toFixed(2) + '" y2="' + lineY.toFixed(2) + '" stroke="#333" stroke-width="0.6"/>');
+        _drwSvgEsc(row.text) + '</text>');
+      if (_canBreak) {
+        parts.push('<line x1="' + _dimX0.toFixed(2) + '" y1="' + lineY.toFixed(2) +
+          '" x2="' + _leftEnd.toFixed(2) + '" y2="' + lineY.toFixed(2) + '" stroke="#333" stroke-width="0.6"/>');
+        parts.push('<line x1="' + _rightStart.toFixed(2) + '" y1="' + lineY.toFixed(2) +
+          '" x2="' + _dimX1.toFixed(2) + '" y2="' + lineY.toFixed(2) + '" stroke="#333" stroke-width="0.6"/>');
+      } else {
+        parts.push('<line x1="' + _dimX0.toFixed(2) + '" y1="' + lineY.toFixed(2) +
+          '" x2="' + _dimX1.toFixed(2) + '" y2="' + lineY.toFixed(2) + '" stroke="#333" stroke-width="0.6"/>');
+      }
       // Small tick + arrowhead at each end (thin CAD-style, not filled fat arrows)
       [[_dimX0, 1], [_dimX1, -1]].forEach(function (a) {
         const ax = a[0], dir = a[1];
@@ -16907,7 +17316,136 @@ function drwRenderSVG(scene, snapshot) {
           (ax + dir * 5).toFixed(2) + ',' + (lineY + 1.6).toFixed(2) + '" fill="#333"/>');
       });
     });
+
+    // v7_8_6-83 / TASK 2 (approved): thin witness lines from Punch-In and
+    // Punch-Out straight up through all 3 header lines, confirming to the
+    // reference drawing which two points the three measurements span. X
+    // positions are the SAME _dimX0/_dimX1 already used above (Punch-In/
+    // Punch-Out via the one authoritative _drwMapX()); the bottom end is
+    // layout.groundY — the exact Y the frozen curve already places these
+    // two points at. No new geometry, no new station, existing curve
+    // completely untouched.
+    [_dimX0, _dimX1].forEach(function (wx) {
+      parts.push('<line x1="' + wx.toFixed(2) + '" y1="' + _dimTop.toFixed(2) +
+        '" x2="' + wx.toFixed(2) + '" y2="' + layout.groundY.toFixed(2) +
+        '" stroke="#999" stroke-width="0.5"/>');
+    });
   })();
+
+  // v7_8_6-88 / shared across crossing symbols + pit annotations below,
+  // so the Entry/Exit Pit leader always clears every crossing dimension
+  // row, however many are stacked.
+  let _drwCrossMaxRow = -1;
+
+  // v7_8_6-87 / ON-PROFILE CROSSING SYMBOLS (extends v7_8_6-86's
+  // crossing[0]-only dimension label to ALL saved crossings, plus a
+  // type-specific pictogram). For crossing[0], behavior is BYTE-FOR-BYTE
+  // preserved when it only has a single Chainage (legacy fallback to the
+  // shared Crossing Width field) — exactly the same numbers/positions as
+  // before. For any crossing (including #1) that has its OWN Start+End
+  // Chainage filled in, that per-record span is used instead — this is
+  // new capability, not a behavior change for existing saved data.
+  // Crossings whose computed span falls entirely outside the bore's own
+  // plotted X range are silently skipped here (never drawn off-canvas —
+  // same safety rule as before); they remain fully visible in the
+  // existing text-only Crossing/Utility Reference panel regardless.
+  // Multiple overlapping crossings are stacked into separate rows so
+  // their dimension labels never overlap each other.
+  (function () {
+    const usableC = _drwCrossRefUsable(scene.crossings);
+    if (!usableC.length) return;
+    const plotX0 = _drwMapX(layout, layout.bounds.minX), plotX1 = _drwMapX(layout, layout.bounds.maxX);
+    if (plotX0 === null || plotX1 === null) return;
+
+    const rowEndX = []; // last cx1 used per row, for simple interval-based stacking
+    usableC.forEach(function (c, idx) {
+      let mid = null, width = null;
+      if (typeof c.startChainage === 'number' && typeof c.endChainage === 'number' &&
+          isFinite(c.startChainage) && isFinite(c.endChainage) && c.endChainage !== c.startChainage) {
+        mid = (c.startChainage + c.endChainage) / 2;
+        width = Math.abs(c.endChainage - c.startChainage);
+      } else if (idx === 0 && typeof c.chainage === 'number' && isFinite(c.chainage)) {
+        // legacy fallback — identical to v7_8_6-86, only for crossing #1
+        mid = c.chainage;
+        const widthRaw = (snapshot && snapshot.drawingInfo && snapshot.drawingInfo.crossWidthRaw) || '';
+        width = parseFloat(String(widthRaw).replace(/[^0-9.\-]/g, ''));
+      }
+      if (mid === null || !(width > 0)) return;
+
+      let cx0 = _drwMapX(layout, mid - width / 2);
+      let cx1 = _drwMapX(layout, mid + width / 2);
+      if (cx0 === null || cx1 === null) return;
+      cx0 = Math.max(cx0, plotX0); cx1 = Math.min(cx1, plotX1);
+      if (cx1 <= cx0) return; // outside the bore's own plotted span — skip silently
+
+      // Row-occupancy must account for the LABEL TEXT width too, not just
+      // the narrow physical dimension-line span — a short-width crossing
+      // with a long name (e.g. "ASPHALT ROAD") can be visually much wider
+      // than its own line, and would otherwise collide with the next
+      // crossing's label even though their physical spans don't overlap.
+      const _cText = c.label.toUpperCase() + ' = ' + _drwFmtNum(width, 2) + 'M';
+      const _approxTextW = _cText.length * 4.4; // ~char width at font-size 7.5 bold
+      const _cMidX = (cx0 + cx1) / 2;
+      // v7_8_6-88 / PUNCH-IN & PUNCH-OUT DISTANCE DIMENSIONS: this row now
+      // also spans the full Punch-In..Punch-Out width for its two outer
+      // dimension segments (see below), so the row's occupied span must
+      // reserve the FULL plot width, not just the crossing's own narrow
+      // line — this correctly pushes any other crossing onto its own row,
+      // matching the reference drawing's real convention of stacking each
+      // utility's dimension line at its own height.
+      const occX0 = plotX0, occX1 = plotX1;
+
+      let row = 0;
+      while (row < rowEndX.length && rowEndX[row] > occX0 - 4) row++;
+      rowEndX[row] = occX1;
+      _drwCrossMaxRow = Math.max(_drwCrossMaxRow, row);
+
+      const _cLineY = layout.groundY - 22 - row * 20;
+      parts.push('<text x="' + _cMidX.toFixed(2) + '" y="' + (_cLineY - 3).toFixed(2) +
+        '" text-anchor="middle" font-family="sans-serif" font-size="7.5" font-weight="700" fill="#333">' +
+        _drwSvgEsc(_cText) + '</text>');
+      parts.push('<line x1="' + cx0.toFixed(2) + '" y1="' + _cLineY.toFixed(2) +
+        '" x2="' + cx1.toFixed(2) + '" y2="' + _cLineY.toFixed(2) + '" stroke="#333" stroke-width="0.6"/>');
+      [[cx0, 1], [cx1, -1]].forEach(function (a) {
+        const ax = a[0], dir = a[1];
+        parts.push('<line x1="' + ax.toFixed(2) + '" y1="' + (_cLineY - 4).toFixed(2) +
+          '" x2="' + ax.toFixed(2) + '" y2="' + (_cLineY + 4).toFixed(2) + '" stroke="#333" stroke-width="0.6"/>');
+        parts.push('<polygon points="' + ax.toFixed(2) + ',' + _cLineY.toFixed(2) + ' ' +
+          (ax + dir * 5).toFixed(2) + ',' + (_cLineY - 1.6).toFixed(2) + ' ' +
+          (ax + dir * 5).toFixed(2) + ',' + (_cLineY + 1.6).toFixed(2) + '" fill="#333"/>');
+      });
+
+      // v7_8_6-88 / Punch-In→crossing-start and crossing-end→Punch-Out
+      // distance dimensions, on the SAME row, reusing the identical
+      // tick+arrowhead style — the real distances come straight from
+      // the bore's own authoritative bounds (layout.bounds), never a
+      // separate/invented number.
+      function _drwPunchGapDim(gx0, gx1, distVal) {
+        if (!(gx1 - gx0 > 3) || !(distVal >= 0)) return;
+        const gMidX = (gx0 + gx1) / 2;
+        parts.push('<text x="' + gMidX.toFixed(2) + '" y="' + (_cLineY - 3).toFixed(2) +
+          '" text-anchor="middle" font-family="sans-serif" font-size="7" fill="#333">' +
+          _drwSvgEsc(_drwFmtNum(distVal, 2)) + '</text>');
+        parts.push('<line x1="' + gx0.toFixed(2) + '" y1="' + _cLineY.toFixed(2) +
+          '" x2="' + gx1.toFixed(2) + '" y2="' + _cLineY.toFixed(2) + '" stroke="#333" stroke-width="0.6"/>');
+        [[gx0, 1], [gx1, -1]].forEach(function (a) {
+          const ax = a[0], dir = a[1];
+          parts.push('<line x1="' + ax.toFixed(2) + '" y1="' + (_cLineY - 4).toFixed(2) +
+            '" x2="' + ax.toFixed(2) + '" y2="' + (_cLineY + 4).toFixed(2) + '" stroke="#333" stroke-width="0.6"/>');
+          parts.push('<polygon points="' + ax.toFixed(2) + ',' + _cLineY.toFixed(2) + ' ' +
+            (ax + dir * 5).toFixed(2) + ',' + (_cLineY - 1.6).toFixed(2) + ' ' +
+            (ax + dir * 5).toFixed(2) + ',' + (_cLineY + 1.6).toFixed(2) + '" fill="#333"/>');
+        });
+      }
+      _drwPunchGapDim(plotX0, cx0, (mid - width / 2) - layout.bounds.minX);
+      _drwPunchGapDim(cx1, plotX1, layout.bounds.maxX - (mid + width / 2));
+
+      // type-specific pictogram drawn on the ground line itself, so it's
+      // visually obvious at a glance whether this is a road, railway,
+      // pipeline, cable, or water crossing.
+      _drwCrossSymbolDraw(parts, _drwCrossSymbolType(c.label), cx0, cx1, layout.groundY);
+    });
+  }());
 
   // ── Y-axis depth scale — tick marks + numeric labels on the left margin.
   // PART 1 / TECHNICAL-DRAWING (NOT A GRAPH): ticks now sit inside the
@@ -17010,146 +17548,23 @@ function drwRenderSVG(scene, snapshot) {
       '" r="2" fill="#ffffff" stroke="#d08a00" stroke-width="1.2"/>');
   });
 
-  // ── G. Crossings — vertical callout only for records with a real
-  // chainage; an empty crossing array produces no crossing graphics. ──
-  // PART 3 / CROSSING SVG ANNOTATION: _drwCrossNeglStack gives each close-
-  // together crossing's N/E/GL line its own deterministic vertical slot
-  // (same ~18px-bucket approach as the existing chainage stagger below) so
-  // labels don't overlap — the crossing marker/line position itself is
-  // never moved.
-  const _drwCrossNeglStack = {};
-  (scene.crossings || []).forEach(function (c) {
-    if (typeof c.chainage !== 'number' || !isFinite(c.chainage)) return;
-    const x = _drwMapX(layout, c.chainage);
-    if (x === null) return;
-    parts.push('<line x1="' + x.toFixed(2) + '" y1="' + layout.marginT.toFixed(2) +
-      '" x2="' + x.toFixed(2) + '" y2="' + (layout.marginT + layout.plotH).toFixed(2) +
-      '" stroke="#c0392b" stroke-width="1" stroke-dasharray="5,2"/>');
-    const label = c.label ? c.label : 'Crossing';
-    const ly = layout.marginT + layout.plotH + 14;
-    parts.push('<text x="' + x.toFixed(2) + '" y="' + ly.toFixed(2) +
-      '" text-anchor="middle" font-family="sans-serif" font-size="8" fill="#c0392b" ' +
-      'transform="rotate(-40 ' + x.toFixed(2) + ' ' + ly.toFixed(2) + ')">' +
-      _drwSvgEsc(label) + '</text>');
-    if (typeof c.depth === 'number') {
-      parts.push('<text x="' + x.toFixed(2) + '" y="' + (layout.marginT - 6).toFixed(2) +
-        '" text-anchor="middle" font-family="sans-serif" font-size="8" fill="#c0392b">' +
-        _drwSvgEsc('Utility: ' + _drwFmtNum(c.depth, 2) + 'm') + '</text>');
-    }
-    // "offset" now carries Bore Crossing Depth (renamed field) — drawn
-    // directly above the Utility Depth line, in the exact same
-    // present-only-if-filled style, so the two depths sit together for a
-    // clearance comparison at a glance. Never drawn if left blank.
-    if (typeof c.offset === 'number') {
-      const boreDepthY = (typeof c.depth === 'number') ? (layout.marginT - 16) : (layout.marginT - 6);
-      parts.push('<text x="' + x.toFixed(2) + '" y="' + boreDepthY.toFixed(2) +
-        '" text-anchor="middle" font-family="sans-serif" font-size="8" fill="#c0392b">' +
-        _drwSvgEsc('Bore: ' + _drwFmtNum(c.offset, 2) + 'm') + '</text>');
-    }
-
-    // ── Northing / Easting / GL — compact single-line callout, shown
-    // ONLY for the fields actually present on this crossing (blank/
-    // whitespace-only/invalid values were already normalized to null by
-    // drwBuildScene(), so there is nothing here that can render as
-    // "N/A"/"0"/"-"). Tied to the same real chainage-derived x position
-    // used by the marker/label above — no new geometry is introduced. ──
-    const neglBits = [];
-    if (typeof c.northing === 'number') neglBits.push('N: ' + _drwFmtCoord(c.northing));
-    if (typeof c.easting  === 'number') neglBits.push('E: ' + _drwFmtCoord(c.easting));
-    if (typeof c.gl       === 'number') neglBits.push('GL: ' + _drwFmtCoord(c.gl));
-    if (neglBits.length) {
-      const neglSlot = Math.round(x / 18);
-      const neglStack = _drwCrossNeglStack[neglSlot] || 0;
-      _drwCrossNeglStack[neglSlot] = neglStack + 1;
-      const neglY = ly + 9 + (neglStack * 8);
-      parts.push('<text x="' + x.toFixed(2) + '" y="' + neglY.toFixed(2) +
-        '" text-anchor="middle" font-family="sans-serif" font-size="7" fill="#c0392b" ' +
-        'transform="rotate(-40 ' + x.toFixed(2) + ' ' + neglY.toFixed(2) + ')">' +
-        _drwSvgEsc(neglBits.join('  ')) + '</text>');
-    }
-
-    // ── PART 3 / BIN QURAYA MULTI-STATION CROSSING: Start / End boundary
-    // stations of the crossing zone, shown only when the user actually
-    // entered them and each is a genuinely distinct real station from the
-    // Actual Crossing point (>1mm apart — same dedupe tolerance already
-    // used by the segment-distance station list above; a Start/End that
-    // coincides with the Actual Crossing is simply not re-drawn on top of
-    // it). The Actual Crossing marker/line/label/N-E-GL above remains the
-    // sole authoritative crossing position and is completely unchanged. ──
-    const hasStart = typeof c.startChainage === 'number' && isFinite(c.startChainage) &&
-      Math.abs(c.startChainage - c.chainage) > 0.001;
-    const hasEnd = typeof c.endChainage === 'number' && isFinite(c.endChainage) &&
-      Math.abs(c.endChainage - c.chainage) > 0.001;
-    const xStart = hasStart ? _drwMapX(layout, c.startChainage) : null;
-    const xEnd   = hasEnd   ? _drwMapX(layout, c.endChainage)   : null;
-
-    function _drwZoneStation(sx, tag) {
-      if (sx === null) return;
-      parts.push('<line x1="' + sx.toFixed(2) + '" y1="' + layout.marginT.toFixed(2) +
-        '" x2="' + sx.toFixed(2) + '" y2="' + (layout.marginT + layout.plotH).toFixed(2) +
-        '" stroke="#c0392b" stroke-width="0.6" stroke-dasharray="2,4"/>');
-      parts.push('<text x="' + sx.toFixed(2) + '" y="' + (layout.marginT + 8).toFixed(2) +
-        '" text-anchor="middle" font-family="sans-serif" font-size="6.5" fill="#c0392b">' +
-        _drwSvgEsc(tag) + '</text>');
-    }
-    _drwZoneStation(xStart, 'START');
-    _drwZoneStation(xEnd, 'END');
-
-    // Crossing-zone bracket — a compact horizontal span between Start and
-    // End (only drawn when BOTH are real and distinct from one another),
-    // making the zone visually understandable per the Bin Quraya reference
-    // without moving the trajectory or any other station.
-    if (xStart !== null && xEnd !== null && Math.abs(c.endChainage - c.startChainage) > 0.001) {
-      const zy = layout.marginT + 16;
-      const zx1 = Math.min(xStart, xEnd), zx2 = Math.max(xStart, xEnd);
-      parts.push('<line x1="' + zx1.toFixed(2) + '" y1="' + zy.toFixed(2) +
-        '" x2="' + zx2.toFixed(2) + '" y2="' + zy.toFixed(2) +
-        '" stroke="#c0392b" stroke-width="0.6"/>');
-      [zx1, zx2].forEach(function (tx) {
-        parts.push('<line x1="' + tx.toFixed(2) + '" y1="' + (zy - 3).toFixed(2) +
-          '" x2="' + tx.toFixed(2) + '" y2="' + (zy + 3).toFixed(2) +
-          '" stroke="#c0392b" stroke-width="0.6"/>');
-      });
-    }
-
-  });
-
-  // ── K. Full chainage/station annotation at every valid crossing.
-  // Reuses the existing _drwFmtChainage() helper (already used for the
-  // trajectory start/end labels) so crossings get the exact same "KM+m
-  // when a real starting chainage exists, otherwise plain metres" rule —
-  // no separate formatting logic, no invented KM reference. A crossing
-  // with a null/undefined/non-numeric chainage is skipped entirely (rule:
-  // never fabricate). Crossings that share an identical real chainage
-  // value are labeled once (avoids drawing an exact duplicate on top of
-  // itself); distinct-but-close stations get a small deterministic
-  // vertical stagger so labels stay readable — the station's real x
-  // position and chainage value are never altered by the stagger. ──
-  (function () {
-    const _drwChainageSeen = {};  // dedupe: identical real chainage value labeled once
-    const _drwSlotStack = {};     // deterministic stagger for close (not identical) stations
-    (scene.crossings || []).forEach(function (c) {
-      if (typeof c.chainage !== 'number' || !isFinite(c.chainage)) return;
-      const x = _drwMapX(layout, c.chainage);
-      if (x === null) return;
-
-      const key = c.chainage.toFixed(3);
-      if (_drwChainageSeen[key]) return; // same real station already labeled
-      _drwChainageSeen[key] = true;
-
-      const chLabel = _drwFmtChainage(scene, c.chainage);
-      if (!chLabel) return;
-
-      const slot = Math.round(x / 18); // ~18px buckets → deterministic stagger for close stations
-      const stack = _drwSlotStack[slot] || 0;
-      _drwSlotStack[slot] = stack + 1;
-      const y = layout.marginT - 16 - (stack * 9);
-
-      parts.push('<text x="' + x.toFixed(2) + '" y="' + y.toFixed(2) +
-        '" text-anchor="middle" font-family="sans-serif" font-size="7.5" font-weight="700" fill="#8a2a20">' +
-        _drwSvgEsc(chLabel) + '</text>');
-    });
-  }());
+  // ── G/K. CROSSING ON-PROFILE PLOTTING — REMOVED (v7_8_6-81).
+  // Per corrected engineering instruction: Pipeline/Client Chainage
+  // (e.g. 4+660) is a REFERENCE IDENTIFIER on the client's own pipeline
+  // system — it is NOT automatically equal to HDD bore-local distance,
+  // and no existing authoritative data relationship in this app maps one
+  // to the other. Plotting it directly on the bore-local X axis (as the
+  // previous version did) placed crossing markers/lines far outside the
+  // visible drawing whenever the entered chainage was a real-world
+  // reference number rather than a 0..boreLength local distance — this
+  // is why crossings appeared to "not show up" at all.
+  // Since no reliable chainage → bore-local-station mapping exists,
+  // crossings are no longer plotted on the profile's X axis. Instead,
+  // every crossing record is shown as a compact, always-visible text
+  // reference block in the existing right-hand info column — see
+  // section "N. Crossing / Utility Reference Panel" below, added right
+  // after the Title Block. Nothing about the Blue Bore Curve, Ground
+  // Line, Punch-In/Punch-Out, survey table, or station mapping changes.
 
   // ── B/C. Punch-In / Punch-Out markers — from real scene markers only. ──
   // F. GPS — Entry GPS shown only at Punch-In, Exit GPS only at Punch-Out;
@@ -17217,20 +17632,36 @@ function drwRenderSVG(scene, snapshot) {
       const gl  = isEntry ? snpEntryRL : snpExitRL;
       const angValid = typeof marker.calcAngle === 'number' && isFinite(marker.calcAngle) && Math.abs(marker.calcAngle) > 0.001;
 
-      const lines = [];
+      const lines = [(isEntry ? 'Entry' : 'Exit') + ' Pit'];
       if (typeof gl === 'number')  lines.push('GL: ' + _drwFmtNum(gl, 2));
       if (angValid) lines.push((isEntry ? 'Entry' : 'Exit') + ' Angle: ' + toD(marker.calcAngle));
-      if (!lines.length) return;   // nothing to draw
+      if (lines.length < 2) return; // GL and Angle both unavailable — nothing real to show
+
+      // v7_8_6-88 / ELBOW LEADER (matches real Aramco reference drawing
+      // style): a short diagonal rises from the pit point, then a short
+      // horizontal segment, with the text starting right after it —
+      // instead of plain text sitting straight above the point. Entry
+      // (left edge of sheet) leans right/outward toward free space;
+      // Exit (right edge) leans left/outward — so the leader always
+      // points into the page, never off its edge.
+      const dir = isEntry ? 1 : -1;
+      // Rise clear above every crossing dimension row that was actually
+      // drawn (rows are at groundY-22, groundY-42, ... one per 20px) —
+      // _drwCrossMaxRow is -1 when there are no crossings at all, so this
+      // safely falls back to a modest rise in that case.
+      const D = 26 + Math.max(0, _drwCrossMaxRow + 1) * 20, H = 12;
+      const bx = x + dir * D, by = glLineY - D;
+      const hx = bx + dir * H, hy = by;
+      parts.push('<polyline points="' + x.toFixed(2) + ',' + glLineY.toFixed(2) + ' ' +
+        bx.toFixed(2) + ',' + by.toFixed(2) + ' ' + hx.toFixed(2) + ',' + hy.toFixed(2) +
+        '" fill="none" stroke="#1a3a6a" stroke-width="0.7"/>');
 
       const anchor = isEntry ? 'start' : 'end';
-      // v7_8_6-5 / ITEM 9: Punch-In/Punch-Out label clearance — GL and
-      // Angle are now drawn on separate lines with independent clamping
-      // so they never merge, and the block always fits inside the frame
-      // (never goes above y=4) regardless of how many lines are present.
-      let ty = glLineY - 16 - lines.length * 10;
-      if (ty < 4) ty = 4;
+      const tx = hx + dir * 3;
+      let ty = hy - 2;
+      if (ty < 8) ty = 8;
       lines.forEach(function (line, i) {
-        parts.push('<text x="' + x.toFixed(2) + '" y="' + (ty + i * 10).toFixed(2) + '" ' +
+        parts.push('<text x="' + tx.toFixed(2) + '" y="' + (ty + i * 10).toFixed(2) + '" ' +
           'text-anchor="' + anchor + '" font-family="sans-serif" font-size="7.5" fill="#1a3a6a">' +
           _drwSvgEsc(line) + '</text>');
       });
@@ -17579,6 +18010,62 @@ function drwRenderSVG(scene, snapshot) {
     _drwTitleBlockEndY = cy;
   }());
 
+  // ── N. Crossing / Utility Reference Panel (v7_8_6-81) — replaces the
+  // old on-profile crossing plotting removed above. Every saved crossing
+  // (any record with a real Name/Label) is listed here as compact
+  // reference text in the SAME right-hand info column as the Title
+  // Block, directly below it — never on the bore profile, since Pipeline
+  // Chainage has no reliable mapping to bore-local X (see removal note).
+  // Only fields actually present on each record are shown; a crossing
+  // with zero displayable info was already excluded by
+  // _drwCrossRefUsable(). Reuses _drwTitleBlockEndY as its top so it can
+  // never overlap the Title Block above, and pushes _drwTitleBlockEndY
+  // further down afterward so the existing Legend panel below (which
+  // already floor-clamps against this same variable) can never overlap
+  // this new panel either — no new collision logic was needed, this
+  // panel simply participates in the collision-avoidance chain that
+  // already existed between Title Block and Legend. ──
+  (function () {
+    const usable = _drwCrossRefUsable(scene.crossings);
+    if (!usable.length) return;
+    if (typeof layout.titleBlockX !== 'number') return;
+    const tbX = layout.titleBlockX;
+    const padX = 12;
+    const innerX = tbX + padX;
+
+    let cy = _drwTitleBlockEndY + 14;
+    parts.push('<line x1="' + tbX.toFixed(2) + '" y1="' + (cy - 10).toFixed(2) + '" x2="' + layout.vbW +
+      '" y2="' + (cy - 10).toFixed(2) + '" stroke="#333" stroke-width="0.7"/>');
+    parts.push('<text x="' + innerX.toFixed(2) + '" y="' + cy.toFixed(2) + '" ' +
+      'font-family="sans-serif" font-size="8" font-weight="700" fill="#1a1a1a">CROSSING / UTILITY REFERENCE</text>');
+    cy += 10;
+
+    usable.forEach(function (c) {
+      let autoBoreDepth = null;
+      let midStation = null;
+      if (typeof c.startChainage === 'number' && typeof c.endChainage === 'number' &&
+          isFinite(c.startChainage) && isFinite(c.endChainage)) {
+        midStation = (c.startChainage + c.endChainage) / 2;
+      } else if (typeof c.chainage === 'number' && isFinite(c.chainage)) {
+        midStation = c.chainage;
+      }
+      if (midStation !== null) {
+        autoBoreDepth = _drwDepthAtStation(_drwSortedRealPts, midStation);
+      }
+      const lines = _drwCrossRefLines(c, autoBoreDepth);
+      lines.forEach(function (ln, li) {
+        parts.push('<text x="' + innerX.toFixed(2) + '" y="' + cy.toFixed(2) + '" ' +
+          'font-family="sans-serif" font-size="' + (ln.head ? '7.5' : '7') + '" ' +
+          'font-weight="' + (ln.head ? '700' : '400') + '" ' +
+          'fill="' + (ln.head ? '#8a2a20' : '#333') + '">' +
+          _drwSvgEsc(ln.text) + '</text>');
+        cy += ln.head ? 10 : 8.5;
+      });
+      cy += 6;
+    });
+    _drwTitleBlockEndY = cy;
+  }());
+
   // ── M. Data-driven Legend Panel — Part 3 (Legend). Placed in the
   // existing right-side title-block column, bottom-anchored so it never
   // depends on / collides with the variable-length title-block field list
@@ -17610,9 +18097,7 @@ function drwRenderSVG(scene, snapshot) {
     const _lgRlUsed = (scene.rlStations || []).some(function (p) {
       return typeof p.distance === 'number' && (typeof p.surveyRL === 'number' || typeof p.actualDepthFromRL === 'number');
     });
-    const _lgCrossingUsed = (scene.crossings || []).some(function (c) {
-      return typeof c.chainage === 'number' && isFinite(c.chainage);
-    });
+    const _lgCrossingUsed = _drwCrossRefUsable(scene.crossings).length > 0;
     // v7_8_6-4: the old scene.segments-driven dimension line was replaced
     // by the bottom engineering data grid (Item 4) — the legend entry now
     // reflects that grid instead.
@@ -17627,8 +18112,7 @@ function drwRenderSVG(scene, snapshot) {
     if (_lgGpsEntryUsed) legendItems.push({ label: 'ENTRY GPS', type: 'text', text: 'N \u00b7 E', fill: '#2d7d2d', fontSize: 7 });
     if (_lgGpsExitUsed) legendItems.push({ label: 'EXIT GPS', type: 'text', text: 'N \u00b7 E', fill: '#2d7d2d', fontSize: 7 });
     if (_lgRlUsed) legendItems.push({ label: 'SURVEY POST (GL\u2192BORE)', type: 'line', stroke: '#d08a00', width: 1, dash: '2,3' });
-    if (_lgCrossingUsed) legendItems.push({ label: 'CROSSING / UTILITY', type: 'line', stroke: '#c0392b', width: 1, dash: '5,2' });
-    if (_lgCrossingUsed) legendItems.push({ label: 'CHAINAGE', type: 'tick', stroke: '#8a2a20', width: 1, dash: '1,2' });
+    if (_lgCrossingUsed) legendItems.push({ label: 'CROSSING / UTILITY REF. (see panel)', type: 'text', text: 'CH', fill: '#8a2a20', fontSize: 7 });
     if (_lgGridUsed) legendItems.push({ label: 'SURVEY DATA GRID', type: 'dim', stroke: '#333', width: 0.7 });
 
     if (legendItems.length && typeof layout.titleBlockX === 'number') {
