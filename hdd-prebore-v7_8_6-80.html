@@ -21,7 +21,7 @@
 // every user automatically, no "Clear Cache" or reinstall needed.
 // This never touches any calculation, UI, ID, or existing feature — it
 // only decides whether to silently reload the page.
-const APP_BUILD_VERSION = 'v7.8.6-80-2026-09-01-quick-angle-converter';
+const APP_BUILD_VERSION = 'v7.8.6-89-2026-09-01-quick-angle-converter';
 (function(){
   try {
     if (location.search.indexOf('_v=') !== -1) return; // just did a fresh cache-busted load — nothing more to do
@@ -1596,7 +1596,7 @@ td.rla-cell:empty:before{content:attr(data-ph);color:var(--t3);font-size:10px;}
     <button class="smenu-item" id="smenu-guide" onclick="closeSideMenu();openQuickGuide&&openQuickGuide()">
       <span class="sm-ico">📘</span><span class="sm-txt"> Quick Guide</span>
     </button>
-    <a href="mailto:saiyadhussain9646@gmail.com?subject=HDD%20Pre-Bore%20Designer%20Pro%20-%20Technical%20Support%20Required&body=Hello%20Admin%2C%20I%20am%20using%20the%20HDD%20Pre-Bore%20Designer%20Pro%20App%20%28v7_8_6-80%29.%20I%20need%20technical%20assistance%20with%20my%20bore%20profile%20calculation.%20Kindly%20contact%20me.%0A%0A%E0%A4%A8%E0%A4%AE%E0%A4%B8%E0%A5%8D%E0%A4%A4%E0%A5%87%20%E0%A4%8F%E0%A4%A1%E0%A4%AE%E0%A4%BF%E0%A4%A8%2C%20%E0%A4%AE%E0%A5%88%E0%A4%82%20HDD%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%80-%E0%A4%AC%E0%A5%8B%E0%A4%B0%20%E0%A4%A1%E0%A4%BC%E0%A4%BF%E0%A4%9C%E0%A4%BC%E0%A4%BE%E0%A4%87%E0%A4%A8%E0%A4%B0%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%8B%20%E0%A4%90%E0%A4%AA%20%E0%A4%95%E0%A4%BE%20%E0%A4%89%E0%A4%AA%E0%A4%AF%E0%A5%8B%E0%A4%97%20%E0%A4%95%E0%A4%B0%20%E0%A4%B0%E0%A4%B9%E0%A4%BE%20%E0%A4%B9%E0%A5%82%E0%A4%81%E0%A5%A4%20%E0%A4%AE%E0%A5%81%E0%A4%9D%E0%A5%87%20%E0%A4%85%E0%A4%AA%E0%A4%A8%E0%A5%87%20%E0%A4%AC%E0%A5%8B%E0%A4%B0%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%8B%E0%A4%AB%E0%A4%BC%E0%A4%BE%E0%A4%87%E0%A4%B2%20%E0%A4%95%E0%A5%88%E0%A4%B2%E0%A4%95%E0%A5%81%E0%A4%B2%E0%A5%87%E0%A4%B6%E0%A4%A8%20%E0%A4%95%E0%A5%87%20%E0%A4%B2%E0%A4%BF%E0%A4%8F%20%E0%A4%A4%E0%A4%95%E0%A4%A8%E0%A5%80%E0%A4%95%E0%A5%80%20%E0%A4%B8%E0%A4%B9%E0%A4%BE%E0%A4%AF%E0%A4%A4%E0%A4%BE%20%E0%A4%9A%E0%A4%BE%E0%A4%B9%E0%A4%BF%E0%A4%8F%E0%A5%A4%20%E0%A4%95%E0%A5%83%E0%A4%AA%E0%A4%AF%E0%A4%BE%20%E0%A4%AE%E0%A5%81%E0%A4%9D%E0%A4%B8%E0%A5%87%20%E0%A4%B8%E0%A4%82%E0%A4%AA%E0%A4%B0%E0%A5%8D%E0%A4%95%20%E0%A4%95%E0%A4%B0%E0%A5%87%E0%A4%82%E0%A5%A4" class="smenu-item" id="smenu-email" onclick="closeSideMenu()">
+    <a href="mailto:saiyadhussain9646@gmail.com?subject=HDD%20Pre-Bore%20Designer%20Pro%20-%20Technical%20Support%20Required&body=Hello%20Admin%2C%20I%20am%20using%20the%20HDD%20Pre-Bore%20Designer%20Pro%20App%20%28v7_8_6-86%29.%20I%20need%20technical%20assistance%20with%20my%20bore%20profile%20calculation.%20Kindly%20contact%20me.%0A%0A%E0%A4%A8%E0%A4%AE%E0%A4%B8%E0%A5%8D%E0%A4%A4%E0%A5%87%20%E0%A4%8F%E0%A4%A1%E0%A4%AE%E0%A4%BF%E0%A4%A8%2C%20%E0%A4%AE%E0%A5%88%E0%A4%82%20HDD%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%80-%E0%A4%AC%E0%A5%8B%E0%A4%B0%20%E0%A4%A1%E0%A4%BC%E0%A4%BF%E0%A4%9C%E0%A4%BC%E0%A4%BE%E0%A4%87%E0%A4%A8%E0%A4%B0%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%8B%20%E0%A4%90%E0%A4%AA%20%E0%A4%95%E0%A4%BE%20%E0%A4%89%E0%A4%AA%E0%A4%AF%E0%A5%8B%E0%A4%97%20%E0%A4%95%E0%A4%B0%20%E0%A4%B0%E0%A4%B9%E0%A4%BE%20%E0%A4%B9%E0%A5%82%E0%A4%81%E0%A5%A4%20%E0%A4%AE%E0%A5%81%E0%A4%9D%E0%A5%87%20%E0%A4%85%E0%A4%AA%E0%A4%A8%E0%A5%87%20%E0%A4%AC%E0%A5%8B%E0%A4%B0%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%8B%E0%A4%AB%E0%A4%BC%E0%A4%BE%E0%A4%87%E0%A4%B2%20%E0%A4%95%E0%A5%88%E0%A4%B2%E0%A4%95%E0%A5%81%E0%A4%B2%E0%A5%87%E0%A4%B6%E0%A4%A8%20%E0%A4%95%E0%A5%87%20%E0%A4%B2%E0%A4%BF%E0%A4%8F%20%E0%A4%A4%E0%A4%95%E0%A4%A8%E0%A5%80%E0%A4%95%E0%A5%80%20%E0%A4%B8%E0%A4%B9%E0%A4%BE%E0%A4%AF%E0%A4%A4%E0%A4%BE%20%E0%A4%9A%E0%A4%BE%E0%A4%B9%E0%A4%BF%E0%A4%8F%E0%A5%A4%20%E0%A4%95%E0%A5%83%E0%A4%AA%E0%A4%AF%E0%A4%BE%20%E0%A4%AE%E0%A5%81%E0%A4%9D%E0%A4%B8%E0%A5%87%20%E0%A4%B8%E0%A4%82%E0%A4%AA%E0%A4%B0%E0%A5%8D%E0%A4%95%20%E0%A4%95%E0%A4%B0%E0%A5%87%E0%A4%82%E0%A5%A4" class="smenu-item" id="smenu-email" onclick="closeSideMenu()">
       <span class="sm-ico">📧</span><span class="sm-txt"> Email Support</span>
     </a>
     <button class="smenu-item" id="smenu-contact" onclick="closeSideMenu();openContactModal()">
@@ -1617,8 +1617,8 @@ td.rla-cell:empty:before{content:attr(data-ph);color:var(--t3);font-size:10px;}
       <span class="sm-ico">🚪</span><span class="sm-txt"> Logout</span>
     </button>
   </div>
-  <div class="smenu-version">HDD PRE-BORE DESIGNER PRO · v7_8_6-80 Built by Saiyad Hussain</div>
-  <div id="smenuTestBuildTag" style="padding:0 20px 12px;font-size:9px;color:rgba(255,255,255,.22)">Build: v7_8_6-80-test</div>
+  <div class="smenu-version">HDD PRE-BORE DESIGNER PRO · v7_8_6-86 Built by Saiyad Hussain</div>
+  <div id="smenuTestBuildTag" style="padding:0 20px 12px;font-size:9px;color:rgba(255,255,255,.22)">Build: v7_8_6-104-test</div>
 </div>
 
 <!-- ═══════ LOGIN ═══════ -->
@@ -1826,7 +1826,7 @@ function showAboutApp(){
   alert('HDD Pre-Bore Designer Pro\n\nBuilt by Saiyad Hussain\nHDD Driller & Locator · Saudi Arabia\n\nA professional tool for Horizontal Directional Drilling pre-bore chart generation, angle calculations, and profile design.\n\nContact: saiyadhussain9646@gmail.com\nWhatsApp: +966 573 133 634\n\n─────────────────────\nDisclaimer: This application is a mathematical calculation guide based on standard HDD trigonometry. Field conditions may vary.');
 }
 function showVersionInfo(){
-  alert('HDD Pre-Bore Designer Pro\n\nv7_8_6-80\n─────────────────────────\nImproved Graph PDF Page Fill (All 4 Modes)\nFixed City & Zero-Degree RL Data Entry\nAdded Engineer-Approval Safety Notice\n─────────────────────────\nAll Features:\n• Trial Bore Draft Mode\n• Standard HDD Mode\n• Pit-to-Pit Curve / City Work Mode\n• Pit-to-Pit 0-Degree Crossing Mode\n• Live 8-9-10-11 Column Table Editing\n• Auto CAD Drawing (Profile)\n• Inch ↔ MM Conversion\n• PDF & Excel Export\n• GPS Location Tag\n• Pipe Pulling Load Report Package\n  A4 Portrait — Engineering Planning Report\n• PIPE WEIGHT & RIG ESTIMATION\n  Fill Pipe Type, Pipe OD, Wall Thickness & Bore Length to see live estimate.\n• Angle Meter\n• Multi-language Support (EN / AR / HI)\n• Project Save & Compare\n• Company Logo & Site Photo');
+  alert('HDD Pre-Bore Designer Pro\n\nv7_8_6-86\n─────────────────────────\nImproved Graph PDF Page Fill (All 4 Modes)\nFixed City & Zero-Degree RL Data Entry\nAdded Engineer-Approval Safety Notice\n─────────────────────────\nAll Features:\n• Trial Bore Draft Mode\n• Standard HDD Mode\n• Pit-to-Pit Curve / City Work Mode\n• Pit-to-Pit 0-Degree Crossing Mode\n• Live 8-9-10-11 Column Table Editing\n• Auto CAD Drawing (Profile)\n• Inch ↔ MM Conversion\n• PDF & Excel Export\n• GPS Location Tag\n• Pipe Pulling Load Report Package\n  A4 Portrait — Engineering Planning Report\n• PIPE WEIGHT & RIG ESTIMATION\n  Fill Pipe Type, Pipe OD, Wall Thickness & Bore Length to see live estimate.\n• Angle Meter\n• Multi-language Support (EN / AR / HI)\n• Project Save & Compare\n• Company Logo & Site Photo');
 }
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape'){ closeSideMenu(); closeContactModal(); }
@@ -1867,7 +1867,7 @@ document.addEventListener('click',function(e){
       <button class="cmenu-close" onclick="closeContactModal()">✕</button>
     </div>
     <div class="cmenu-opts">
-      <a href="https://wa.me/966573133634?text=Hello%20Admin%2C%20I%20am%20using%20the%20HDD%20Pre-Bore%20Designer%20Pro%20App%20%28v7_8_6-80%29.%20I%20need%20technical%20assistance%20with%20my%20bore%20profile%20calculation.%20Kindly%20contact%20me.%0A%0A%E0%A4%A8%E0%A4%AE%E0%A4%B8%E0%A5%8D%E0%A4%A4%E0%A5%87%20%E0%A4%8F%E0%A4%A1%E0%A4%AE%E0%A4%BF%E0%A4%A8%2C%20%E0%A4%AE%E0%A5%88%E0%A4%82%20HDD%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%80-%E0%A4%AC%E0%A5%8B%E0%A4%B0%20%E0%A4%A1%E0%A4%BF%E0%A4%9C%E0%A4%BC%E0%A4%BE%E0%A4%87%E0%A4%A8%E0%A4%B0%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%8B%20%E0%A4%90%E0%A4%AA%20%E0%A4%95%E0%A4%BE%20%E0%A4%89%E0%A4%AA%E0%A4%AF%E0%A5%8B%E0%A4%97%20%E0%A4%95%E0%A4%B0%20%E0%A4%B0%E0%A4%B9%E0%A4%BE%20%E0%A4%B9%E0%A5%82%E0%A4%81%E0%A5%A4%20%E0%A4%AE%E0%A5%81%E0%A4%9D%E0%A5%87%20%E0%A4%85%E0%A4%AA%E0%A4%A8%E0%A5%87%20%E0%A4%AC%E0%A5%8B%E0%A4%B0%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%8B%E0%A4%AB%E0%A4%BE%E0%A4%87%E0%A4%B2%20%E0%A4%95%E0%A5%88%E0%A4%B2%E0%A4%95%E0%A5%81%E0%A4%B2%E0%A5%87%E0%A4%B6%E0%A4%A8%20%E0%A4%95%E0%A5%87%20%E0%A4%B2%E0%A4%BF%E0%A4%8F%20%E0%A4%A4%E0%A4%95%E0%A4%A8%E0%A5%80%E0%A4%95%E0%A5%80%20%E0%A4%B8%E0%A4%B9%E0%A4%BE%E0%A4%AF%E0%A4%A4%E0%A4%BE%20%E0%A4%9A%E0%A4%BE%E0%A4%B9%E0%A4%BF%E0%A4%8F%E0%A5%A4%20%E0%A4%95%E0%A5%83%E0%A4%AA%E0%A4%AF%E0%A4%BE%20%E0%A4%AE%E0%A5%81%E0%A4%9D%E0%A4%B8%E0%A5%87%20%E0%A4%B8%E0%A4%82%E0%A4%AA%E0%A4%B0%E0%A5%8D%E0%A4%95%20%E0%A4%95%E0%A4%B0%E0%A5%87%E0%A4%82%E0%A5%A4"
+      <a href="https://wa.me/966573133634?text=Hello%20Admin%2C%20I%20am%20using%20the%20HDD%20Pre-Bore%20Designer%20Pro%20App%20%28v7_8_6-86%29.%20I%20need%20technical%20assistance%20with%20my%20bore%20profile%20calculation.%20Kindly%20contact%20me.%0A%0A%E0%A4%A8%E0%A4%AE%E0%A4%B8%E0%A5%8D%E0%A4%A4%E0%A5%87%20%E0%A4%8F%E0%A4%A1%E0%A4%AE%E0%A4%BF%E0%A4%A8%2C%20%E0%A4%AE%E0%A5%88%E0%A4%82%20HDD%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%80-%E0%A4%AC%E0%A5%8B%E0%A4%B0%20%E0%A4%A1%E0%A4%BF%E0%A4%9C%E0%A4%BC%E0%A4%BE%E0%A4%87%E0%A4%A8%E0%A4%B0%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%8B%20%E0%A4%90%E0%A4%AA%20%E0%A4%95%E0%A4%BE%20%E0%A4%89%E0%A4%AA%E0%A4%AF%E0%A5%8B%E0%A4%97%20%E0%A4%95%E0%A4%B0%20%E0%A4%B0%E0%A4%B9%E0%A4%BE%20%E0%A4%B9%E0%A5%82%E0%A4%81%E0%A5%A4%20%E0%A4%AE%E0%A5%81%E0%A4%9D%E0%A5%87%20%E0%A4%85%E0%A4%AA%E0%A4%A8%E0%A5%87%20%E0%A4%AC%E0%A5%8B%E0%A4%B0%20%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A5%8B%E0%A4%AB%E0%A4%BE%E0%A4%87%E0%A4%B2%20%E0%A4%95%E0%A5%88%E0%A4%B2%E0%A4%95%E0%A5%81%E0%A4%B2%E0%A5%87%E0%A4%B6%E0%A4%A8%20%E0%A4%95%E0%A5%87%20%E0%A4%B2%E0%A4%BF%E0%A4%8F%20%E0%A4%A4%E0%A4%95%E0%A4%A8%E0%A5%80%E0%A4%95%E0%A5%80%20%E0%A4%B8%E0%A4%B9%E0%A4%BE%E0%A4%AF%E0%A4%A4%E0%A4%BE%20%E0%A4%9A%E0%A4%BE%E0%A4%B9%E0%A4%BF%E0%A4%8F%E0%A5%A4%20%E0%A4%95%E0%A5%83%E0%A4%AA%E0%A4%AF%E0%A4%BE%20%E0%A4%AE%E0%A5%81%E0%A4%9D%E0%A4%B8%E0%A5%87%20%E0%A4%B8%E0%A4%82%E0%A4%AA%E0%A4%B0%E0%A5%8D%E0%A4%95%20%E0%A4%95%E0%A4%B0%E0%A5%87%E0%A4%82%E0%A5%A4"
          target="_blank" class="cmenu-opt cmenu-opt-wa" onclick="closeContactModal()">
         <span class="cmenu-opt-ico">🟢</span>
         <div><div>WhatsApp Support</div>
@@ -2134,13 +2134,13 @@ document.addEventListener('click',function(e){
       <span class="iu-u">M</span></div></div>
 
     <div class="fi"><label>Machine Boom Height <span class="opt">from ground</span></label>
-      <div class="iu"><input type="number" id="machH" placeholder="e.g. 1.0" min="0" step="0.1">
+      <div class="iu"><input type="number" id="machH" placeholder="e.g. 1.0" min="0" step="0.1" oninput="updateAirDistHint()">
       <span class="iu-u">M</span></div>
-      <div class="hint">Vise height from ground (default 1.0m)</div></div>
+      <div class="hint" id="machHHint">Vise height from ground (default 1.0m)</div></div>
 
     <!-- Row 3: Punch-In Angle | Punch-Out Angle (side-by-side, face-to-face) -->
     <div class="fi"><label>Punch-In Angle <span class="opt">(Optional)</span></label>
-      <div class="iu"><input type="number" id="entA" placeholder="e.g. -18%" step="0.5" oninput="onIC()">
+      <div class="iu"><input type="number" id="entA" placeholder="e.g. -18%" step="0.5" oninput="onIC();updateAirDistHint()">
       <span class="iu-u" id="eaU">%</span></div>
       <div class="hint">Negative = going down. Leave empty for auto.</div></div>
 
@@ -2372,7 +2372,7 @@ document.addEventListener('click',function(e){
         </select></span></div></div>
       <div class="fi" style="position:relative;"><label>Hole Condition <span class="opt">for Load Report</span></label>
         <div style="position:relative;">
-          <input type="text" id="lrHoleCondition" autocomplete="off" placeholder="e.g. Good, Normal, Difficult... ▼" value="Not Recorded"
+          <input type="text" id="lrHoleCondition" autocomplete="off" placeholder="e.g. Good, Normal, Difficult... ▼" value=""
             style="padding-right:26px;box-sizing:border-box;"
             onfocus="_dcdShowList('lrHoleConditionDropdown','lrHoleCondition',HOLE_CONDITION_OPTIONS,this.value)"
             oninput="_dcdShowList('lrHoleConditionDropdown','lrHoleCondition',HOLE_CONDITION_OPTIONS,this.value)">
@@ -2479,8 +2479,10 @@ document.addEventListener('click',function(e){
     <div class="fg" style="margin-top:10px;">
       <div class="fi"><label>Tie-In to Tie-In Length <span class="opt">optional</span></label>
         <input type="text" id="drwTieInLength" placeholder="e.g.500.0M"></div>
-      <div class="fi"><label>Crossing Width <span class="opt">optional</span></label>
-        <input type="number" id="drwCrossWidth" placeholder="e.g. 30.0M" step="0.01"></div>
+    </div>
+    <div class="fg" style="margin-top:10px;">
+      <div class="fi" style="grid-column:1/-1"><label>Starting Chainage <span class="opt">optional — project KM/chainage at Punch-In, e.g. 4600 (or 4+600). Adds to local bore metres for display only — Crossing Chainage fields below still use local metres (0 to Bore Length)</span></label>
+        <input type="text" id="drwStartChainage" placeholder="e.g. 4+600 or 4600"></div>
     </div>
   </div>
 
@@ -2512,8 +2514,8 @@ document.addEventListener('click',function(e){
         <div id="drwCrossNameDropdown" class="dcd-dropdown"></div>
       </div>
       <div class="fi">
-        <label>Actual Crossing Midpoint</label>
-        <input type="number" id="drwCrossChainage" placeholder="e.g.45.0M" step="0.01">
+        <label>Actual Crossing Midpoint <span class="opt">local bore metres, e.g. 45 — NOT project KM</span></label>
+        <input type="number" id="drwCrossChainage" placeholder="e.g. 45.0 (0 to Bore Length)" step="0.01">
       </div>
     </div>
 
@@ -2536,10 +2538,10 @@ document.addEventListener('click',function(e){
          so all three share one consistent parsing rule within this form.
          Blank → null, never fabricated. -->
     <div class="fg" style="margin-bottom:12px;">
-      <div class="fi"><label>Crossing Start Chainage <span class="opt">optional</span></label>
-        <input type="number" id="drwCrossStartChainage" placeholder="e.g. 40.0" step="0.01"></div>
-      <div class="fi"><label>Crossing End Chainage <span class="opt">optional</span></label>
-        <input type="number" id="drwCrossEndChainage" placeholder="e.g. 50.0" step="0.01"></div>
+      <div class="fi"><label>Crossing Start Chainage <span class="opt">optional · local bore metres</span></label>
+        <input type="number" id="drwCrossStartChainage" placeholder="e.g. 40.0 (0 to Bore Length)" step="0.01"></div>
+      <div class="fi"><label>Crossing End Chainage <span class="opt">optional · local bore metres</span></label>
+        <input type="number" id="drwCrossEndChainage" placeholder="e.g. 50.0 (0 to Bore Length)" step="0.01"></div>
     </div>
 
     <!-- Depth renamed "Utility Actual Depth" (depth of the crossing utility
@@ -6005,12 +6007,27 @@ function onCustomStepInput() {
   }
   const rl = parseFloat(document.getElementById('rodL').value) || 9.5;
   const autoSs = safeStep(rl);
-  CUSTOM_STEP_VALUE = val;
-  if (val > autoSs) {
-    note.textContent = `⚠️ ${val}% > Safe Step ±${autoSs}%. Higher stress on pipe — use with caution.`;
+  // v94: hard cap Custom Step at 2× the Safe Step for this rod length
+  // (explicit decision by Saiyad Hussain — e.g. 9.5m rod: Safe Step
+  // ±2.5%/rod, so Custom Step is allowed from ±0.1% up to ±5.0%/rod, never
+  // more). Values beyond the cap are clamped, not silently accepted.
+  const capSs = autoSs * 2;
+  let clamped = false;
+  let finalVal = val;
+  if (val > capSs) {
+    finalVal = capSs;
+    clamped = true;
+    inp.value = capSs;
+  }
+  CUSTOM_STEP_VALUE = finalVal;
+  if (clamped) {
+    note.textContent = `⚠️ Capped at ±${capSs}%/rod (2× Safe Step ±${autoSs}% — maximum allowed for a ${rl}m rod).`;
     note.style.color = '#ffb800';
-  } else if (val < autoSs) {
-    note.textContent = `✓ ${val}% < Safe Step ±${autoSs}%. More conservative — smoother bore.`;
+  } else if (finalVal > autoSs) {
+    note.textContent = `⚠️ ${finalVal}% > Safe Step ±${autoSs}%. Higher stress on pipe — use with caution.`;
+    note.style.color = '#ffb800';
+  } else if (finalVal < autoSs) {
+    note.textContent = `✓ ${finalVal}% < Safe Step ±${autoSs}%. More conservative — smoother bore.`;
     note.style.color = '#4caf50';
   } else {
     note.textContent = `= Safe Step ±${autoSs}%/rod`;
@@ -6035,6 +6052,33 @@ function clearCustomStep() {
 function getEffectiveStep(rl) {
   // Returns custom step if set, else auto safeStep
   return (CUSTOM_STEP_VALUE > 0) ? CUSTOM_STEP_VALUE : safeStep(rl);
+}
+
+// ════════════════════════════════════════════════════
+// LIVE AIR-DISTANCE HINT (Machine Boom Height ↔ Punch-In Angle)
+// Pure display feature — reads the two existing boxes, shows the
+// resulting air-travel distance live underneath Machine Boom Height.
+// Never writes back to entA/machH and never touches any calculation —
+// same formula already used in calcDepths()/tbdCalcFrom() for reference.
+// ════════════════════════════════════════════════════
+function updateAirDistHint() {
+  const hintEl = document.getElementById('machHHint');
+  if (!hintEl) return;
+  const entRaw = (document.getElementById('entA') || {}).value;
+  if (!entRaw || entRaw.trim() === '') {
+    hintEl.textContent = 'Vise height from ground (default 1.0m)';
+    return;
+  }
+  const entPct = Math.abs(iToP(entRaw));
+  if (!(entPct > 0)) {
+    hintEl.textContent = 'Vise height from ground (default 1.0m)';
+    return;
+  }
+  const machHRaw = parseFloat((document.getElementById('machH') || {}).value);
+  const machH = (machHRaw > 0) ? machHRaw : 1.0;
+  const entRad = Math.atan(entPct / 100);
+  const airDist = entRad > 0 ? machH / Math.tan(entRad) : 0;
+  hintEl.textContent = `Air Distance: ~${airDist.toFixed(1)}m (before pilot enters ground @ ${toDmag(entPct)})`;
 }
 
 // ════════════════════════════════════════════════════
@@ -6391,12 +6435,26 @@ function _clearFieldErr(el) {
   }
 }
 
+// v93 FOLLOW-UP FIX: shared helper — Row 0 (Punch-In) now carries a real,
+// non-zero depth contribution (its own rod's ground-only portion, after
+// the air-distance-at-source fix), which the auto-angle-fit engine below
+// must account for as a starting offset — otherwise it plans as if Row 0
+// contributes nothing, causing the plan to overshoot at Punch-Out by
+// exactly however much Row 0 actually added.
+function _rod0GroundDepth(rl, machH, entPct) {
+  if (!machH || entPct <= 0) return 0;
+  const entRad = Math.atan(entPct / 100);
+  const airDist = entRad > 0 ? machH / Math.tan(entRad) : 0;
+  const groundPortion0 = Math.max(0, rl - Math.min(airDist, rl));
+  return groundPortion0 * entPct / 100;
+}
+
 // ════════════════════════════════════════════════════
 // AUTO ANGLE PLANNER
 // Rule: Exit < Entry (smoother pullback)
 // Respects safeStep per rod length
 // ════════════════════════════════════════════════════
-function planAngles(rl,bl,maxD,userEnt,userExt){
+function planAngles(rl,bl,maxD,userEnt,userExt,machH){
   const n = Math.ceil(bl/rl);
   const rawSs = getEffectiveStep(rl); // custom step if set, else auto safeStep (2.5% for 9.5m, etc.)
 
@@ -6412,12 +6470,12 @@ function planAngles(rl,bl,maxD,userEnt,userExt){
     : rawSs;
   // ────────────────────────────────────────────────────────────────────
 
-  const entPct = userEnt>0 ? userEnt : bestEntry(rl,bl,maxD,ss,n);
+  const entPct = userEnt>0 ? userEnt : bestEntry(rl,bl,maxD,ss,n,machH);
   const extPct = userExt>0 ? userExt : Math.max(ss, Math.round(entPct*0.75*2)/2);
-  return buildPlan(rl,bl,maxD,entPct,Math.min(extPct,entPct),ss,n);
+  return buildPlan(rl,bl,maxD,entPct,Math.min(extPct,entPct),ss,n,machH);
 }
 
-function bestEntry(rl,bl,maxD,ss,n){
+function bestEntry(rl,bl,maxD,ss,n,machH){
   // Minimum practical entry angle:
   //   Long bores (>300m): 13%–16% — 10%/12% requires boom lifting/PCC, not practical
   //   High-depth bores (maxD>10m): 15%–20% allowed
@@ -6426,8 +6484,10 @@ function bestEntry(rl,bl,maxD,ss,n){
   const isDeepBore = maxD > 10;
   const minPractical = isLongBore ? 13 : Math.max(ss, 12);
 
-  // v7_8_6-81 / Mode-2 Punch-Out tolerance widened ±0.30 -> ±0.40 (approved).
-  const TOL = 0.40;
+  // v94: tolerance tightened ±0.40 -> ±0.25 (explicit decision by Saiyad
+  // Hussain, now safe because generation properly fails with a clear error
+  // when infeasible instead of silently overshooting).
+  const TOL = 0.25;
 
   // v7_8_6-81: tracks the best (closest-to-zero-residual, depth-feasible)
   // angle seen across the WHOLE search, so the final fallback (when no
@@ -6438,9 +6498,10 @@ function bestEntry(rl,bl,maxD,ss,n){
   // ── Simulate and check a given entry angle ──
   function tryAngle(e) {
     const ex = Math.max(ss, Math.round(e*0.75*2)/2);
-    const plan = buildPlan(rl, bl, maxD, e, ex, ss, n);
+    const plan = buildPlan(rl, bl, maxD, e, ex, ss, n, machH);
     if (!plan) return false;
-    let d = 0, peakD = 0;
+    const d0 = _rod0GroundDepth(rl, machH, e);
+    let d = d0, peakD = d0;
     for (let rod = 1; rod <= n; rod++) {
       const seg = Math.min(rl, bl-(rod-1)*rl);
       const a = plan.angles[rod-1];
@@ -6482,23 +6543,31 @@ function bestEntry(rl,bl,maxD,ss,n){
 // Explains why a buildPlan failed for user-entered angles
 // Returns a specific, actionable error string
 // ════════════════════════════════════════════════════
-function diagnoseManualAngleFail(rl,bl,maxD,entPct,extPct,ss){
+function diagnoseManualAngleFail(rl,bl,maxD,entPct,extPct,ss,machH){
   const n=Math.ceil(bl/rl);
   const flatN=Math.ceil(entPct/ss);
   let dFlat=0;
   for(let i=1;i<=flatN;i++) dFlat+=rl*Math.max(0,entPct-i*ss)/100;
   const dprIN=rl*entPct/100;
   if(dprIN<=0) return 'Punch-In angle must be greater than 0%.';
-  const inN=Math.max(0,Math.ceil(Math.max(0,maxD-dFlat)/dprIN));
-  let simDepth=0;
+  // v94: same Row-0 ground-depth accounting as buildPlanManual, and the
+  // same ±0.25m tolerance, so the reported reason matches what actually
+  // failed.
+  const TOL=0.25;
+  const d0=_rod0GroundDepth(rl,machH,entPct);
+  const inN=Math.max(0,Math.ceil(Math.max(0,maxD-d0-dFlat)/dprIN));
+  let simDepth=d0;
   for(let i=0;i<inN;i++) simDepth+=dprIN;
   for(let i=1;i<=flatN;i++) simDepth+=rl*Math.max(0,entPct-i*ss)/100;
+  const stepHint = ` Or type your own step in Custom Step (below Bore Details) — `+
+                   `the app will still build the chart from your exact step, `+
+                   `at your own responsibility.`;
 
   // Condition 1: Depth overshoot
-  if(simDepth>maxD+0.30){
+  if(simDepth>maxD+TOL){
     const excess=(simDepth-maxD).toFixed(1);
     return `Punch-In angle ${toD(entPct)} overshoots by ${excess}m. `+
-           `Reduce Punch-In angle or increase Max Depth by ${excess}m.`;
+           `Reduce Punch-In angle or increase Max Depth by ${excess}m.`+stepHint;
   }
 
   // Condition 2: Too many rods needed
@@ -6511,26 +6580,27 @@ function diagnoseManualAngleFail(rl,bl,maxD,entPct,extPct,ss){
   const lastRemoval=lastSeg*extPct/100;
   let outN=0;
   if(dprOUT>0){
-    outN=lastRemoval>=depAfterRise-0.30?1:Math.ceil((depAfterRise-0.30-lastRemoval)/dprOUT)+1;
+    outN=lastRemoval>=depAfterRise-TOL?1:Math.ceil((depAfterRise-TOL-lastRemoval)/dprOUT)+1;
     if(outN<0) outN=0;
   }
   const totalNeeded=inN+flatN+riseN+outN;
   if(totalNeeded>n){
     const addM=Math.ceil((totalNeeded-n)*rl/5)*5;
-    return `Bore too short for these angles. Increase bore length by ~${addM}m, `+
-           `or reduce Punch-In angle.`;
+    return `Bore too short for these angles at the safe step. Increase bore length by ~${addM}m, `+
+           `or reduce Punch-In angle.`+stepHint;
   }
 
   // Condition 3: Punch-Out too shallow — still underground at exit
-  if(depAfterRise>0.30){
+  if(depAfterRise>TOL){
     return `Punch-Out angle ${toD(extPct)} too small — bore ends ${depAfterRise.toFixed(2)}m underground. `+
-           `Increase Punch-Out angle.`;
+           `Increase Punch-Out angle.`+stepHint;
   }
 
-  return `Cannot generate bore plan. Try: increase bore length, reduce max depth, or reduce Punch-In angle.`;
+  return `Cannot generate bore plan at the safe step. Try: increase bore length, reduce max depth, `+
+         `reduce Punch-In angle,`+stepHint;
 }
 
-function buildPlan(rl,bl,maxD,entPct,extPct,ss,n){
+function buildPlan(rl,bl,maxD,entPct,extPct,ss,n,machH){
   const flatN=Math.ceil(entPct/ss);
   let dFlat=0;
   for(let i=1;i<=flatN;i++) dFlat+=rl*Math.max(0,entPct-i*ss)/100;
@@ -6539,12 +6609,18 @@ function buildPlan(rl,bl,maxD,entPct,extPct,ss,n){
   for(let i=1;i<=riseN;i++) dRise+=rl*Math.min(extPct,i*ss)/100;
   const dprIN=rl*entPct/100;
   if(dprIN<=0) return null;
+  // v93 FOLLOW-UP FIX: Row 0 (Punch-In) now contributes a real depth d0
+  // BEFORE rod 1 even starts (its own rod's ground-only portion, after
+  // the air-distance-at-source fix) — the in-phase rod count only needs
+  // to cover whatever of maxD is left after d0 and the flat-ramp.
+  const d0 = _rod0GroundDepth(rl, machH, entPct);
   // ── FIX: allow inN=0 when the flat-ramp alone covers maxD ──
   // Previously clamped to max(1,...) which forced an extra in-rod even when
   // dFlat ≥ maxD, causing simDepth to overshoot (e.g. 6.32m when maxD=5m).
-  const inN=Math.max(0,Math.ceil(Math.max(0,maxD-dFlat)/dprIN));
-  // Calculate REAL simDepth (actual depth after in+flat phases)
-  let simDepth=0;
+  const inN=Math.max(0,Math.ceil(Math.max(0,maxD-d0-dFlat)/dprIN));
+  // Calculate REAL simDepth (actual depth after in+flat phases) — now
+  // starting from d0 (Row 0's own contribution), not 0.
+  let simDepth=d0;
   for(let i=0;i<inN;i++) simDepth+=dprIN;
   for(let i=1;i<=flatN;i++) simDepth+=rl*Math.max(0,entPct-i*ss)/100;
   // v7_8_6-81: tolerance ±0.30 -> ±0.40 (approved). Peak-depth rejection is
@@ -6552,7 +6628,8 @@ function buildPlan(rl,bl,maxD,entPct,extPct,ss,n){
   // per explicit instruction, a manually-chosen step must always produce a
   // chart; the actual resulting overshoot (if any) is reported honestly in
   // Safety Factor instead of being silently blocked here.
-  const TOL = 0.40;
+  // v94: tolerance tightened ±0.40 -> ±0.25 (explicit decision).
+  const TOL = 0.25;
   if(simDepth > maxD + TOL && CUSTOM_STEP_VALUE <= 0) return null;
   const dprOUT=rl*extPct/100;
   // FIX: depAfterRise uses simDepth (not maxD) — maxD can differ from actual depth reached
@@ -6598,7 +6675,7 @@ function buildPlan(rl,bl,maxD,entPct,extPct,ss,n){
 // Used when the user explicitly provides Punch-In / Punch-Out angles.
 // Trusts user angles — no simDepth overshoot rejection.
 // ════════════════════════════════════════════════════
-function buildPlanManual(rl, bl, maxD, entPct, extPct, ss, n) {
+function buildPlanManual(rl, bl, maxD, entPct, extPct, ss, n, machH) {
   const flatN = Math.ceil(entPct / ss);
   let dFlat = 0;
   for (let i = 1; i <= flatN; i++) dFlat += rl * Math.max(0, entPct - i * ss) / 100;
@@ -6607,13 +6684,15 @@ function buildPlanManual(rl, bl, maxD, entPct, extPct, ss, n) {
   for (let i = 1; i <= riseN; i++) dRise += rl * Math.min(extPct, i * ss) / 100;
   const dprIN = rl * entPct / 100;
   if (dprIN <= 0) return null;
+  // v93 FOLLOW-UP FIX: same Row-0 ground-depth accounting as buildPlan().
+  const d0 = _rod0GroundDepth(rl, machH, entPct);
   // Use Math.round instead of ceil so integer rounding doesn't push simDepth over maxD
-  const inN = Math.max(0, Math.round(Math.max(0, maxD - dFlat) / dprIN));
-  let simDepth = 0;
+  const inN = Math.max(0, Math.round(Math.max(0, maxD - d0 - dFlat) / dprIN));
+  let simDepth = d0;
   for (let i = 0; i < inN; i++) simDepth += dprIN;
   for (let i = 1; i <= flatN; i++) simDepth += rl * Math.max(0, entPct - i * ss) / 100;
-  // NO rejection on overshoot — user's angles are trusted (±0.40m tolerance)
-  const TOL = 0.40;
+  // NO rejection on overshoot — user's angles are trusted (±0.25m tolerance)
+  const TOL = 0.25;
   const dprOUT = rl * extPct / 100;
   const depAfterRise = Math.max(0, simDepth - dRise);
   const lastSeg = bl - (n - 1) * rl;
@@ -6759,12 +6838,12 @@ function build(){
   const hasManualAngles = userEntPct > 0 || userExtPct > 0;
   let plan;
   if (hasManualAngles) {
-    const resolvedEnt = userEntPct > 0 ? userEntPct : bestEntry(rl, bl, maxD, ss, n);
+    const resolvedEnt = userEntPct > 0 ? userEntPct : bestEntry(rl, bl, maxD, ss, n, machH);
     const resolvedExt = userExtPct > 0 ? userExtPct : Math.max(ss, Math.round(resolvedEnt*0.75*2)/2);
-    plan = buildPlanManual(rl, bl, maxD, resolvedEnt, Math.min(resolvedExt, resolvedEnt), ss, n);
-    if (!plan) throw new Error(diagnoseManualAngleFail(rl, bl, maxD, resolvedEnt, resolvedExt, ss));
+    plan = buildPlanManual(rl, bl, maxD, resolvedEnt, Math.min(resolvedExt, resolvedEnt), ss, n, machH);
+    if (!plan) throw new Error(diagnoseManualAngleFail(rl, bl, maxD, resolvedEnt, resolvedExt, ss, machH));
   } else {
-    plan = planAngles(rl, bl, maxD, 0, 0);
+    plan = planAngles(rl, bl, maxD, 0, 0, machH);
     if (!plan) {
       throw new Error(CUSTOM_STEP_VALUE > 0
         ? 'Cannot fit bore plan even with Custom Step ' + CUSTOM_STEP_VALUE + '%/rod. Try a larger Custom Step, longer Bore Length, or smaller Max Depth.'
@@ -6780,11 +6859,44 @@ function build(){
 
   G={rl,bl,maxD,odMM,pipT,pull,BR,ream,ss,totalRods:n,plan,machH,airDist,rows:[]};
 
-  for(let rod=0;rod<=n;rod++){
-    const distEnd = Math.min(rod*rl,bl);
-    const seg     = rod===0?rl:Math.min(rl,bl-(rod-1)*rl);
+  // v93 / Air-distance-at-source rewrite (generic, rod-length independent):
+  // build the row-by-row GROUND-ONLY cumulative distance first — the pilot
+  // consumes airDist worth of rod length in the air before any of it
+  // counts as real chainage, so Row 0's own DISTANCE is no longer the
+  // full rod length; it's whatever of Rod 0 is left after the air travel
+  // (0 if Rod 0 is short enough to be entirely in the air — in which case
+  // the leftover air budget carries into Rod 1, Rod 2, ... exactly as
+  // many rods as it takes, same pattern already used for the LAST rod
+  // being trimmed to land exactly on Bore Length). Row count (n) grows by
+  // one extra rod ONLY if genuinely needed to still reach Bore Length —
+  // normal cases (airDist < one rod length) never change row count.
+  // groundDist[i] = cumulative GROUND distance shown in table Row i's own
+  // DISTANCE column (Row 0 = first physical rod's ground-only leftover).
+  let airBudget = airDist;
+  let cum = 0;
+  const groundDist = [];
+  let i = 0;
+  while (cum < bl) {
+    const consumed = Math.min(airBudget, rl);
+    airBudget -= consumed;
+    const groundThisRod = rl - consumed;
+    cum = Math.min(cum + groundThisRod, bl);
+    groundDist[i] = cum;
+    i++;
+    if (i > n + 50) break; // sanity guard — should never trigger in practice
+  }
+  const nActual = i - 1; // last valid table-row index (Punch-Out row) — may equal the original n, or be one (rarely more) higher
+  G.totalRods = nActual; // keep Pipe Weight / Rig Estimation / PDF header in sync with reality
+
+  for(let rod=0;rod<=nActual;rod++){
+    const distEnd = groundDist[rod];
+    const prevEnd = rod===0 ? 0 : groundDist[rod-1];
+    // Every row's own seg is simply the ground gained between the previous
+    // row and this one (0 for a rod that's still entirely in the air).
+    const seg = Math.max(0, distEnd - prevEnd);
     const isPI    = rod===0;
-    const isPO    = rod===n;
+    const isPO    = rod===nActual;
+
 
     // ── FIX 3: Punch-In angle = entry angle (NOT 0) ──
     // Machine boom is already at entry angle from start
@@ -6805,14 +6917,20 @@ function build(){
 
   calcDepths();
 
-  // ── FIX 4: Punch-Out warning if depth not 0 ──
-  const lastData=G.rows[G.rows.length-2];
-  if(lastData&&!lastData.isPO&&lastData.depth>0.05){
-    const poRow=G.rows[G.rows.length-1];
-    poRow.poWarn=true;
-    poRow.poDepth=lastData.depth.toFixed(2);
-    const needed=(lastData.depth/lastData.seg)*100;
-    poRow.neededAngle=needed.toFixed(1);
+  // ── FIX 4: Punch-Out warning if ACTUAL final depth is outside tolerance ──
+  // v94 FOLLOW-UP FIX: previously checked the SECOND-TO-LAST row's depth
+  // (before the last rod's own angle is even applied) — so a plan that
+  // already lands safely within tolerance after the last rod's angle
+  // still showed a stale, misleading warning. Now checks the real final
+  // Punch-Out depth (after calcDepths()) against the actual tolerance.
+  const poRowFinal = G.rows[G.rows.length-1];
+  const PO_TOL = 0.25;
+  if (poRowFinal && Math.abs(poRowFinal.depth) > PO_TOL) {
+    const lastData = G.rows[G.rows.length-2];
+    poRowFinal.poWarn = true;
+    poRowFinal.poDepth = poRowFinal.depth.toFixed(2);
+    const needed = lastData ? ((lastData.depth / lastData.seg) * 100) : 0;
+    poRowFinal.neededAngle = needed.toFixed(1);
   }
 }
 
@@ -6820,10 +6938,11 @@ function calcDepths(){
   if(!G) return;
   let prev=0;
   G.rows.forEach(r=>{
-    if(r.isPI){r.depth=0;prev=0;return;}
-    if(r.dist<=G.airDist){r.depth=0;prev=0;return;}
-    // ALL rods including last (isPO) get real signed depth
-    // No Math.max(0) clamp — negative means above ground (valid punch-out overshoot)
+    // v93: r.seg is now already the row's real GROUND-ONLY length (air
+    // travel already subtracted at the source, in the row-building loop
+    // above) — so the plain formula below is correct for every row,
+    // including Row 0 itself (no separate isPI/airDist special-case
+    // needed any more; a rod fully in the air simply has seg=0 → chg=0).
     const chg=r.seg*Math.abs(r.angle)/100;
     if(r.angle<0)      r.depth=prev+chg;   // going down → deeper
     else if(r.angle>0) r.depth=prev-chg;   // coming up → may go negative = above ground
@@ -6834,7 +6953,10 @@ function calcDepths(){
 
 // Depth display: underground = minus sign (−6.09), above ground = plus (+0.28), zero = 0.00
 function fmtDepth(depth, isPI, isPO) {
-  if (isPI) return '0.00';                          // punch-in always 0
+  // v93 FOLLOW-UP FIX: Punch-In no longer forced to '0.00' — since the v93
+  // air-distance-at-source rewrite, Row 0 carries a real, correctly
+  // calculated depth (its own rod's ground-only portion × its angle) and
+  // must display exactly like every other row, not a hardcoded zero.
   if (Math.abs(depth) < 0.005) return '0.00';       // at surface
   if (depth > 0) return '\u2212' + depth.toFixed(2); // underground → minus sign
   return '+' + Math.abs(depth).toFixed(2);           // above ground → plus sign
@@ -6941,7 +7063,7 @@ function renderChart(){
                  : r.isPO?(r.poWarn?'r-pw':'r-po')
                  : (phC[r.phase]||'r-ho');
 
-    const rc=getRC(idx),rcVal=rc===null?'∞':rc.toFixed(0);
+    const rc=getRC(idx),rcVal=rc===null?'Straight':rc.toFixed(0);
     const rcCls=rc===null?'cr str':rc>=G.BR?'cr safe':'cr tight';
 
     // ── Angle display ──
@@ -6952,15 +7074,19 @@ function renderChart(){
     const angCls  = r.isPI?'ca neg':r.isPO?'ca pos':
       r.angle<-0.01?'ca neg':r.angle>0.01?'ca pos':'ca zer';
 
-    const depCls  = r.isPI?'cd z':Math.abs(r.depth)<=0.40?'cd ok':'cd lo';
+    const depCls  = Math.abs(r.depth)<=0.40?'cd ok':'cd lo';
     const rodNo   = r.isPI ? '0' : r.rod;  // always real rod number, never "PO"
     const airD    = G.machH&&G.plan.entPct>0
                   ? (G.machH/Math.tan(Math.atan(G.plan.entPct/100))).toFixed(1):'0.0';
 
-    let rem = r.isPI  ? `PUNCH IN | Entry: ${toD(-G.plan.entPct)} | Air dist: ~${airD}m | Depth: 0.00m`
+    // v93: Row 0 no longer has a forced 0.00m depth — it now shows exactly
+    // how much of its own rod length is in the air vs already in the
+    // ground (r.seg = the real ground-only portion), and its real signed
+    // depth (r.depth), consistent with every other row.
+    let rem = r.isPI  ? `PUNCH IN | Entry: ${toD(-G.plan.entPct)} | Air dist: ~${airD}m | in side ground ${r.seg.toFixed(1)}M Depth: ${r.depth.toFixed(2)}m`
             : r.isPO  ? (r.poWarn
-                ? `⚠️ PUNCH OUT WARNING: Depth before PO = ${r.poDepth}m (not 0). Need exit angle ≥ ${r.neededAngle}% OR increase bore length.`
-                : `PUNCH OUT | Exit: ${toD(G.plan.extPct)} | Depth: 0.00m`)
+                ? `⚠️ PUNCH OUT WARNING: Depth before PO = ${fmtDepth(r.depth,false,false)}m (not 0).`
+                : `PUNCH OUT | Exit: ${toD(G.plan.extPct)} | Depth: ${r.depth.toFixed(2)}m`)
             : '';
 
     // ── PHASE 3+4+5+7+8: Survey RL (editable) + Actual Depth From RL (auto) ──
@@ -7020,7 +7146,7 @@ function renderChart(){
           contenteditable="true" data-ph="0"
           onblur="onAngEdit(this)">${angDisp}</td>
       <td class="${depCls}" id="cd-${r.rod}" contenteditable="true" data-ph="0.00">${fmtDepth(r.depth,r.isPI,r.isPO)}</td>
-      <td class="${rcCls}" id="rc-${r.rod}" contenteditable="true" data-ph="∞">${rcVal}</td>
+      <td class="${rcCls}" id="rc-${r.rod}" contenteditable="true" data-ph="Straight">${rcVal}</td>
       ${gpsCellHTML}
       ${rlCellsHTML}
       <td style="color:var(--green);font-family:'Share Tech Mono',monospace;font-size:11px"
@@ -7170,7 +7296,7 @@ function onZdcAngEdit(cell) {
       ? '[data-zdc-rc="' + rodNum + '"][data-zdczone="count"]'
       : '[data-zdc-rc="' + rodNum + '"]:not([data-zdczone])';
     const el = scope.querySelector(sel);
-    if (el) el.textContent = (rc !== null && rc !== undefined && isFinite(rc)) ? rc.toFixed(0) : '∞';
+    if (el) el.textContent = (rc !== null && rc !== undefined && isFinite(rc)) ? rc.toFixed(0) : 'Straight';
   }
 
   // ── Helper: get angle cell for NC rod ──
@@ -7206,7 +7332,7 @@ function onZdcAngEdit(cell) {
 
       if (i > 0) {
         const dA = Math.abs(Math.abs(r.angle) - Math.abs(ncRows[i - 1].angle));
-        r.rc = dA > 0.005 ? Math.abs(seg / Math.tan(dA / 100)) : null;
+        r.rc = dA > 0.005 ? Math.abs(seg / Math.atan(dA / 100)) : null;
       } else {
         r.rc = null;
       }
@@ -7232,7 +7358,7 @@ function onZdcAngEdit(cell) {
 
       if (i > 0) {
         const dA = Math.abs(r.rodAngle - countRows[i - 1].rodAngle);
-        r.rc   = dA > 0.005 ? Math.abs(seg / Math.tan(dA / 100)) : null;
+        r.rc   = dA > 0.005 ? Math.abs(seg / Math.atan(dA / 100)) : null;
         r.rcOK = r.rc === null || r.rc >= BR;
       } else {
         r.rc = null; r.rcOK = true;
@@ -7261,7 +7387,7 @@ function onZdcAngEdit(cell) {
 
       if (i > 0) {
         const dA = Math.abs(r.rodAngle - countRows[i - 1].rodAngle);
-        r.rc   = dA > 0.005 ? Math.abs(seg / Math.tan(dA / 100)) : null;
+        r.rc   = dA > 0.005 ? Math.abs(seg / Math.atan(dA / 100)) : null;
         r.rcOK = r.rc === null || r.rc >= BR;
       } else {
         r.rc = null; r.rcOK = true;
@@ -7439,7 +7565,7 @@ function updRC(idx){
   const r=G.rows[idx];if(!r)return;
   const el=document.getElementById('rc-'+r.rod);if(!el)return;
   const rc=getRC(idx);
-  if(rc===null){el.textContent='∞';el.className='cr str';}
+  if(rc===null){el.textContent='Straight';el.className='cr str';}
   else{el.textContent=rc.toFixed(0);el.className=rc>=G.BR?'cr safe':'cr tight';}
 }
 
@@ -7483,8 +7609,8 @@ function renderSafety(){
   const allRC=G.rows.map((_,i)=>getRC(i)).filter(Boolean);
   const minRC=allRC.length?Math.min(...allRC):99999;
   const sf=minRC/G.BR;
-  // v7_8_6-81: Mode 2 Punch-Out tolerance widened ±0.30 -> ±0.40 (approved).
-  const TOL = 0.40;
+  // v94: tolerance tightened ±0.40 -> ±0.25 (explicit decision).
+  const TOL = 0.25;
   const depOK=maxA>=G.maxD-0.2,safe=minRC>=G.BR,sfOK=sf>=1.5,reamOK=G.ream>=G.odMM*1.3;
   // Last rod = actual punch-out depth (real signed value)
   const poRow=G.rows[G.rows.length-1];
@@ -7509,9 +7635,9 @@ function renderSafety(){
                : 'Formula: Depth = Prev + (Angle% × Seg ÷ 100)',
     formulaVal: L==='ar' ? '✓ صحيح' : L==='hi' ? '✓ सही' : '✓ CORRECT',
 
-    poLbl: L==='ar' ? `نقطة الدخول: 0.00م | نقطة الخروج: ${poDisplay} (التسامح ±0.40م)`
-          : L==='hi' ? `Punch-In: 0.00m | Punch-Out: ${poDisplay} (tolerance ±0.40m)`
-          : `Punch-In: 0.00m | Punch-Out: ${poDisplay} (tolerance ±0.40m)`,
+    poLbl: L==='ar' ? `نقطة الدخول: 0.00م | نقطة الخروج: ${poDisplay} (التسامح ±0.25م)`
+          : L==='hi' ? `Punch-In: 0.00m | Punch-Out: ${poDisplay} (tolerance ±0.25m)`
+          : `Punch-In: 0.00m | Punch-Out: ${poDisplay} (tolerance ±0.25m)`,
     poValOk:  L==='ar'?'✓ صحيح' : L==='hi'?'✓ सही'   : '✓ CORRECT',
     poValBad: L==='ar'?'⚠ تحقق' : L==='hi'?'⚠ जांचें' : '⚠ CHECK',
 
@@ -7521,9 +7647,9 @@ function renderSafety(){
     depValOk:  L==='ar'?'✓ جيد'     : L==='hi'?'✓ ठीक है'      : '✓ OK',
     depValBad: L==='ar'?'⚠ أقل من الهدف': L==='hi'?'⚠ कम है'   : '⚠ BELOW TARGET',
 
-    exitLbl: L==='ar' ? `زاوية الخروج (${toD(G.plan.extPct)}) < زاوية الدخول (${toD(G.plan.entPct)})`
-            : L==='hi' ? `Exit Angle (${toD(G.plan.extPct)}) < Entry Angle (${toD(G.plan.entPct)})`
-            : `Exit Angle (${toD(G.plan.extPct)}) < Entry Angle (${toD(G.plan.entPct)})`,
+    exitLbl: L==='ar' ? `دخول/زاوية الدخول (${toD(-G.plan.entPct)}) > خروج/زاوية الخروج (${toD(G.plan.extPct)})`
+            : L==='hi' ? `Punch In/Entry Angle (${toD(-G.plan.entPct)}) > Punch Out/Exit Angle (${toD(G.plan.extPct)})`
+            : `Punch In/Entry Angle (${toD(-G.plan.entPct)}) > Punch Out/Exit Angle (${toD(G.plan.extPct)})`,
     exitVal: L==='ar'?'✓ صحيح' : L==='hi'?'✓ सही' : '✓ CORRECT',
 
     stepLbl: L==='ar' ? `خطوة الزاوية: ±${G.ss}%/قضيب (حد أمان القضيب ${G.rl}م)`
@@ -7803,22 +7929,37 @@ function collectRows(){
   return rows;
 }
 
+// v98 FOLLOW-UP FIX: single shared source of truth for Mode 1's current
+// rl/bl/rod-count/maxDepth/entry+exit-angle — was previously duplicated
+// (and inconsistently fixed) across 5 separate places (getInfoLines,
+// Excel export ×2, PDF export, Graph label, Safety panel), each trusting
+// raw _tbdRows.length directly, which can hold stale/leftover rows from
+// a longer bore tested earlier in the same session. All 5 now call this.
+function _tbdCurrentInfo() {
+  const rl = parseFloat(v('rodL')) || 0;
+  const bl = parseFloat(v('boreL')) || (_tbdRows.length ? _tbdRows[_tbdRows.length-1].dist : 0);
+  const currentN = rl > 0 ? Math.max(1, Math.ceil(bl / rl) || 1) : Math.max(0, _tbdRows.length - 1);
+  const lastIdx = Math.min(currentN, _tbdRows.length - 1);
+  const maxD = Math.max(0, ..._tbdRows.slice(0, lastIdx+1).map(r => Math.abs(r.depth || 0)));
+  const entAngle = _tbdRows[0] ? _tbdRows[0].angle : 0;
+  const extAngle = _tbdRows[lastIdx] ? _tbdRows[lastIdx].angle : 0;
+  const lastDepth = _tbdRows[lastIdx] ? _tbdRows[lastIdx].depth : 0;
+  return { rl, bl, currentN, lastIdx, maxD, entAngle, extAngle, lastDepth };
+}
+
 function getInfoLines(){
   if (CURRENT_MODE === 1) {
     // Trial Bore Draft has no auto-plan (G) — build equivalent info lines
     // straight from the form fields + the manually-entered rows instead.
     if (!_tbdRows.length) return [];
-    const rl = parseFloat(v('rodL')) || 0;
-    const bl = parseFloat(v('boreL')) || _tbdRows[_tbdRows.length-1].dist;
-    const maxD = Math.max(0, ..._tbdRows.map(r => Math.abs(r.depth || 0)));
-    const entAngle = _tbdRows.length > 1 ? _tbdRows[1].angle : 0;
-    const extAngle = _tbdRows.length > 1 ? _tbdRows[_tbdRows.length-1].angle : 0;
+    const { rl, bl, currentN, maxD, entAngle, extAngle } = _tbdCurrentInfo();
+    const machH = parseFloat(v('machH')) || 1.0;
     return ['TRIAL BORE DRAFT — PRE-BORE CHART',
       `Project: ${v('projN')||'—'} | Client: ${v('projC')||'—'} | Location: ${v('projL')||'—'}`,
       `Date: ${v('projDt')||'—'} | By: ${v('prepB')||'—'} | Bore ID: ${v('boreID')||'—'}`,
-      `Rod=${rl}m | Bore=${bl}m | Rods: ${_tbdRows.length-1}`,
+      `Rod=${rl}m | Bore=${bl}m | Rods: ${currentN}`,
       `Manually-entered angles | Max Depth (from entries): ${maxD.toFixed(2)}m`,
-      `Entry Angle: ${toD(entAngle)} | Exit Angle: ${toD(extAngle)}`,
+      `Entry Angle: ${toD(entAngle)} | Exit Angle: ${toD(extAngle)} | Boom Height: ${machH}m`,
       `Formula: Depth = Prev + (Angle% × Seg ÷ 100) | Punch-In=0.00m`,
       `Designed by: Saiyad Hussain — HDD Driller & Locator · 14+ Years · Saudi Arabia`,
       `⚠️ For reference/planning only — must be verified & approved by a Licensed/Authorized Engineer before actual field execution.`,
@@ -7830,7 +7971,7 @@ function getInfoLines(){
     `Date: ${v('projDt')||'—'} | By: ${v('prepB')||'—'} | Bore ID: ${v('boreID')||'—'}`,
     `Pipe: ${G.pipT} OD=${G.odMM.toFixed(1)}mm | Min BR=${G.BR.toFixed(2)}m | Ream=${G.ream.toFixed(0)}mm`,
     `Machine: ${v('macMod')||'HDD'} | Pull=${G.pull||'—'}T | Rod=${G.rl}m | Bore=${G.bl}m | MaxD=${G.maxD}m`,
-    `Entry: ${toD(G.plan.entPct)} (${toDOther(G.plan.entPct)}) | Exit: ${toD(G.plan.extPct)} | Step: ±${toDmag(G.ss)}/rod | Boom Height: ${G.machH}m`,
+    `Entry: ${toD(-G.plan.entPct)} (${toDOther(-G.plan.entPct)}) | Exit: ${toD(G.plan.extPct)} | Step: ±${toDmag(G.ss)}/rod | Boom Height: ${G.machH}m`,
     `Formula: Depth = Prev + (Angle% × Seg ÷ 100) | Punch-In=0.00m | Punch-Out=0.00m`,
     `Designed by: Saiyad Hussain — HDD Driller & Locator · 14+ Years · Saudi Arabia`,
     `⚠️ For reference/planning only — must be verified & approved by a Licensed/Authorized Engineer before actual field execution.`,
@@ -7898,17 +8039,13 @@ function _excelChartCore_SHEETJS_BACKUP(){
     XLSX.utils.book_append_sheet(wb, wsChart, 'Pre-Bore Chart');
     let sfData;
     if (CURRENT_MODE === 1) {
-      const rl = parseFloat(v('rodL')) || 0;
-      const bl = parseFloat(v('boreL')) || _tbdRows[_tbdRows.length-1].dist;
-      const maxD = Math.max(0, ..._tbdRows.map(r => Math.abs(r.depth || 0)));
-      const entAngle = _tbdRows.length > 1 ? _tbdRows[1].angle : 0;
-      const extAngle = _tbdRows.length > 1 ? _tbdRows[_tbdRows.length-1].angle : 0;
+      const { rl, bl, currentN, maxD, entAngle, extAngle } = _tbdCurrentInfo();
       sfData=[
         ['TRIAL BORE DRAFT — SUMMARY',''],
         ['Formula','Depth = Prev + (Angle% × Seg ÷ 100)'],
         ['Bore Length',bl+'m'],
         ['Rod Length',rl+'m'],
-        ['Total Rods',_tbdRows.length-1],
+        ['Total Rods',currentN],
         ['Max Depth (from entries)',maxD.toFixed(2)+'m'],
         ['Entry Angle',entAngle.toFixed(1)+'%'],
         ['Exit Angle',extAngle.toFixed(1)+'%'],
@@ -8001,16 +8138,12 @@ async function _excelChartCore(){
     // Safety Summary sheet used, untouched, just re-targeted as rows ----
     let sfData;
     if (CURRENT_MODE === 1) {
-      const rl = parseFloat(v('rodL')) || 0;
-      const bl = parseFloat(v('boreL')) || _tbdRows[_tbdRows.length-1].dist;
-      const maxD = Math.max(0, ..._tbdRows.map(rr => Math.abs(rr.depth || 0)));
-      const entAngle = _tbdRows.length > 1 ? _tbdRows[1].angle : 0;
-      const extAngle = _tbdRows.length > 1 ? _tbdRows[_tbdRows.length-1].angle : 0;
+      const { rl, bl, currentN, maxD, entAngle, extAngle } = _tbdCurrentInfo();
       sfData=[
         ['Formula','Depth = Prev + (Angle% × Seg ÷ 100)'],
         ['Bore Length',bl+'m'],
         ['Rod Length',rl+'m'],
-        ['Total Rods',_tbdRows.length-1],
+        ['Total Rods',currentN],
         ['Max Depth (from entries)',maxD.toFixed(2)+'m'],
         ['Entry Angle',toD(entAngle)],
         ['Exit Angle',toD(extAngle)],
@@ -8030,7 +8163,7 @@ async function _excelChartCore(){
     } else {
       sfData=[
         ['Formula','Depth = Prev + (Angle% × Seg ÷ 100)'],
-        ['Min Bend Radius','OD × 100 ÷ 1000 = '+G.BR.toFixed(2)+'m'],
+        ['Min Bend Radius','OD(m)×100 = '+G.BR.toFixed(2)+'m'],
         ['Pipe OD',G.odMM.toFixed(0)+'mm'],
         ['Ream Size',G.ream.toFixed(0)+'mm'],
         ['Bore Length',G.bl+'m'],
@@ -8177,7 +8310,7 @@ async function _excelChartCore(){
     // -- Remarks / Formula / Warnings footer --
     ws.mergeCells(r,1,r,numCols);
     c = ws.getCell(r,1);
-    c.value = 'Formula: Depth=Prev+(Angle%×Seg÷100) | Min BR=OD×100÷1000 | RC=Seg÷tan(ΔAngle) | API RP 1107';
+    c.value = 'Formula: Depth=Prev+(Angle%×Seg÷100) | Min BR(m)=OD(m)×100 | RC=Seg÷ΔAngle(rad) | API RP 1107';
     c.font = {size:8.5,color:{argb:'FF333333'}};
     c.fill = {type:'pattern',pattern:'solid',fgColor:{argb:'FFF0FFF4'}};
     c.alignment = {wrapText:true};
@@ -8816,7 +8949,7 @@ function _doChartPDF(){
         <tbody>${buildRows(pRows)}</tbody></table>
         ${p===pages-1 ? pwHTML : ''}
         ${photoHtml}
-        <div class="pf">Formula: Depth=Prev+(Angle%×Seg÷100) | Min BR=OD×100÷1000 | RC=Seg÷tan(ΔAngle) | API RP 1107 &nbsp;|&nbsp;
+        <div class="pf">Formula: Depth=Prev+(Angle%×Seg÷100) | Min BR(m)=OD(m)×100 | RC=Seg÷ΔAngle(rad) | API RP 1107 &nbsp;|&nbsp;
         <strong>Saiyad Hussain</strong> — HDD Driller &amp; Locator · 14+ Yrs · Saudi Arabia</div>
       </div>`;
     }
@@ -8958,7 +9091,7 @@ html,body{height:100%;font-family:Arial,sans-serif;background:#fff;color:#111;}
 </div>
 <div class="gw"><img src="${graphImg}" alt="Bore Profile Graph"></div>
 <div class="gf">
-  <span>Formula: Depth=Prev+(Angle%×Seg÷100) | Min BR=OD×100÷1000 | RC=Seg÷tan(ΔAngle) | API RP 1107</span>
+  <span>Formula: Depth=Prev+(Angle%×Seg÷100) | Min BR(m)=OD(m)×100 | RC=Seg÷ΔAngle(rad) | API RP 1107</span>
   <span><strong>Saiyad Hussain</strong> — HDD Driller &amp; Locator · 14+ Yrs · Saudi Arabia</span>
 </div>
 <div style="margin-top:3px;padding:3px 7px;background:#fff8e1;border:1px solid #e0c060;border-radius:3px;font-size:6.5px;color:#7a5c00;text-align:center">⚠️ For reference/planning only — must be verified &amp; approved by a Licensed/Authorized Engineer before actual field execution.</div>
@@ -8999,11 +9132,7 @@ function _doGraphPDF_TBD(){
     }
     const logoHtml=getPDFLogoHTML?getPDFLogoHTML():'';
     const info=getInfoLines();
-    const rl = parseFloat(v('rodL')) || 0;
-    const bl = parseFloat(v('boreL')) || _tbdRows[_tbdRows.length-1].dist;
-    const maxD = Math.max(0, ..._tbdRows.map(r => Math.abs(r.depth || 0)));
-    const entAngle = _tbdRows.length > 1 ? _tbdRows[1].angle : 0;
-    const extAngle = _tbdRows.length > 1 ? _tbdRows[_tbdRows.length-1].angle : 0;
+    const { rl, bl, currentN, maxD, entAngle, extAngle } = _tbdCurrentInfo();
 
     const cells=[
       ['PROJECT / KM', v('projN')||'—'],
@@ -9014,7 +9143,7 @@ function _doGraphPDF_TBD(){
       ['MAX DEPTH',    maxD.toFixed(2)+' m'],
       ['ENTRY ANGLE',  toD(entAngle)],
       ['EXIT ANGLE',   toD(extAngle)],
-      ['RODS',         (_tbdRows.length-1)+' × '+rl+'m'],
+      ['RODS',         currentN+' × '+rl+'m'],
       ['DATE',         v('projDt')||new Date().toISOString().slice(0,10)],
     ];
 
@@ -9222,7 +9351,7 @@ function populateSaveInfo() {
   }
   el.innerHTML =
     `Bore: ${G.bl}m | Rods: ${G.totalRods} × ${G.rl}m | Pipe: ${G.pipT} OD=${G.odMM.toFixed(0)}mm<br>` +
-    `Entry: ${toD(G.plan.entPct)} | Exit: ${toD(G.plan.extPct)} | MaxD: ${G.maxD}m<br>` +
+    `Entry: ${toD(-G.plan.entPct)} | Exit: ${toD(G.plan.extPct)} | MaxD: ${G.maxD}m<br>` +
     `Project: ${document.getElementById('projN').value || '—'} | Bore ID: ${document.getElementById('boreID').value || '—'}`;
 }
 
@@ -9949,7 +10078,7 @@ const QG_DATA = {
         'STEER PATH: Entry angle (neg %) → descend rods → level/hold → ascend rods → exit angle (neg %).',
         'EXIT: Drill bit emerges at the far end at ground level. Pull back pipe from exit to entry.',
         'CRITICAL CHECK: Verify all RC values exceed minimum bend radius. Red RC = over-bend risk.'],
-        note:'📐 Rod step limit: ±2.5%/rod (9.5m). Entry ~13–18%. Min BR = OD×100÷1000 m.' },
+        note:'📐 Rod step limit: ±2.5%/rod (9.5m). Entry ~13–18%. Min BR(m) = OD(m)×100.' },
       { ico:'🏙️', lbl:'MODE 3 — PIT-TO-PIT CURVE (CITY MODE)', steps:[
         'USE WHEN: Urban/congested zones with pre-dug client pits at both ends.',
         'SETUP: Enter Entry Pit Depth and Exit Pit Depth (client-specified). These are the real soil surface constraints.',
@@ -9994,7 +10123,7 @@ const QG_DATA = {
         'Warning fires if exit depth ≠ 0.00m at the last rod.',
         'Increase bore length OR raise exit angle to fix.',
         'App shows required adjustment in the warning row.'],
-        note:'📐 Min BR = OD×100÷1000 | RC = Seg÷tan(ΔAngle) — API RP 1107' },
+        note:'📐 Min BR(m) = OD(m)×100 | RC = Seg÷ΔAngle(rad) — API RP 1107' },
       { ico:'🛰️', lbl:'FIELD TOOLS — OVERVIEW', steps:[
         'Open from the 3-dot menu (top-right) on the Login page.',
         'Six tabs inside: GPS Distance, Track Map, Field Camera, Gallery, Field Report, Angle Meter.',
@@ -10136,7 +10265,7 @@ const QG_DATA = {
         'تظهر التحذير إذا كان عمق الخروج ≠ 0.00م في آخر قضيب.',
         'زد طول الحفر أو ارفع زاوية الخروج للإصلاح.',
         'يعرض التطبيق التعديل المطلوب في صف التحذير.'],
-        note:'📐 Min BR = OD×100÷1000 | RC = Seg÷tan(ΔAngle) — API RP 1107' },
+        note:'📐 Min BR(m) = OD(m)×100 | RC = Seg÷ΔAngle(rad) — API RP 1107' },
       { ico:'🛰️', lbl:'الأدوات الميدانية — نظرة عامة', steps:[
         'افتح من قائمة الثلاث نقاط (أعلى يمين) في صفحة تسجيل الدخول.',
         'ستة تبويبات: مسافة GPS، خريطة المسار، كاميرا الحقل، المعرض، تقرير الحقل، مقياس الزاوية.',
@@ -10228,7 +10357,7 @@ const QG_DATA = {
         'स्टीयर पाथ: Entry Angle (neg%) → नीचे जाना → Level Hold → ऊपर आना → Exit Angle।',
         'निकास: Drill bit दूसरे सिरे पर ज़मीनी स्तर पर निकलता है। Exit से Entry तक pipe pull करें।',
         'RC जांच: सभी RC values minimum bend radius से अधिक होनी चाहिए। लाल RC = over-bend।'],
-        note:'📐 Rod step limit: ±2.5%/rod (9.5m)। Entry ~13–18%। Min BR = OD×100÷1000 m।' },
+        note:'📐 Rod step limit: ±2.5%/rod (9.5m)। Entry ~13–18%। Min BR(m) = OD(m)×100।' },
       { ico:'🏙️', lbl:'मोड 2 — पिट-टू-पिट कर्व (सिटी मोड)', steps:[
         'कब उपयोग करें: शहरी क्षेत्र जहाँ client के दोनों तरफ pit पहले से खुदे हों।',
         'सेटअप: Entry Pit Depth और Exit Pit Depth डालें (client द्वारा निर्धारित)।',
@@ -10280,7 +10409,7 @@ const QG_DATA = {
         'Warning तब आती है जब last rod पर depth ≠ 0.00m हो।',
         'Bore length बढ़ाएं या exit angle ऊपर करें।',
         'App warning row में ज़रूरी adjustment दिखाता है।'],
-        note:'📐 Min BR = OD×100÷1000 | RC = Seg÷tan(ΔAngle) — API RP 1107' },
+        note:'📐 Min BR(m) = OD(m)×100 | RC = Seg÷ΔAngle(rad) — API RP 1107' },
       { ico:'🛰️', lbl:'फील्ड टूल्स — परिचय', steps:[
         '3-dot menu (ऊपर right) से Login page पर open करें।',
         'अंदर 6 tabs: GPS Distance, Track Map, Field Camera, Gallery, Field Report, Angle Meter।',
@@ -10601,7 +10730,7 @@ function zdcCustomStepPreview() {
   if (odMM && val > 2.5) {
     const BR = getMBR(odMM);
     const rl = parseFloat(document.getElementById('zdcRodLen').value) || 9.5;
-    const rc = Math.abs(rl / Math.tan(val / 100));
+    const rc = Math.abs(rl / Math.atan(val / 100));
     const sf = rc / BR;
     note.innerHTML += `<br>RC≈${rc.toFixed(0)}m | BR=${BR.toFixed(0)}m | SF=${sf.toFixed(1)}×`;
     if (sf < 1.5) note.innerHTML += ' ⚠️ LOW SF';
@@ -10824,7 +10953,7 @@ function calcZeroDegree() {
   // If user gave custom step > 2.5%, check if RC is safe for the pipe
   let stepWarnHTML = '';
   if (userStep > 2.5) {
-    const rcAtStep = Math.abs(rl / Math.tan(userStep / 100));
+    const rcAtStep = Math.abs(rl / Math.atan(userStep / 100));
     const sfAtStep = rcAtStep / BR;
     if (sfAtStep < 1.5) {
       stepWarnHTML = `<div style="background:rgba(255,51,102,.1);border:1px solid rgba(255,51,102,.3);
@@ -10857,7 +10986,7 @@ function calcZeroDegree() {
     rodNum++;
     const prevA = ncRows.length > 0 ? Math.abs(ncRows[ncRows.length-1].angle) : peakAngle;
     const dA    = Math.abs(peakAngle - prevA);
-    const rc    = dA > 0.005 ? Math.abs(rl / Math.tan(dA / 100)) : null;
+    const rc    = dA > 0.005 ? Math.abs(rl / Math.atan(dA / 100)) : null;
     ncDepth    += rl * peakAngle / 100;
     ncRows.push({ rod: rodNum, seg: rl, dist: rodNum * rl,
       angle: -peakAngle, depth: ncDepth, rc, zone: 'NC' });
@@ -10886,7 +11015,7 @@ function calcZeroDegree() {
         rodNum++;
         const prevA = ncRows.length > 0 ? Math.abs(ncRows[ncRows.length-1].angle) : peakAngle;
         const dA = Math.abs(adjAngle - prevA);
-        const rc = dA > 0.005 ? Math.abs(rl / Math.tan(dA / 100)) : null;
+        const rc = dA > 0.005 ? Math.abs(rl / Math.atan(dA / 100)) : null;
         ncDepth = ncDepth + rl * adjAngle / 100;
         ncRows.push({ rod: rodNum, seg: rl, dist: rodNum * rl,
           angle: -adjAngle, depth: ncDepth, rc, zone: 'NC' });
@@ -10898,7 +11027,7 @@ function calcZeroDegree() {
     rodNum++;
     const prevA = ncRows.length > 0 ? Math.abs(ncRows[ncRows.length-1].angle) : peakAngle;
     const dA    = Math.abs(curAngle - prevA);
-    const rc    = dA > 0.005 ? Math.abs(rl / Math.tan(dA / 100)) : null;
+    const rc    = dA > 0.005 ? Math.abs(rl / Math.atan(dA / 100)) : null;
     ncDepth    += rl * curAngle / 100;
     ncRows.push({ rod: rodNum, seg: rl, dist: rodNum * rl,
       angle: -curAngle, depth: ncDepth, rc, zone: 'NC' });
@@ -10922,7 +11051,7 @@ function calcZeroDegree() {
         rodNum++;
         const prevA = ncRows.length > 0 ? Math.abs(ncRows[ncRows.length-1].angle) : 0;
         const dA = Math.abs(adjAngle - prevA);
-        const rc = dA > 0.005 ? Math.abs(rl / Math.tan(dA / 100)) : null;
+        const rc = dA > 0.005 ? Math.abs(rl / Math.atan(dA / 100)) : null;
         ncDepth = ncDepth + rl * adjAngle / 100;
         ncRows.push({ rod: rodNum, seg: rl, dist: rodNum * rl,
           angle: -adjAngle, depth: ncDepth, rc, zone: 'NC' });
@@ -10935,7 +11064,7 @@ function calcZeroDegree() {
     rodNum++;
     const prevA = ncRows.length > 0 ? Math.abs(ncRows[ncRows.length-1].angle) : 0;
     const dA    = Math.abs(curAngle - prevA);
-    const rc    = dA > 0.005 ? Math.abs(rl / Math.tan(dA / 100)) : null;
+    const rc    = dA > 0.005 ? Math.abs(rl / Math.atan(dA / 100)) : null;
     ncDepth    += rl * curAngle / 100;
     ncRows.push({ rod: rodNum, seg: rl, dist: rodNum * rl,
       angle: -curAngle, depth: ncDepth, rc, zone: 'NC' });
@@ -11113,7 +11242,7 @@ function calcZeroDegree() {
     let rc = null;
     if (countRows.length > 0) {
       const dA = Math.abs(rodAngle - countRows[countRows.length-1].rodAngle);
-      rc = dA > 0.005 ? Math.abs(seg / Math.tan(dA / 100)) : null;
+      rc = dA > 0.005 ? Math.abs(seg / Math.atan(dA / 100)) : null;
     }
     const rcOK = rc === null || rc >= BR;
     countRows.push({ rod, seg, depth, rodAngle, rc, rcOK, zone: 'COUNT' });
@@ -11155,7 +11284,7 @@ function calcZeroDegree() {
     const dist = r.dist.toFixed(1);
     const aStr = toD(r.angle);   // unit-aware (% or °) via existing mechanism
     const dStr = '−' + r.depth.toFixed(2);
-    const rcStr = r.rc !== null ? r.rc.toFixed(0) : '∞';
+    const rcStr = r.rc !== null ? r.rc.toFixed(0) : 'Straight';
     let rlCells = '';
     if (_rlZdc) {
       rlCells = `<td id="srl-zdc-${r.rod}" data-srlrod="${r.rod}" data-calcdepth="${r.depth}" data-target="rla-zdc-${r.rod}"
@@ -11225,7 +11354,7 @@ function calcZeroDegree() {
     const bg   = idx % 2 === 0 ? 'rgba(0,255,200,.03)' : 'transparent';
     const aStr = toD(r.rodAngle);   // unit-aware (% or °) via existing mechanism
     const aCol = absA < 0.05 ? '#00ffc8' : absA <= 1 ? '#7effa0' : 'var(--warn)';
-    const rcStr= r.rc !== null ? r.rc.toFixed(0) : '∞';
+    const rcStr= r.rc !== null ? r.rc.toFixed(0) : 'Straight';
     const countDist = (r.rod === n ? bl : r.rod * rl).toFixed(1);
     // Exit box auto-value shown ONLY on the real final/exit rod (r.rod === n);
     // every other row is a free editable per-rod cell. Same rule already
@@ -11378,7 +11507,7 @@ function calcZeroDegree() {
 
   <div class="zdc-footer-note" style="margin-top:8px;">
     🎯 <strong>Zero Degree Crossing</strong> — Target: 0% | Best: ±0.5% | Acceptable: ±1% | Max: ±2%<br>
-    📐 Min BR = OD×100÷1000 = <strong>${BR.toFixed(1)}m</strong> | Countable Bore = Entry Pit → Exit Pit only<br>
+    📐 Min BR(m) = OD(m)×100 = <strong>${BR.toFixed(1)}m</strong> | Countable Bore = Entry Pit → Exit Pit only<br>
     ✅ Use: Steel Casing · Utility Sleeve · Road/Canal/Railway Crossing · Micro Tunnel<br>
     ⚠️ Supplementary calculator — Main HDD chart generated separately.
   </div>`;
@@ -11755,7 +11884,7 @@ function zdcExportPDF() {
     tbl += `<tr style="background:#fee2e2">
       <td>${r.rod}</td><td>${r.dist.toFixed(1)}</td>
       <td>${toD(r.angle)}</td><td>−${r.depth.toFixed(2)}</td>
-      <td>${r.rc!==null?r.rc.toFixed(0):'∞'}</td>
+      <td>${r.rc!==null?r.rc.toFixed(0):'Straight'}</td>
       ${_gpsCellPdf(String(r.rod))}${_rlCells(String(r.rod))}
       <td>—</td><td>—</td><td>🚫 NOT COUNTABLE — Punch-In zone</td></tr>`;
   });
@@ -11768,7 +11897,7 @@ function zdcExportPDF() {
       <td>${r.rod}</td><td>${(r.rod===d.n?d.bl:r.rod*d.rl).toFixed(1)}</td>
       <td style="color:#065f46;font-weight:bold">${aStr}</td>
       <td style="font-weight:bold">−${r.depth.toFixed(2)}</td>
-      <td>${r.rc!==null?r.rc.toFixed(0):'∞'}</td>
+      <td>${r.rc!==null?r.rc.toFixed(0):'Straight'}</td>
       ${_gpsCellPdf(String(r.rod))}${_rlCells(String(r.rod))}
       <td style="background:#f0fff4">—</td><td style="background:#f0fff4">—</td>
       <td>&nbsp;</td></tr>`;
@@ -11814,7 +11943,7 @@ ${(() => { const pw = calcPipeWeight(); return pw ? `<div class="pws">
     </div>
   </div>` : ''; })()}
 <div class="ft">
-  🎯 Target: 0% | Best: ±0.5% | Acceptable: ±1% | Max: ±2% | Min BR=OD×100÷1000<br>
+  🎯 Target: 0% | Best: ±0.5% | Acceptable: ±1% | Max: ±2% | Min BR(m)=OD(m)×100<br>
   🚫 Red = NOT COUNTABLE (Punch-In→Entry Pit) | ✅ Green = COUNTABLE (Entry→Exit Pit)<br>
   <b>Designed by: Saiyad Hussain</b> — HDD Driller &amp; Locator · 14+ Years · Saudi Arabia<br>
   ⚠️ For reference/planning only — must be verified &amp; approved by a Licensed/Authorized Engineer before actual field execution.
@@ -11914,7 +12043,7 @@ html,body{height:100%;font-family:Arial,sans-serif;background:#fff;color:#111;}
 <div class="gi">${cells.map(([l,val])=>`<div class="gc"><div class="gcl">${l}</div><div class="gcv">${val}</div></div>`).join('')}</div>
 <div class="gw"><img src="${graphImg}" alt="Bore Profile Graph"></div>
 <div class="gf">
-  <span>Target: 0% | Best: ±0.5% | Acceptable: ±1% | Max: ±2% | Min BR=OD×100÷1000</span>
+  <span>Target: 0% | Best: ±0.5% | Acceptable: ±1% | Max: ±2% | Min BR(m)=OD(m)×100</span>
   <span><strong>Saiyad Hussain</strong> — HDD Driller &amp; Locator · 14+ Yrs · Saudi Arabia</span>
 </div>
 <div style="margin-top:3px;padding:3px 7px;background:#fff8e1;border:1px solid #e0c060;border-radius:3px;font-size:6.5px;color:#7a5c00;text-align:center">⚠️ For reference/planning only — must be verified &amp; approved by a Licensed/Authorized Engineer before actual field execution.</div>
@@ -11952,13 +12081,13 @@ function _zdcExcelCore() {
 
   // PI row
   const ncAngStr = d.ncRows.length ? toD(d.ncRows[0].angle) : '—';
-  data.push(['0','0.0',ncAngStr,'0.00','∞','—','—',
+  data.push(['0','0.0',ncAngStr,'0.00','Straight','—','—',
     `PUNCH IN | Entry:${ncAngStr} | Target depth:−${d.ed.toFixed(2)}m in ${d.ncRods} rods (~${d.ncDist.toFixed(0)}m)`]);
 
   // NC rows
   d.ncRows.forEach(r => {
     data.push([r.rod, r.dist.toFixed(1), toD(r.angle),
-      '−'+r.depth.toFixed(2), r.rc!==null?r.rc.toFixed(0):'∞',
+      '−'+r.depth.toFixed(2), r.rc!==null?r.rc.toFixed(0):'Straight',
       '—','—','🚫 NOT COUNTABLE — Punch-In zone']);
   });
 
@@ -11970,7 +12099,7 @@ function _zdcExcelCore() {
   d.countRows.forEach((r,i) => {
     const aStr = toD(r.rodAngle);
     data.push([r.rod, (r.rod===d.n?d.bl:r.rod*d.rl).toFixed(1), aStr,
-      '−'+r.depth.toFixed(2), r.rc!==null?r.rc.toFixed(0):'∞',
+      '−'+r.depth.toFixed(2), r.rc!==null?r.rc.toFixed(0):'Straight',
       '—','—',
       r.rod===d.n?'✅ COUNTABLE | 🕳️ EXIT PIT REACHED':'✅ COUNTABLE']);
   });
@@ -12612,6 +12741,54 @@ let _tbdRows = [];
 let _tbdBuiltN = null;
 let _tbdBuiltGpsOn = null;
 let _tbdBuiltRlOn = null;
+// v90 / BUG FIX (reported by Saiyad Hussain — Entry RL showed "1.00" instead
+// of "100.00"): the guard above only re-detects an ACTIVE/INACTIVE transition
+// of the RL columns (_tbdBuiltRlOn), not a change in the entRL/exiRL VALUE
+// itself. So the very first keystroke (e.g. "1") flips RL from inactive→active,
+// triggers one rebuild that bakes in that partial "1" into the Punch-In row's
+// Survey RL cell — then every further keystroke ("10","100") no longer changes
+// the active/inactive state, so the guard skips rebuilding and the cell stays
+// stuck at the stale partial value. Track the actual RL numbers too, so a
+// live-patch (not a full rebuild — see below) can keep them fresh without
+// wiping any manually-typed angle/depth/RC/GPS cells.
+let _tbdBuiltEntRL = null;
+let _tbdBuiltExiRL = null;
+
+// Live-patch ONLY the Punch-In/Punch-Out Survey-RL (and their Actual-Depth-
+// From-RL) cells with the current Entry/Exit RL values — used when RL values
+// change but the table structure itself doesn't need a full rebuild, so any
+// manually-typed angle/depth/RC/GPS data in the rest of the table is left
+// completely untouched.
+function tbdRefreshRLCells() {
+  if (!_tbdRows.length) return;
+  const _rlNow = typeof rlGetValues === 'function' ? rlGetValues('std') : null;
+  if (!_rlNow) return;
+  const piCell  = document.getElementById('srl-tbd-0');
+  const piAdCell = document.getElementById('rla-tbd-0');
+  if (piCell) {
+    const piTxt = (typeof _rlNow.entRL === 'number') ? _rlNow.entRL.toFixed(2) : '';
+    piCell.textContent = piTxt;
+    piCell.dataset.calcdepth = '0';
+  }
+  if (piAdCell) {
+    const piAdVal = (typeof _rlNow.entRL === 'number')
+      ? rlCalcActualDepth(0, _rlNow.entRL, _rlNow.entRL) : null;
+    piAdCell.textContent = (piAdVal === null) ? '' : piAdVal.toFixed(2) + ' m';
+  }
+  const lastRod = _tbdRows.length - 1;
+  const poCell   = document.getElementById('srl-tbd-' + lastRod);
+  if (poCell) {
+    const poTxt = (typeof _rlNow.exiRL === 'number') ? _rlNow.exiRL.toFixed(2) : '';
+    poCell.textContent = poTxt;
+    // Actual-Depth-From-RL for Punch-Out only becomes meaningful once an
+    // angle has been typed — same existing rule tbdAutoRows() already
+    // follows (see its own isLastRow branch); if the user already typed an
+    // angle, onSurveyRLEdit() (fired by tbdCalcFrom's normal cascade) is
+    // what keeps that cell live from here — untouched by this patch.
+  }
+  _tbdBuiltEntRL = _rlNow.entRL;
+  _tbdBuiltExiRL = _rlNow.exiRL;
+}
 
 // Auto-build the draft table when bore details change in Mode 1
 function tbdAutoRows() {
@@ -12631,6 +12808,7 @@ function tbdAutoRows() {
   // touched by this patch.
   const _rlOnNow  = !!(typeof rlGetValues === 'function' && rlGetValues('std'));
   const _gpsOnNow = !!(typeof gpsSurveyBothComplete === 'function' && gpsSurveyBothComplete());
+  const _rlValsNow = _rlOnNow && typeof rlGetValues === 'function' ? rlGetValues('std') : null;
 
   // v7_8_6-8/9 / SAFE PATCH — PRESERVE BORE CHART DATA (MODE 1)
   // ROOT CAUSE (v7_8_6-7 and earlier): onIC() — bound to `oninput` on
@@ -12658,17 +12836,39 @@ function tbdAutoRows() {
   // correctly skips the rebuild and preserves existing manual data.
   if (_tbdBuiltN === n && _tbdBuiltGpsOn === _gpsOnNow && _tbdBuiltRlOn === _rlOnNow &&
       _tbdRows.length === n + 1 && document.getElementById('tbd-tr-0')) {
+    // v90 / BUG FIX: structure and active/inactive state are unchanged, but
+    // the actual Entry/Exit RL NUMBER may still have changed (user still
+    // typing digits) — old code returned here silently, leaving the
+    // Punch-In/Punch-Out Survey RL cells stuck at whatever partial value
+    // was typed at the moment RL first became active. Live-patch just those
+    // two cells (no full rebuild — every manually-typed angle/depth/RC/GPS
+    // cell elsewhere in the table stays exactly as-is).
+    if (_rlValsNow && (_rlValsNow.entRL !== _tbdBuiltEntRL || _rlValsNow.exiRL !== _tbdBuiltExiRL)) {
+      tbdRefreshRLCells();
+    }
     return; // structure AND column-set unchanged — existing manual data stays untouched
   }
   _tbdBuiltN = n;
   _tbdBuiltGpsOn = _gpsOnNow;
   _tbdBuiltRlOn = _rlOnNow;
+  _tbdBuiltEntRL = _rlValsNow ? _rlValsNow.entRL : null;
+  _tbdBuiltExiRL = _rlValsNow ? _rlValsNow.exiRL : null;
+
+  // v103 CRITICAL FIX: save every already-typed angle by rod number BEFORE
+  // wiping _tbdRows, so a structural rebuild (rod count changed, or RL/GPS
+  // columns toggling on/off) never throws away a chart the user already
+  // built. Real bug reported by Saiyad Hussain: typing Entry RL for the
+  // first time after fully building the chart with angles wiped every
+  // angle back to 0 — the RL-column-toggle rebuild path never preserved
+  // prior data, only the rod-count-change path was ever guarded against.
+  const _savedAngles = {};
+  _tbdRows.forEach(r => { if (r.angle) _savedAngles[r.rod] = r.angle; });
 
   // Build _tbdRows array (Rod 0 = Punch-In, Rod 1…n = drill rods)
   _tbdRows = [];
   for (let rod = 0; rod <= n; rod++) {
     const dist = rod === n ? bl : rod * rl;
-    _tbdRows.push({ rod, dist, angle: 0, depth: 0, rc: null });
+    _tbdRows.push({ rod, dist, angle: _savedAngles[rod] || 0, depth: 0, rc: null });
   }
 
   // Render empty table into chartBody
@@ -12745,12 +12945,12 @@ function tbdAutoRows() {
     }
     html += `<tr id="tbd-tr-${r.rod}" style="${isFirst ? 'background:rgba(0,212,255,.06)' : ''}">
       <td contenteditable="true" data-ph="—" style="font-weight:700">${r.rod}</td>
-      <td contenteditable="true" data-ph="0.0" style="font-family:'Share Tech Mono',monospace">${distStr}</td>
+      <td id="tbd-dist-${r.rod}" contenteditable="true" data-ph="0.0" style="font-family:'Share Tech Mono',monospace">${distStr}</td>
       <td id="ca-tbd-${r.rod}" data-rod="${r.rod}" data-tbdzone="1"
           contenteditable="true" data-ph="0${UNIT==='deg'?'°':'%'}"
           oninput="tbdAngInput(this)" style="color:var(--accent);font-weight:700"></td>
       <td id="tbd-d-${r.rod}" contenteditable="true" data-ph="0.00" style="color:var(--t2)"></td>
-      <td id="tbd-rc-${r.rod}" contenteditable="true" data-ph="∞" style="color:var(--t2)"></td>
+      <td id="tbd-rc-${r.rod}" contenteditable="true" data-ph="Straight" style="color:var(--t2)"></td>
       ${gpsCellTbd}
       ${rlCells}
       <td contenteditable="true" data-ph="—" style="color:var(--green);font-family:'Share Tech Mono',monospace;font-size:11px"></td>
@@ -12759,6 +12959,21 @@ function tbdAutoRows() {
     </tr>`;
   });
   tbody.innerHTML = html;
+
+  // v103 CRITICAL FIX (continued): the row markup always renders angle
+  // cells empty (relying on the data-ph placeholder) — so restoring
+  // r.angle in the JS array alone isn't enough; the visible cell text
+  // must be restored too, then recalculated so depth/RC/RL cascade
+  // correctly from the restored angles instead of staying at 0.
+  let _hadSavedAngles = false;
+  Object.keys(_savedAngles).forEach(rodStr => {
+    const rod = parseInt(rodStr, 10);
+    const cell = document.getElementById('ca-tbd-' + rod);
+    if (cell) {
+      cell.textContent = String(_savedAngles[rod]);
+      _hadSavedAngles = true;
+    }
+  });
 
   // Reset table header — 8 standard columns, or 10 when RL is active (PHASE 4),
   // plus the SURVEY GPS (N/E) column right after RC whenever the combined
@@ -12777,6 +12992,21 @@ function tbdAutoRows() {
   // Smart Edit ON by default in Draft mode
   SMART_EDIT_ON = true;
   applySmartEditState();
+
+  // v103 CRITICAL FIX (continued): recalculate everything from the
+  // restored angles (depth, RC, distance) so the chart is fully whole
+  // again, not just showing angle text next to stale/zero depth values.
+  if (_hadSavedAngles && typeof tbdCalcFrom === 'function') {
+    tbdCalcFrom(0);
+  }
+
+  // v98 FIX: refresh the Safety & Design Check panel with Mode 1's own
+  // real data immediately, even before any angle is typed — otherwise it
+  // keeps showing whatever another mode last wrote there.
+  const _tbdOdMM = typeof getODmm === 'function' ? getODmm() : 0;
+  const _tbdBR = _tbdOdMM > 0 && typeof getMBR === 'function' ? getMBR(_tbdOdMM) : 0;
+  tbdUpdateSafety(_tbdBR, bl);
+  tbdDrawProfile();
 
   toast('📐 Draft table ready (' + n + ' rods) — enter angles to compute depth & curvature', 'ok');
 }
@@ -12806,6 +13036,7 @@ function tbdCalcFrom(fromRod) {
   const bl     = parseFloat((document.getElementById('boreL') || {}).value) || 0;
   const odMM   = typeof getODmm === 'function' ? getODmm() : 0;
   const BR     = odMM > 0 && typeof getMBR === 'function' ? getMBR(odMM) : 0;
+  const machH  = parseFloat((document.getElementById('machH') || {}).value) || 1.0;
 
   // Read angle from DOM for every row at or after fromRod
   _tbdRows.forEach((r, i) => {
@@ -12824,33 +13055,93 @@ function tbdCalcFrom(fromRod) {
     }
   });
 
-  // Walk all rows and compute depth + RC
-  let prevDepth = i => i > 0 ? _tbdRows[i-1].depth : 0;
-  let prevAngle = i => i > 0 ? _tbdRows[i-1].angle : 0;
+  // ── Air distance (Machine Boom Height) — same physics/formula as Mode 2
+  // (Standard): the pilot head travels in the AIR at the Punch-In (entry)
+  // angle before it actually enters the ground. Entry angle here is simply
+  // whatever the user typed into Rod 0's own angle cell (Mode 1 has no
+  // separate Entry-Angle field — Rod 0's angle IS the entry angle).
+  // airDist = machH / tan(entryAngleInRadians).
+  const entryPct = Math.abs(_tbdRows[0] ? _tbdRows[0].angle : 0);
+  const entRad   = Math.atan(entryPct / 100);
+  const airDist  = entRad > 0 ? machH / Math.tan(entRad) : 0;
 
+  // v93 / Air-distance-at-source rewrite (generic, rod-length independent
+  // — same algorithm as Mode 2's calcDepths()): Row 0's own DISTANCE is no
+  // longer forced to 0 — it now shows the real GROUND-ONLY portion of the
+  // first rod (0 if the whole rod is still in the air, in which case the
+  // leftover air budget carries into Rod 1, Rod 2, ... as many rods as it
+  // takes). The table's row COUNT only grows by an extra rod if genuinely
+  // needed to still reach Bore Length exactly — normal cases (airDist <
+  // one rod length) never change row count.
+  let airBudget = airDist;
+  let cum = 0;
+  const groundDist = [];
+  let gi = 0;
+  while (cum < bl) {
+    const consumed = Math.min(airBudget, rl);
+    airBudget -= consumed;
+    const groundThisRod = rl - consumed;
+    cum = Math.min(cum + groundThisRod, bl);
+    groundDist[gi] = cum;
+    gi++;
+    if (gi > _tbdRows.length + 50) break; // sanity guard
+  }
+  const nActual = gi - 1;
+  // Extremely rare: if airDist genuinely needs one more row than the
+  // skeleton currently has, extend _tbdRows now (new row starts blank,
+  // like any other unfilled row — nothing fabricated).
+  while (_tbdRows.length - 1 < nActual) {
+    const newRod = _tbdRows.length;
+    _tbdRows.push({ rod: newRod, dist: bl, angle: 0, depth: 0, rc: null });
+  }
+  // v101 CRITICAL FIX: the symmetric case — a PREVIOUS angle/machH combo
+  // needed more rows (grown via the push above) and this angle now needs
+  // fewer. Without truncating back down, the loop below reads past
+  // groundDist's real length (undefined), crashing on r.dist.toFixed(1)
+  // and silently aborting before ever reaching tbdDrawProfile()/
+  // tbdUpdateSafety() — this is why Graph/Drawing could go missing.
+  if (_tbdRows.length - 1 > nActual) {
+    _tbdRows.length = nActual + 1;
+  }
+
+  // Walk all rows and compute distance + depth + RC
   for (let i = 0; i < _tbdRows.length; i++) {
     const r = _tbdRows[i];
-    if (i === 0) { r.depth = 0; continue; }  // Punch-In always 0 depth
-    const seg = (r.rod === _tbdRows.length - 1) ? (bl - (r.rod - 1) * rl) : rl;
-    const pD  = _tbdRows[i-1].depth;
-    const segLen = seg > 0 ? seg : rl;
-    // Strict HDD Sign Convention (cumulative trigonometry):
-    // Negative angle (−) → depth INCREASES: Current = Previous + abs(sin(angle/100) × segLen)
-    // Positive angle (+) → depth DECREASES: Current = Previous - abs(sin(angle/100) × segLen)
-    const sinChange = Math.abs(Math.sin(r.angle / 100) * segLen);
-    if      (r.angle < 0) r.depth = pD + sinChange;  // going deeper — display as −X.XXm
-    else if (r.angle > 0) r.depth = pD - sinChange;  // coming up   — display as +X.XXm
+    const distEnd = groundDist[i];
+    const prevEndDist = i === 0 ? 0 : groundDist[i-1];
+    const seg = Math.max(0, distEnd - prevEndDist);
+    r.dist = distEnd;
+    r.seg  = seg;
+    const pD = i === 0 ? 0 : _tbdRows[i-1].depth;
+
+    // Industry-standard linear HDD formula — matches the footer/PDF formula
+    // text and Mode 2/3/4: Depth = Prev + (Angle% × Seg ÷ 100). No trig.
+    // seg is now already the row's real ground-only length (air already
+    // subtracted above), so this is correct for Row 0 too — a rod fully
+    // in the air simply has seg=0 → depth unchanged from previous.
+    const chg = seg * Math.abs(r.angle) / 100;
+    if      (r.angle < 0) r.depth = pD + chg;  // going deeper — display as −X.XXm
+    else if (r.angle > 0) r.depth = pD - chg;  // coming up   — display as +X.XXm
     else                  r.depth = pD;               // flat
 
-    // Radius of Curvature
-    const pA = _tbdRows[i-1].angle;
-    const dA = Math.abs(r.angle - pA);
-    r.rc = dA > 0.005 ? Math.abs((seg > 0 ? seg : rl) / Math.tan(dA / 100)) : null;
+
+    // Radius of Curvature — Row 0 (Punch-In) has no previous rod to
+    // compare against, so it's always "Straight" here too (matches Mode
+    // 2's isPI convention).
+    if (i === 0) {
+      r.rc = null;
+    } else {
+      const pA = _tbdRows[i-1].angle;
+      const dA = Math.abs(r.angle - pA);
+      r.rc = dA > 0.005 ? Math.abs((seg > 0 ? seg : rl) / Math.atan(dA / 100)) : null;
+    }
 
     // Only update DOM rows at or after the edited rod
     if (i >= fromRod) {
+      const distCell = document.getElementById('tbd-dist-' + r.rod);
       const depCell = document.getElementById('tbd-d-' + r.rod);
       const rcCell  = document.getElementById('tbd-rc-' + r.rod);
+      if (distCell) distCell.textContent = r.dist.toFixed(1);
       if (depCell) {
         const absD = Math.abs(r.depth);
         depCell.textContent = r.depth > 0.005 ? '\u2212' + r.depth.toFixed(2)
@@ -12858,7 +13149,7 @@ function tbdCalcFrom(fromRod) {
         depCell.style.color = r.depth > 0 ? 'var(--warn)' : r.depth < -0.005 ? 'var(--danger)' : 'var(--t2)';
       }
       if (rcCell) {
-        rcCell.textContent = r.rc !== null ? r.rc.toFixed(0) : '\u221e';
+        rcCell.textContent = r.rc !== null ? r.rc.toFixed(0) : 'Straight';
         if (BR > 0 && r.rc !== null) {
           rcCell.style.color = r.rc < BR ? 'var(--danger)' : r.rc < BR * 1.5 ? 'var(--warn)' : 'var(--green)';
         }
@@ -12886,11 +13177,17 @@ function tbdDrawProfile() {
   const ctx = cvs.getContext('2d');
   const W = Math.max(cvs.parentElement.offsetWidth - 4, 300);
   cvs.width = W;
+  cvs.height = 380; // v98 FIX: must be set explicitly (matches Mode 2's drawProfile()) —
+                    // was previously only ever READ here, never assigned, so a session
+                    // that never visits Mode 2 keeps the canvas's default/stale buffer
+                    // height, breaking the graph.
   const H = cvs.height;
   ctx.clearRect(0, 0, W, H);
 
-  const maxDist  = Math.max(..._tbdRows.map(r => r.dist), 1);
-  const maxDepth = Math.max(..._tbdRows.map(r => r.depth), 0.5);
+  const { currentN: _tbdN, lastIdx: _tbdLastIdx, maxD: _tbdMaxD } = _tbdCurrentInfo();
+  const realRows = _tbdRows.slice(0, _tbdLastIdx + 1);
+  const maxDist  = Math.max(...realRows.map(r => r.dist), 1);
+  const maxDepth = Math.max(...realRows.map(r => r.depth), 0.5);
   const pad = { l: 55, r: 20, t: 28, b: 28 };
   const dW   = W - pad.l - pad.r;
   const dH   = H - pad.t - pad.b;
@@ -12910,7 +13207,7 @@ function tbdDrawProfile() {
   ctx.shadowColor = '#c084fc';
   ctx.shadowBlur = 6;
   ctx.beginPath();
-  _tbdRows.forEach((r, i) => {
+  realRows.forEach((r, i) => {
     const x = toX(r.dist);
     const y = toY(r.depth);
     i === 0 ? ctx.moveTo(x, pad.t) : ctx.lineTo(x, y);
@@ -12921,23 +13218,51 @@ function tbdDrawProfile() {
   // Labels
   ctx.fillStyle = 'rgba(192,132,252,.8)';
   ctx.font = '10px Share Tech Mono';
-  ctx.fillText('TRIAL BORE DRAFT | Rods: ' + (_tbdRows.length - 1) + ' | Max Depth: ' + maxDepth.toFixed(2) + 'm', pad.l, 16);
+  ctx.fillText('TRIAL BORE DRAFT | Rods: ' + _tbdN + ' | Max Depth: ' + _tbdMaxD.toFixed(2) + 'm', pad.l, 16);
 }
 
 // Update safety section for TBD
 function tbdUpdateSafety(BR, bl) {
   if (!_tbdRows.length) return;
-  const allRC    = _tbdRows.map(r => r.rc).filter(v => v !== null && v > 0);
+  const { currentN, lastIdx, maxD: maxDepth, entAngle, extAngle, lastDepth: lastD } = _tbdCurrentInfo();
+  const realRows = _tbdRows.slice(0, lastIdx + 1);
+  const allRC    = realRows.map(r => r.rc).filter(v => v !== null && v > 0);
   const minRC    = allRC.length ? Math.min(...allRC) : null;
   const sf       = (minRC !== null && BR > 0) ? minRC / BR : null;
   const sfOK     = sf === null || sf >= 1.5;
-  const maxDepth = Math.max(..._tbdRows.map(r => r.depth), 0);
-  const lastD    = _tbdRows[_tbdRows.length - 1]?.depth || 0;
-  const poOK     = Math.abs(lastD) <= 0.30;
+  const TOL      = 0.25;
+  const poOK     = Math.abs(lastD) <= TOL;
 
   if (typeof updateFinalStatus === 'function') {
     updateFinalStatus(sfOK && poOK ? 'SAFE TO PROCEED' : 'CHECK REQUIRED',
                       sfOK && poOK ? 'ok' : 'wn');
+  }
+
+  // v98 FIX: Mode 1's own real Safety & Design Check panel — previously
+  // this mode had NO panel-writer of its own, so whatever the shared
+  // renderSafety() last wrote (always from Mode 2's G object — stale or
+  // even from a completely different rod length/bore tested earlier)
+  // stayed on screen, showing numbers that had nothing to do with this
+  // Mode 1 chart. Same pattern Mode 3/4 already use for their own panels.
+  const saf = document.getElementById('safetyContent');
+  if (saf) {
+    const odMM  = typeof getODmm === 'function' ? getODmm() : 0;
+    const ream  = odMM * 1.5;
+    const rlVal = parseFloat((document.getElementById('rodL')||{}).value) || 0;
+    const poDisplay = (typeof fmtDepth === 'function' ? fmtDepth(lastD,false,false) : lastD.toFixed(2)) + 'm';
+    const poClass = poOK ? 'ok' : 'bad';
+    const poStatus = poOK ? '✓ CORRECT' : '⚠ CHECK';
+    const sfDisp = sf !== null ? sf.toFixed(2) + '×' : '∞';
+    saf.innerHTML = `
+      <div class="srow"><span class="slbl">Mode: 📝 Trial Bore Draft (Manual Entry)</span><span class="sval ok">✓ ACTIVE</span></div>
+      <div class="srow"><span class="slbl">Formula: Depth = Prev + (Angle% × Seg ÷ 100)</span><span class="sval ok">✓ CORRECT</span></div>
+      <div class="srow"><span class="slbl">Entry Angle: ${toD(entAngle)} | Exit Angle: ${toD(extAngle)}</span><span class="sval ok">✓ AS ENTERED</span></div>
+      <div class="srow"><span class="slbl">Max Depth (from entries): ${maxDepth.toFixed(2)}m</span><span class="sval ok">✓ OK</span></div>
+      <div class="srow"><span class="slbl">Punch-In: 0.00m | Punch-Out: ${poDisplay} (tolerance ±${TOL}m)</span><span class="sval ${poClass}">${poStatus}</span></div>
+      <div class="srow"><span class="slbl">Rod Length: ${rlVal}m | Bore Length: ${bl}m | Rods: ${currentN}</span><span class="sval ok">✓ OK</span></div>
+      <div class="srow"><span class="slbl">Min Bend Radius: OD(${odMM.toFixed(0)}mm) × 100 ÷ 1000 = ${BR.toFixed(2)}m</span><span class="sval ok">✓ API FORMULA</span></div>
+      <div class="srow"><span class="slbl">Safety Factor: ${sfDisp} ${minRC !== null ? '(Min RC: ' + minRC.toFixed(0) + 'm)' : ''}</span><span class="sval ${sfOK?'ok':'bad'}">${sfOK?'✓ SAFE':'⚠ CHECK'}</span></div>
+      <div class="srow"><span class="slbl">Ream Size: ${ream.toFixed(0)}mm vs Pipe OD: ${odMM.toFixed(0)}mm</span><span class="sval ok">✓ OK</span></div>`;
   }
 }
 
@@ -13694,7 +14019,7 @@ function _cwRenderInline(d) {
       <td id="cd-nc-${r.rod}" data-rod="${r.rod}" data-cwzone="nc" contenteditable="true" oninput="onCwDistEdit(this)" onblur="onCwDistEdit(this)" style="color:#aaa;cursor:text">${r.dist.toFixed(1)}</td>
       <td id="ca-cw-${r.rod}" data-rod="${r.rod}" style="color:${aCol};font-weight:bold" contenteditable="true" oninput="onCwAngEdit(this)" onblur="onCwAngEdit(this)">${aStr}</td>
       <td id="cp-nc-${r.rod}" style="color:#ff8899" contenteditable="true">${dStr}</td>
-      <td id="rc-nc-${r.rod}" contenteditable="true" style="color:#888">${r.rc !== null ? r.rc.toFixed(0) : '∞'}</td>
+      <td id="rc-nc-${r.rod}" contenteditable="true" style="color:#888">${r.rc !== null ? r.rc.toFixed(0) : 'Straight'}</td>
       ${gpsCell}
       ${rlCells}
       <td contenteditable="true" data-ph="—" style="color:#888"></td>
@@ -13750,7 +14075,7 @@ function _cwRenderInline(d) {
       <td id="cd-cwc-${r.rod}" data-rod="${r.rod}" data-cwzone="count" contenteditable="true" oninput="onCwDistEdit(this)" onblur="onCwDistEdit(this)" style="color:#ccc;cursor:text">${r.sectDist.toFixed(1)}</td>
       <td id="ca-cwc-${r.rod}" data-rod="${r.rod}" data-cwzone="count" style="color:${aCol};font-weight:bold" contenteditable="true" oninput="onCwAngEdit(this)" onblur="onCwAngEdit(this)">${aStr}</td>
       <td id="cp-cwc-${r.rod}" style="font-weight:bold" contenteditable="true">${dStr}</td>
-      <td id="rc-cwc-${r.rod}" style="${rcOKs}" contenteditable="true">${r.rc !== null ? r.rc.toFixed(0) : '∞'}</td>
+      <td id="rc-cwc-${r.rod}" style="${rcOKs}" contenteditable="true">${r.rc !== null ? r.rc.toFixed(0) : 'Straight'}</td>
       ${gpsCell}
       ${rlCells}
       <td contenteditable="true" data-ph="—" style="color:#888"></td>
@@ -13943,7 +14268,7 @@ function onCwDistEdit(cell) {
     const depEl = document.getElementById('cp-cwc-' + rod);
     const rcEl  = document.getElementById('rc-cwc-' + rod);
     if (depEl) depEl.textContent = (r0.depth >= 0 ? '−' : '+') + Math.abs(r0.depth).toFixed(2);
-    if (rcEl)  rcEl.textContent  = r0.rc !== null ? r0.rc.toFixed(0) : '∞';
+    if (rcEl)  rcEl.textContent  = r0.rc !== null ? r0.rc.toFixed(0) : 'Straight';
     syncSrl('srl-cwc-' + rod, r0.depth);
 
     // Recalc subsequent rows (sectDist, depth; seg unchanged for them)
@@ -13978,7 +14303,7 @@ function onCwDistEdit(cell) {
     const depEl = document.getElementById('cp-nc-' + rod);
     const rcEl  = document.getElementById('rc-nc-' + rod);
     if (depEl) depEl.textContent = '−' + r0.depth.toFixed(2);
-    if (rcEl)  rcEl.textContent  = r0.rc !== null ? r0.rc.toFixed(0) : '∞';
+    if (rcEl)  rcEl.textContent  = r0.rc !== null ? r0.rc.toFixed(0) : 'Straight';
     syncSrl('srl-cw-' + rod, r0.depth);
 
     // Recalc subsequent NC rows
@@ -14033,7 +14358,7 @@ function onCwAngEdit(cell) {
     const depthEl = document.getElementById(dpId);
     const rcEl    = document.getElementById(rcId);
     if (depthEl && !isNaN(depth)) depthEl.textContent = (depth >= 0 ? '−' : '+') + Math.abs(depth).toFixed(2);
-    if (rcEl) rcEl.textContent = (rc !== null && rc !== undefined) ? rc.toFixed(0) : '∞';
+    if (rcEl) rcEl.textContent = (rc !== null && rc !== undefined) ? rc.toFixed(0) : 'Straight';
     // PHASE 8: keep Survey-RL data-calcdepth in sync, refresh Actual-Depth-From-RL if filled
     const srlId = zone === 'count' ? 'srl-cwc-' + rod : 'srl-cw-' + rod;
     const srlEl = document.getElementById(srlId);
@@ -15487,7 +15812,7 @@ td{padding:4px 5px;text-align:center;border:1px solid #ccc;}
         &lt;td style=&quot;background:#f0fff4&quot;&gt;&lt;/td&gt;
         &lt;td style=&quot;background:#f0fff4&quot;&gt;&lt;/td&gt;
         &lt;td&gt;⚠️ PUNCH OUT WARNING: Depth before PO = 0.90m (not 0). Need exit angle ≥ 9.5% OR increase bore length.&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
-&lt;div class=&quot;ft&quot;&gt;Formula: Depth=Prev+(Angle%×Seg÷100) | Min BR=OD×100÷1000 | RC=Seg÷tan(ΔAngle) | API RP 1107&lt;br&gt;
+&lt;div class=&quot;ft&quot;&gt;Formula: Depth=Prev+(Angle%×Seg÷100) | Min BR(m)=OD(m)×100 | RC=Seg÷ΔAngle(rad) | API RP 1107&lt;br&gt;
 &lt;b&gt;Designed by: Saiyad Hussain&lt;/b&gt; — HDD Driller &amp;amp; Locator · 14+ Years · Saudi Arabia&lt;/div&gt;
 &lt;/body&gt;&lt;/html&gt;" style="position: fixed; top: -9999px; left: -9999px; width: 1px; height: 1px; border-width: medium; border-style: none; border-color: currentcolor; border-image: initial;"></iframe><script>
 // ══════════════════════════════════════════════════════
@@ -16323,7 +16648,12 @@ function drwCollectData() {
 
   // ── Existing RL system — reused exactly as-is via rlGetValues() ──
   const modeKey = CURRENT_MODE === 3 ? 'cw' : CURRENT_MODE === 4 ? 'zdc' : 'std';
-  const rl = (CURRENT_MODE === 1) ? null : rlGetValues(modeKey); // Trial Bore has no RL fields
+  // v91 / BUG FIX: Mode 1 (Trial Bore Draft) shares the SAME Entry/Exit RL
+  // fields as Mode 2 (tbdAutoRows already reads them via rlGetValues('std')
+  // — see _rlTbd) — the old "Trial Bore has no RL fields" assumption here
+  // was wrong and silently forced every RL-based connector pole off for
+  // Mode 1's Drawing, regardless of what the user had typed.
+  const rl = rlGetValues(modeKey);
   const entryRL = rl ? rl.entRL : null;
   const exitRL  = rl ? rl.exiRL : null;
 
@@ -16541,11 +16871,22 @@ function drwBuildScene(snapshot) {
   // BOTH (same rod) naturally produces ONE combined pole below, since it's
   // a single point object with both fields — never two separate poles at
   // the same station. Empty when neither RL nor Survey GPS is active. ──
+  // v91 / BUG FIX (reported by Saiyad Hussain): a rod's own real Survey-RL
+  // value was previously ALSO gated behind snapshot.rlActive (the
+  // Drawing's stricter "both Entry AND Exit RL filled" rule) — so a user
+  // who builds a drawing purely from per-rod Reduced Level data (no GPS,
+  // and without necessarily filling BOTH top Entry+Exit RL boxes) got no
+  // connector pole at all for that rod. p.surveyRL / p.actualDepthFromRL
+  // being a real number already proves the user genuinely typed it for
+  // THIS rod (collectRows() only ever populates it from an actual filled
+  // cell) — that alone is sufficient, independent of GPS and independent
+  // of the top-level Entry/Exit RL completeness.
   const rlStations = points.filter(function (p) {
-    const hasRL = snapshot.rlActive && (typeof p.surveyRL === 'number' || typeof p.actualDepthFromRL === 'number');
+    const hasRL = (typeof p.surveyRL === 'number' || typeof p.actualDepthFromRL === 'number');
     const hasGPS = !!(p.surveyGPS && (typeof p.surveyGPS.northing === 'number' || typeof p.surveyGPS.easting === 'number'));
     return hasRL || hasGPS;
   });
+
 
   // ── GPS — pass through Entry/Exit fixes exactly as collected; no
   // calculation, no interpolation, no intermediate GPS points. ──
@@ -17113,6 +17454,17 @@ function _drwCalcDrillingLength(scene) {
     .map(function (p) { return { distance: p.distance, depth: _drwPointDepth(p) }; })
     .sort(function (a, b) { return a.distance - b.distance; });
   if (pts.length < 2) return null;
+  // v102 FIX (explicit decision by Saiyad Hussain): measure Curve Length
+  // from the machine's REAL starting point (distance=0, surface level) —
+  // not just from the first real data point. After the air-distance-at-
+  // source fix, Row 0's own distance can be > 0 (its ground-only portion),
+  // so without this, the initial straight air-approach segment at the
+  // entry angle was silently missing from the total, making Curve Length
+  // come out shorter than the horizontal Bore Length — physically
+  // impossible for a curved path.
+  if (pts[0].distance > 0) {
+    pts.unshift({ distance: 0, depth: 0 });
+  }
   let total = 0;
   for (let i = 1; i < pts.length; i++) {
     const dx = pts[i].distance - pts[i - 1].distance;
