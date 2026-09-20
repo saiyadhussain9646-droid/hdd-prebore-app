@@ -2193,12 +2193,14 @@ document.addEventListener('click',function(e){
     </div>
     <button class="btn-hdr" onclick="openProjModal()" style="background:rgba(0,255,136,.07);border-color:rgba(0,255,136,.25);color:var(--green)">💾 Projects</button>
     <button class="btn-hdr" id="adminBtn" onclick="openAdmin()" style="display: block;">⚙️ Admin</button>
-    <button class="btn-hdr" onclick="doLogout()">🚪 Logout</button>
-    <button class="btn-hdr" id="hdrLiveDraftsBtn" onclick="openLiveDraftsModal()" style="background:rgba(0,212,255,.07);border-color:rgba(0,212,255,.25);color:var(--accent)">📝 Live Drafts</button>
-    <div class="utog" id="themeSelector" style="flex-shrink:0;">
-      <button id="btnThemeLight" onclick="setTheme('light')">Light</button>
-      <button class="on" id="btnThemeDark" onclick="setTheme('dark')">Dark</button>
-      <button id="btnThemeHC" onclick="setTheme('hc')">High Contrast</button>
+    <div class="hdr-btn-group" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
+      <button class="btn-hdr" onclick="doLogout()">🚪 Logout</button>
+      <button class="btn-hdr" id="hdrLiveDraftsBtn" onclick="openLiveDraftsModal()" style="background:rgba(0,212,255,.07);border-color:rgba(0,212,255,.25);color:var(--accent)">📝 Drafts</button>
+      <div class="utog" id="themeSelector" style="flex-shrink:0;">
+        <button id="btnThemeLight" onclick="setTheme('light')">Light</button>
+        <button class="on" id="btnThemeDark" onclick="setTheme('dark')">Dark</button>
+        <button id="btnThemeHC" onclick="setTheme('hc')">High Contrast</button>
+      </div>
     </div>
   </div>
 </div>
@@ -9710,7 +9712,11 @@ function openLiveDraftsModal() {
   // user — and then the very next real Login wiped it again via the
   // normal fresh-start flow (_clearAllBoreData()). Gate it: Live Drafts
   // can only be opened once actually logged in.
-  if (!window.CU) {
+  // FIX: CU is a top-level `let`, not `window.CU` — checking window.CU
+  // here was always false (a `let` at script scope never becomes a
+  // window property), so this incorrectly blocked Live Drafts even when
+  // genuinely logged in. Check the real variable instead.
+  if (!CU) {
     if (typeof toast === 'function') toast('⚠️ Live Drafts resume karne ke liye pehle Login karein', 'wn');
     return;
   }
