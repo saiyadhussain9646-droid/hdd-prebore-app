@@ -1740,7 +1740,7 @@ td.rla-cell:empty:before{content:attr(data-ph);color:var(--t3);font-size:10px;}
     </button>
   </div>
   <div class="smenu-version">HDD PRE-BORE DESIGNER PRO · v7_8_6-90 Built by Saiyad Hussain</div>
-  <div id="smenuTestBuildTag" style="padding:0 20px 12px;font-size:9px;color:rgba(255,255,255,.22)">Build: v7_8_6-90</div>
+  <div id="smenuTestBuildTag" style="padding:0 20px 12px;font-size:9px;color:rgba(255,255,255,.22)">Build: v7_8_6-91</div>
 </div>
 
 <!-- ═══════ LOGIN ═══════ -->
@@ -5065,9 +5065,14 @@ document.addEventListener('click',function(e){
         <span class="pdfch-ico">📋</span>
         <div>
           <div class="pdfch-title">Pre-Bore Chart</div>
-          <div class="pdfch-desc">A4 Portrait — Rod-by-rod data table</div>
+          <div class="pdfch-desc">A4 — Rod-by-rod data table</div>
         </div>
       </label>
+      <div id="pdfch-orient-wrap" style="display:flex;gap:6px;padding:0 4px 2px 44px;font-size:10px;color:var(--t2)">
+        <label style="display:flex;align-items:center;gap:3px;cursor:pointer"><input type="radio" name="pdfch-orient" value="auto" checked style="accent-color:var(--accent)"> Auto</label>
+        <label style="display:flex;align-items:center;gap:3px;cursor:pointer"><input type="radio" name="pdfch-orient" value="landscape" style="accent-color:var(--accent)"> Landscape</label>
+        <label style="display:flex;align-items:center;gap:3px;cursor:pointer"><input type="radio" name="pdfch-orient" value="portrait" style="accent-color:var(--accent)"> Portrait</label>
+      </div>
       <label class="pdfch-option" id="pdfch-opt2" onclick="pdfchToggle(2)">
         <input type="checkbox" id="pdfch-cb2" checked>
         <span class="pdfch-ico">📈</span>
@@ -7202,7 +7207,7 @@ function renderChart(){
       <th id="th-rc">RADIUS OF CURVATURE (m)</th>` +
       (_gpsOn ? `<th id="th-gps">SURVEY GPS (N/E)</th>` : '') +
       (_rlStd ? `<th id="th-srl">SURVEY REDUCED LEVEL (m)</th><th id="th-rlad">ACTUAL DEPTH FROM RL (m)</th>` : '') +
-      `<th id="th-aang">ACTUAL ANGLE</th><th id="th-adep">ACTUAL DEPTH (m)</th><th id="th-time">TIME</th><th id="th-rem">REMARKS</th>`;
+      `<th id="th-aang">ACTUAL ANGLE</th><th id="th-adep">ACTUAL DEPTH (m)</th><th id="th-tstart">START TIME</th><th id="th-tfin">FINISH TIME</th><th id="th-tdown">DOWN TIME</th><th id="th-tdrill">DRILL TIME</th><th id="th-rem">REMARKS</th>`;
   }
 
   const _gpsSurv = _gpsOn ? gpsSurveyGetValues() : null;
@@ -8107,28 +8112,32 @@ function collectRows(){
     const hasRL = !!(rlSurveyCell && rlActualCell);
     const gpsCell = tr.querySelector('[data-gpsrod]');
     const n = c.length;
-    // FIX (TIME column rollout): TIME now sits between Actual Depth and
-    // Remarks in every mode's screen table, so the last 4 cells are
-    // [Actual Angle, Actual Depth, TIME, Remarks] instead of the old 3
-    // — read the TIME cell by its own start/finish/total sub-elements
-    // (same robust-by-marker approach already used for RL/GPS above)
-    // rather than by raw textContent, since it's built from live spans.
-    const timeCell = c[n-2];
-    const timeStartEl  = timeCell ? timeCell.querySelector('[id^="time-start-live-"], [id^="time-start-manual-"]') : null;
-    const timeFinishEl = timeCell ? timeCell.querySelector('[id^="time-finish-live-"], [id^="time-finish-manual-"]') : null;
-    const timeTotalEl  = timeCell ? timeCell.querySelector('[id^="time-total-"]') : null;
+    // FIX (4-COLUMN TIME SYSTEM rollout — v92): TIME now occupies 4 real
+    // columns (Start/Finish/Down/Drill) between Actual Depth and Remarks,
+    // so the last 7 cells are [Actual Angle, Actual Depth, Start, Finish,
+    // Down, Drill, Remarks] instead of the old 4 — read each TIME cell by
+    // its own DOM marker id (same robust-by-marker approach already used
+    // for RL/GPS above) rather than by raw textContent, since Start/
+    // Finish can render as an action BUTTON (not yet captured) instead
+    // of a plain text span.
+    const startTD  = c[n-5], finishTD = c[n-4], downTD = c[n-3], drillTD = c[n-2];
+    const startEl  = startTD  ? startTD.querySelector('[id^="time-start-"]')  : null;
+    const finishEl = finishTD ? finishTD.querySelector('[id^="time-finish-"]') : null;
+    const downEl   = downTD   ? downTD.querySelector('[id^="time-down-"]')    : null;
+    const drillEl  = drillTD  ? drillTD.querySelector('[id^="time-drill-"]')  : null;
     rows.push({
       r0: c[0].textContent.trim(),
       r1: c[1].textContent.trim(),
       r2: c[2].textContent.trim(),
       r3: c[3].textContent.trim(),
       r4: c[4].textContent.trim(),            // Radius of Curvature — always index 4
-      r5: c[n-4].textContent.trim(),           // Actual Angle — always 4th from end
-      r6: c[n-3].textContent.trim(),           // Actual Depth — always 3rd from end
+      r5: c[n-7].textContent.trim(),           // Actual Angle — always 7th from end
+      r6: c[n-6].textContent.trim(),           // Actual Depth — always 6th from end
       rTime: {
-        start:  timeStartEl  ? timeStartEl.textContent.trim()  : '',
-        finish: timeFinishEl ? timeFinishEl.textContent.trim() : '',
-        total:  timeTotalEl  ? timeTotalEl.textContent.trim()  : ''
+        start:  startEl  ? startEl.textContent.trim()  : '',
+        finish: finishEl ? finishEl.textContent.trim() : '',
+        down:   downEl   ? downEl.textContent.trim()   : '',
+        drill:  drillEl  ? drillEl.textContent.trim()  : ''
       },
       r7: c[n-1].textContent.trim(),           // Remarks — always last
       rlSurvey: hasRL ? rlSurveyCell.textContent.trim() : null,
@@ -8347,7 +8356,7 @@ async function _excelChartCore(){
     const header = ['ROD No.','DISTANCE (m)','CALCULATED ANGLE','CALCULATED DEPTH (m)','RADIUS OF CURVATURE (m)']
       .concat(gpsActive ? ['SURVEY GPS (N/E)'] : [])
       .concat(rlActive ? ['SURVEY REDUCED LEVEL (m)','ACTUAL DEPTH FROM RL (m)'] : [])
-      .concat(['ACTUAL ANGLE','ACTUAL DEPTH (m)','TIME','REMARKS']);
+      .concat(['ACTUAL ANGLE','ACTUAL DEPTH (m)','START TIME','FINISH TIME','DOWN TIME','DRILL TIME','REMARKS']);
     const numCols = header.length;
     const angleColIdx = 2; // 0-based: 'CALCULATED ANGLE' column — always index 2 in every state
     const gpsColIdx = gpsActive ? 5 : -1; // 0-based: 'SURVEY GPS (N/E)' column — always right after RC (index 5) when active
@@ -8508,7 +8517,10 @@ async function _excelChartCore(){
         .concat(gpsActive ? [row.gps||''] : [])
         .concat(rlActive ? [row.rlSurvey||'',row.rlActual||''] : [])
         .concat([row.r5,row.r6,
-          row.rTime ? `Start: ${row.rTime.start}\nFinish: ${row.rTime.finish}\nTotal: ${row.rTime.total}` : '',
+          row.rTime ? row.rTime.start  : '',
+          row.rTime ? row.rTime.finish : '',
+          row.rTime ? row.rTime.down   : '',
+          row.rTime ? row.rTime.drill  : '',
           // FIX (Saiyad Hussain — same as PDF): strip the [Auto Time Log]
           // markers for the export cell only; the live table's own data
           // keeps them so future pause/resume updates still find them.
@@ -9075,6 +9087,10 @@ function pdfchGo(){
   const cb3=document.getElementById('pdfch-cb3').checked;
   const cb4=document.getElementById('pdfch-cb4').checked;
   if(!cb1&&!cb2&&!cb3&&!cb4){toast('⚠️ Kam se kam ek PDF select karein','wn');return;}
+  // Chart PDF layout choice — Auto/Landscape/Portrait, read once here so
+  // it's available to whichever Chart-PDF builder runs (Mode 1/2 or 3/4).
+  const orientEl = document.querySelector('input[name="pdfch-orient"]:checked');
+  window._chartPdfOrient = orientEl ? orientEl.value : 'auto';
   closePdfChooser();
   if (CURRENT_MODE === 3 || CURRENT_MODE === 4) {
     // City Mode / Zero Degree Crossing — same popup, their own table+graph builders
@@ -9095,6 +9111,15 @@ function pdfchGo(){
 // ════════════════════════════════════════
 // PDF CHART ONLY — A4 Portrait
 // ════════════════════════════════════════
+// PDF layout auto-picker — 9+ columns default to A4 Landscape so the
+// table isn't squeezed; the operator can still force Portrait/Landscape
+// from the PDF chooser's "Layout" radios (window._chartPdfOrient).
+function _chartPdfPickOrient(numCols) {
+  const pref = window._chartPdfOrient || 'auto';
+  if (pref === 'landscape') return 'landscape';
+  if (pref === 'portrait') return 'portrait';
+  return numCols >= 9 ? 'landscape' : 'portrait';
+}
 function _doChartPDF(){
   if (CURRENT_MODE !== 1 && !G) {toast('⚠️ Generate chart first!','wn');return;}
   if (CURRENT_MODE === 1 && !_tbdRows.length) {toast('⚠️ Generate chart first!','wn');return;}
@@ -9113,10 +9138,10 @@ function _doChartPDF(){
     const cols = ['ROD','DISTANCE (m)','CALC ANGLE','CALC DEPTH (m)','RC (m)']
       .concat(gpsActive ? ['SURVEY GPS (N/E)'] : [])
       .concat(rlActive ? ['SURVEY RL (m)','ACTUAL DEPTH FROM RL (m)'] : [])
-      .concat(['ACT ANGLE','ACT DEPTH (m)','TIME','REMARKS']);
+      .concat(['ACT ANGLE','ACT DEPTH (m)','START TIME','FINISH TIME','DOWN TIME','DRILL TIME','REMARKS']);
     const baseWidths = gpsActive
-      ? (rlActive ? [4,7,7,8,6,8,6,7,7,7,8,25] : [5,8,8,10,6,9,8,8,8,30]) // ROD,DIST,ANGLE,DEPTH,RC,[GPS],[RL×2],ACT ANGLE,ACT DEPTH,TIME,REMARKS
-      : (rlActive ? [4,8,8,9,6,7,8,8,8,8,26] : [5,9,10,12,8,10,11,8,27]);
+      ? (rlActive ? [4,6,6,7,5,7,5,6,6,5,5,5,5,17] : [4,7,7,8,5,8,7,7,4,4,4,4,22]) // ROD,DIST,ANGLE,DEPTH,RC,[GPS],[RL×2],ACT ANGLE,ACT DEPTH,START,FIN,DOWN,DRILL,REMARKS
+      : (rlActive ? [4,7,7,8,5,6,7,7,5,5,5,5,19] : [4,8,9,10,7,9,9,5,5,5,5,19]);
     const colWidths = baseWidths;
     const colWidthCSS = colWidths.map((w,i)=>`th:nth-child(${i+1}),td:nth-child(${i+1}){width:${w}%;}`).join('');
     const logoHtml=getPDFLogoHTML?getPDFLogoHTML():'';
@@ -9133,17 +9158,7 @@ function _doChartPDF(){
           ? `<td style="color:#a16207;font-weight:600">${r.rlSurvey||''}</td>
              <td style="color:#0f766e;font-weight:600;background:#f0fdfa">${r.rlActual||''}</td>`
           : '';
-        const timeTxt = r.rTime ? [
-          r.rTime.start  ? `S: ${r.rTime.start}`  : '',
-          r.rTime.finish ? `F: ${r.rTime.finish}` : '',
-          r.rTime.total  ? `T: ${r.rTime.total}`  : ''
-        ].filter(Boolean).join('<br>') : '';
-        // FIX (Saiyad Hussain — PDF layout): the [Auto Time Log] /
-        // [/Auto Time Log] markers exist only so the app can find and
-        // update its own auto-generated pause/resume block later — they
-        // add nothing for a human reading the PDF and were eating space
-        // an operator's own remark needs. Stripped for display only; the
-        // markers themselves are untouched in the live table/data.
+        const t = r.rTime || {};
         const remarksTxt = (r.r7 || '')
           .replace(/\[Auto Time Log\]\n?/g, '')
           .replace(/\[\/Auto Time Log\]\n?/g, '')
@@ -9158,7 +9173,10 @@ function _doChartPDF(){
           ${rlCells}
           <td style="background:#f0fff4">${r.r5}</td>
           <td style="background:#f0fff4">${r.r6}</td>
-          <td style="font-size:7px;color:#00695c">${timeTxt}</td>
+          <td style="font-size:7px;color:#00695c">${t.start||'—'}</td>
+          <td style="font-size:7px;color:#00695c">${t.finish||'—'}</td>
+          <td style="font-size:7px;color:#00695c">${t.down||'—'}</td>
+          <td style="font-size:7px;color:#00695c;font-weight:bold">${t.drill||'—'}</td>
           <td style="font-size:7.5px;text-align:left;padding:3px 4px">${remarksTxt}</td>
         </tr>`;
       }).join('');
@@ -9201,10 +9219,11 @@ function _doChartPDF(){
       </div>`;
     }
 
+    const _orient = _chartPdfPickOrient(cols.length);
     const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>HDD Chart</title>
 <style>*{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:Arial,sans-serif;background:#fff;color:#111;}
-@page{size:A4 portrait;margin:10mm 8mm;}
+@page{size:A4 ${_orient};margin:10mm 8mm;}
 @media print{.page{page-break-after:always;}.page:last-child{page-break-after:avoid;}
 body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
 .page{width:100%;}
@@ -9241,7 +9260,7 @@ ${colWidthCSS}
       document.body.appendChild(ifr);}
     ifr.onload=()=>setTimeout(()=>ifr.contentWindow.print(),600);
     ifr.srcdoc=html;
-    toast('📋 Chart PDF — A4 Portrait ready','ok');
+    toast('📋 Chart PDF — A4 ' + (_orient==='landscape'?'Landscape':'Portrait') + ' ready','ok');
   }catch(e){toast('❌ '+e.message,'bad');console.error(e);}
 }
 
@@ -9723,7 +9742,6 @@ function _liveResumeWork(saved) {
           // currently designed, instead of poking specific span ids.
           Object.keys(window._timeLog).forEach(key => {
             if (typeof _timeRenderCell === 'function') _timeRenderCell(key);
-            if (typeof _timeRecalcTotal === 'function') _timeRecalcTotal(key);
           });
         }
         if (typeof toast === 'function') toast('✅ Live work recovered!');
@@ -11666,8 +11684,8 @@ function calcZeroDegree() {
        'RADIUS OF CURVATURE (m)']
     .concat(_gpsOnZdc ? ['SURVEY GPS (N/E)'] : [])
     .concat(_rlZdc ? ['SURVEY REDUCED LEVEL (m)','ACTUAL DEPTH FROM RL (m)'] : [])
-    .concat(['ACTUAL ANGLE','ACTUAL DEPTH (m)','TIME','REMARKS']);
-  const _zdcColspan = (_rlZdc ? 10 : 8) + (_gpsOnZdc ? 1 : 0) + 1; // +1 for TIME column (always present)
+    .concat(['ACTUAL ANGLE','ACTUAL DEPTH (m)','START TIME','FINISH TIME','DOWN TIME','DRILL TIME','REMARKS']);
+  const _zdcColspan = (_rlZdc ? 10 : 8) + (_gpsOnZdc ? 1 : 0) + 4; // +4 for START/FINISH/DOWN/DRILL TIME columns (always present)
 
   // NC section rows — editable
   function ncRowHTML(r, i) {
@@ -12277,16 +12295,18 @@ function zdcExportPDF() {
   const cols8 = ['ROD No.','DISTANCE (m)','CALC ANGLE','CALC DEPTH (m)','RC (m)']
     .concat(_gpsOnPdf ? ['SURVEY GPS (N/E)'] : [])
     .concat(_rlZdcPdf ? ['SURVEY RL (m)','ACTUAL DEPTH FROM RL (m)'] : [])
-    .concat(['ACT ANGLE','ACT DEPTH (m)','TIME','REMARKS']);
-  const _cs = 9 + (_rlZdcPdf ? 2 : 0) + (_gpsOnPdf ? 1 : 0); // +1 base for TIME (always present)
+    .concat(['ACT ANGLE','ACT DEPTH (m)','START TIME','FINISH TIME','DOWN TIME','DRILL TIME','REMARKS']);
+  const _cs = 12 + (_rlZdcPdf ? 2 : 0) + (_gpsOnPdf ? 1 : 0); // 12 base (incl. 4 TIME columns, always present)
   // Mode 3 uses 'cw'/'cwc' row-key prefixes, Mode 4 uses 'zdc'/'zdcc' —
   // pick the right one so TIME cells are read from the correct rows.
   const _timePfxNc  = _isCityMode ? 'cw'  : 'zdc';
   const _timePfxCnt = _isCityMode ? 'cwc' : 'zdcc';
   function _timeCellPdf(rod, isNc){
     const t = _timeReadCell((isNc ? _timePfxNc : _timePfxCnt) + '-' + rod);
-    const txt = [t.start?`S: ${t.start}`:'', t.finish?`F: ${t.finish}`:'', t.total?`T: ${t.total}`:''].filter(Boolean).join('<br>');
-    return `<td style="font-size:7px;color:#00695c">${txt}</td>`;
+    return `<td style="font-size:7px;color:#00695c">${t.start||'—'}</td>` +
+           `<td style="font-size:7px;color:#00695c">${t.finish||'—'}</td>` +
+           `<td style="font-size:7px;color:#00695c">${t.down||'—'}</td>` +
+           `<td style="font-size:7px;color:#00695c;font-weight:bold">${t.drill||'—'}</td>`;
   }
   function _rlCells(rod){
     if(!_rlZdcPdf) return '';
@@ -12346,6 +12366,7 @@ function zdcExportPDF() {
     🕳️ EXIT PIT — Depth: ${d.xd.toFixed(2)}m | Vertical pullout ↑</td></tr>`;
   tbl += '</tbody></table>';
 
+  const _orient = _chartPdfPickOrient(cols8.length);
   const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
 <title>${_isCityMode ? 'City Mode' : 'ZDC'} — ${proj}</title>
 <style>*{box-sizing:border-box;margin:0;padding:0;}
@@ -12361,7 +12382,7 @@ td{padding:3px 3px;text-align:center;border:1px solid #ccc;}
 .pws{margin-top:6px;padding:6px 8px;background:#fff8e1;border:1px solid #e0c060;border-radius:4px;}
 .pws-t{font-size:9px;font-weight:700;color:#7a5c00;letter-spacing:.5px;margin-bottom:4px;}
 .pws-g{display:grid;grid-template-columns:1fr 1fr;gap:2px 12px;font-size:8px;color:#333;line-height:1.6;}
-@page{size:A4 portrait;margin:10mm 8mm;}</style>
+@page{size:A4 ${_orient};margin:10mm 8mm;}</style>
 </head><body>
 <h2>${_isCityMode ? '🏙️ PIT TO PIT CURVE / CITY MODE — BORE CHART' : '🎯 ZERO DEGREE CROSSING — BORE CHART'}</h2>
 <div class="inf">
@@ -12396,7 +12417,7 @@ ${(() => { const pw = calcPipeWeight(); return pw ? `<div class="pws">
     document.body.appendChild(iframe); }
   iframe.onload = () => setTimeout(() => iframe.contentWindow.print(), 400);
   iframe.srcdoc = html;
-  toast('📋 Chart PDF — A4 Portrait ready', 'ok');
+  toast('📋 Chart PDF — A4 ' + (_orient==='landscape'?'Landscape':'Portrait') + ' ready', 'ok');
 }
 
 // ── City/ZDC Graph-only PDF — A4 Landscape ──
@@ -13426,7 +13447,7 @@ function tbdAutoRows() {
     thead.innerHTML = '<th>ROD No.</th><th>DISTANCE (m)</th><th>CALCULATED ANGLE</th><th>CALCULATED DEPTH (m)</th><th>RADIUS OF CURVATURE (m)</th>' +
       (_gpsOnTbd ? '<th id="th-gps">SURVEY GPS (N/E)</th>' : '') +
       (_rlTbd ? '<th>SURVEY REDUCED LEVEL (m)</th><th>ACTUAL DEPTH FROM RL (m)</th>' : '') +
-      '<th>ACTUAL ANGLE</th><th>ACTUAL DEPTH (m)</th><th>TIME</th><th>REMARKS</th>';
+      '<th>ACTUAL ANGLE</th><th>ACTUAL DEPTH (m)</th><th>START TIME</th><th>FINISH TIME</th><th>DOWN TIME</th><th>DRILL TIME</th><th>REMARKS</th>';
   }
 
   // Show results area
@@ -14150,25 +14171,51 @@ function cwUpdateSummary() {
 // ══════════════════════════════════════════════════════════════════════════
 // ── RC helper for City Mode: uses atan(pct/100) for correct metres result ─
 // ════════════════════════════════════════════════════════════════════
-// TIME COLUMN — shared across all 4 modes (Trial Bore Draft, Standard
-// HDD, Pit-To-Pit City, Zero Degree Crossing). Pure additive UI — never
-// touches any calculation engine. One column, 3 lines inside the cell:
-// Start / Finish / Total. Two entry modes, switched by one global
-// toggle (☰ affects whichever table is on screen, no chart re-generate
-// needed):
-//   • MANUAL (default): operator types Start/Finish (HH:MM:SS) by hand
-//     — same as writing on a printed sheet — Total auto-computes.
+// TIME COLUMN (v92 — MODERN 4-COLUMN TIME SYSTEM) — shared across all 4
+// modes (Trial Bore Draft, Standard HDD, Pit-To-Pit City, Zero Degree
+// Crossing). Pure additive UI — never touches any calculation engine.
+// FOUR separate columns: START TIME | FINISH TIME | DOWN TIME | DRILL TIME
+//   DRILL TIME = (Finish Time − Start Time) − Down Time
+// Two entry modes, switched by one global toggle (☰ affects whichever
+// table is on screen, no chart re-generate needed):
+//   • MANUAL (default): operator types Start/Finish (HH:MM:SS) by hand,
+//     plus Down Time (duration) with a Reason dropdown (default "Mud
+//     Shortage" when left blank) — Drill Time auto-computes.
 //   • LIVE: ▶ button on Start captures the device's real clock time;
-//     the same button becomes ⏸/▶ to log a pause→resume if drilling on
-//     that rod had to stop partway (both timestamps stack inside the
-//     Start cell); ⏹ on Finish captures the stop time; Total = elapsed
-//     time minus any paused gaps.
+//     ⏹ STOP/ACTION on Finish opens a WORK STATUS popup — "TEMPORARILY
+//     STOPPED" logs a pause (Down Time) and immediately opens a Quick
+//     Reason popup (predefined breakdown reasons, default "Mud
+//     Shortage" if the popup is dismissed); "ROD COMPLETED" captures
+//     the finish time. Down Time = sum of pause gaps; Drill Time auto-
+//     computes from Start/Finish/Down.
+// Smart Edit (☰ existing global toggle): once a LIVE entry is
+// completed, its captured Start/Finish/Down become editable so an
+// operator can correct a live-logged entry after the fact — same
+// permission model as the Survey RL / Angle cells already use.
 // window._timeLog holds all of it, keyed by a per-row string the
 // caller supplies (must be unique within that mode's table, e.g.
 // "cwc-7" or "std-12") — never touches rod-numbering/depth/angle data.
 // ════════════════════════════════════════════════════════════════════
-window._timeLog  = window._timeLog  || {};   // key -> {startTs,finishTs,pauses:[{p,r}],manualStart,manualFinish}
+window._timeLog  = window._timeLog  || {};   // key -> {startTs,finishTs,pauses:[{p,r,reason}],manualStart,manualFinish,manualDown,manualDownReason,startOverride,finishOverride,downOverride}
 window._timeMode = window._timeMode || 'manual'; // 'manual' | 'live'
+
+// Predefined quick-pick breakdown/down-time reasons — matches the
+// operator's real field vocabulary; "Others/Custom Type" opens a free
+// text prompt; an empty/dismissed choice always defaults to the first
+// entry ("Mud Shortage") per explicit spec.
+const TIME_DOWN_REASONS = [
+  'Mud Shortage',
+  'Hydraulic Hose Burst/Leak',
+  'Mud Pump/Pressure Issue',
+  'Recycling Unit/Shaker Screen',
+  'Rig Mechanical Breakdown',
+  'Drill Rod Loading/Crane Work',
+  'Sonde Battery/Wireline Survey',
+  'Client/Inspection Hold',
+  'Generator/Site Power Failure',
+  'Shift Handover/Safety Standby',
+  'Others/Custom Type'
+];
 
 function _timeNowStr() {
   const d = new Date();
@@ -14190,8 +14237,64 @@ function _timeFmtDur(sec) {
   return (h>0 ? String(h).padStart(2,'0')+'h ' : '') + String(m).padStart(2,'0')+'m '+String(s).padStart(2,'0')+'s';
 }
 function _timeEntry(key) {
-  if (!window._timeLog[key]) window._timeLog[key] = { startTs:null, finishTs:null, pauses:[], manualStart:'', manualFinish:'' };
+  if (!window._timeLog[key]) window._timeLog[key] = {
+    startTs:null, finishTs:null, pauses:[],
+    manualStart:'', manualFinish:'', manualDown:'', manualDownReason:'Mud Shortage',
+    startOverride:null, finishOverride:null, downOverride:null
+  };
   return window._timeLog[key];
+}
+// ── Unified read helpers — compute through plain HH:MM:SS strings so
+// LIVE and MANUAL entries (and any Smart-Edit override on top of a LIVE
+// entry) share exactly the same Drill Time formula. ──
+function _timeGetDisplayStart(key) {
+  const e = _timeEntry(key);
+  if (window._timeMode === 'manual') return e.manualStart || '';
+  const st = _timeState(key);
+  if (st === 'idle') return '';
+  return e.startOverride || _timeFmtClock(e.startTs);
+}
+function _timeGetDisplayFinish(key) {
+  const e = _timeEntry(key);
+  if (window._timeMode === 'manual') return e.manualFinish || '';
+  const st = _timeState(key);
+  if (st !== 'completed') return '';
+  return e.finishOverride || _timeFmtClock(e.finishTs);
+}
+function _timeGetDownSec(key) {
+  const e = _timeEntry(key);
+  if (window._timeMode === 'manual') {
+    if (e.manualDownOverride != null) return e.manualDownOverride;
+    const v = _timeParseHMS(e.manualDown);
+    return v == null ? 0 : v;
+  }
+  if (e.downOverride != null) return e.downOverride;
+  let gap = 0;
+  e.pauses.forEach(p => { if (p.p !== null && p.r !== null) gap += (p.r - p.p) / 1000; });
+  return gap;
+}
+function _timeGetDrillSec(key) {
+  const s = _timeParseHMS(_timeGetDisplayStart(key));
+  const f = _timeParseHMS(_timeGetDisplayFinish(key));
+  if (s === null || f === null) return null;
+  let total = f >= s ? f - s : (f + 86400 - s);
+  const down = _timeGetDownSec(key) || 0;
+  total -= down;
+  return total < 0 ? 0 : total;
+}
+// Data-driven read used by PDF/Excel exporters — matches whichever
+// mode (manual/live) is currently active for a given row key.
+function _timeReadCell(key) {
+  const startTxt = _timeGetDisplayStart(key);
+  const finishTxt = _timeGetDisplayFinish(key);
+  const downSec = _timeGetDownSec(key);
+  const drillSec = _timeGetDrillSec(key);
+  return {
+    start: startTxt,
+    finish: finishTxt,
+    down: downSec ? _timeFmtDur(downSec) : '',
+    drill: drillSec != null ? _timeFmtDur(drillSec) : ''
+  };
 }
 // idle -> running -> (paused <-> running)* -> completed. Derived, never
 // stored separately, so it can never drift out of sync with the data.
@@ -14203,41 +14306,35 @@ function _timeState(key) {
   if (last && last.r === null) return 'paused';
   return 'running';
 }
-// Reads whichever mode (manual/live) is currently active for a given row
-// key — data-driven straight from _timeEntry/_timeState (not DOM-id
-// dependent), used by PDF/Excel exporters. Only a completed entry gets a
-// Finish/Total; matches "PDF में कोई interactive button नहीं, सिर्फ साफ text".
-function _timeReadCell(key) {
-  const e = _timeEntry(key);
-  if (window._timeMode === 'manual') {
-    const totEl = document.getElementById('time-total-' + key);
-    return { start: e.manualStart || '', finish: e.manualFinish || '', total: totEl ? totEl.textContent.trim() : '' };
-  }
-  const st = _timeState(key);
-  if (st === 'idle')    return { start: '', finish: '', total: '' };
-  if (st === 'running' || st === 'paused') return { start: _timeFmtClock(e.startTs), finish: '', total: '' };
-  const totEl = document.getElementById('time-total-' + key);
-  return { start: _timeFmtClock(e.startTs), finish: _timeFmtClock(e.finishTs), total: totEl ? totEl.textContent.trim() : '' };
-}
-function _timeRecalcTotal(key) {
-  const e = _timeEntry(key);
-  const totEl = document.getElementById('time-total-' + key);
-  let totalSec = null;
-  if (window._timeMode === 'manual') {
-    const s = _timeParseHMS(e.manualStart), f = _timeParseHMS(e.manualFinish);
-    if (s !== null && f !== null) totalSec = f >= s ? f - s : (f + 86400 - s);
-  } else if (e.startTs !== null && e.finishTs !== null) {
-    let gap = 0;
-    e.pauses.forEach(p => { if (p.p !== null && p.r !== null) gap += (p.r - p.p) / 1000; });
-    totalSec = (e.finishTs - e.startTs) / 1000 - gap;
-  }
-  if (totEl) totEl.textContent = totalSec !== null ? _timeFmtDur(totalSec) : '—';
-}
+// MANUAL-mode text edits (Start / Finish / Down Time cells) — Drill
+// Time is always derived (never stored), so a re-render is enough.
 function onTimeManualEdit(el, key, which) {
   const e = _timeEntry(key);
-  if (which === 'start') e.manualStart = el.textContent.trim();
-  else e.manualFinish = el.textContent.trim();
-  _timeRecalcTotal(key);
+  const val = el.textContent.trim();
+  if (which === 'start') e.manualStart = val;
+  else if (which === 'finish') e.manualFinish = val;
+  else if (which === 'down') e.manualDown = val;
+  _timeRenderCell(key);
+  if (typeof _liveAutosaveDebounced === 'function') _liveAutosaveDebounced();
+}
+// MANUAL-mode Down Time reason dropdown.
+function onTimeDownReasonChange(sel, key) {
+  const e = _timeEntry(key);
+  e.manualDownReason = sel.value;
+  if (typeof _liveAutosaveDebounced === 'function') _liveAutosaveDebounced();
+}
+// Smart Edit (☰ ON) — lets an operator correct a LIVE-logged, already-
+// completed entry's Start / Finish / Down Time text afterwards. Stored
+// as an override on top of the real captured timestamps/pauses, so the
+// original live log is never destroyed — only the displayed/exported
+// value changes.
+function onTimeSmartEdit(el, key, which) {
+  const e = _timeEntry(key);
+  const val = el.textContent.trim();
+  if (which === 'start') e.startOverride = val || null;
+  else if (which === 'finish') e.finishOverride = val || null;
+  else if (which === 'down') e.downOverride = val ? _timeParseHMS(val) : null;
+  _timeRenderCell(key);
   if (typeof _liveAutosaveDebounced === 'function') _liveAutosaveDebounced();
 }
 
@@ -14254,7 +14351,7 @@ function _timeBuildAutoLogText(key) {
   let totalDown = 0;
   e.pauses.forEach((p, i) => {
     if (multi) lines.push(`Stop ${i + 1}:`);
-    lines.push(`Paused: ${_timeFmtClock(p.p)}`);
+    lines.push(`Paused: ${_timeFmtClock(p.p)}${p.reason ? ' — ' + p.reason : ''}`);
     if (p.r !== null) {
       const gap = (p.r - p.p) / 1000;
       totalDown += gap;
@@ -14300,10 +14397,13 @@ function _timeDoPause(key) {
   if (e.startTs === null || e.finishTs !== null) return;
   const last = e.pauses[e.pauses.length - 1];
   if (last && last.r === null) return; // already paused
-  e.pauses.push({ p: Date.now(), r: null });
+  // Default reason "Mud Shortage" applied immediately — the Quick
+  // Reason popup that follows just lets the operator override it.
+  e.pauses.push({ p: Date.now(), r: null, reason: 'Mud Shortage' });
   _timeRenderCell(key);
   _timeAppendAutoLog(key);
   if (typeof _liveAutosaveDebounced === 'function') _liveAutosaveDebounced();
+  _timeOpenReasonPopup(key);
 }
 function _timeDoResume(key) {
   const e = _timeEntry(key);
@@ -14319,7 +14419,6 @@ function _timeDoComplete(key) {
   if (e.startTs === null || e.finishTs !== null) return;
   e.finishTs = Date.now();
   _timeRenderCell(key);
-  _timeRecalcTotal(key);
   _timeAppendAutoLog(key);
   if (typeof _liveAutosaveDebounced === 'function') _liveAutosaveDebounced();
 }
@@ -14362,61 +14461,150 @@ function _timePopupAction(action) {
   if (action === 'pause') _timeDoPause(key); else _timeDoComplete(key);
 }
 
+// ── QUICK REASON popup — opened automatically right after a pause is
+// logged (TEMPORARILY STOPPED). Predefined breakdown reasons; "Others/
+// Custom Type" prompts for free text; dismissing without a pick keeps
+// the "Mud Shortage" default already applied when the pause was logged. ──
+let _timeReasonKey = null;
+function _timeOpenReasonPopup(key) {
+  _timeReasonKey = key;
+  let modal = document.getElementById('timeReasonPopup');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'timeReasonPopup';
+    modal.style.cssText = 'position:fixed;inset:0;z-index:100001;background:rgba(0,0,0,.7);display:none;align-items:flex-end;justify-content:center';
+    const btnsHTML = TIME_DOWN_REASONS.map(r =>
+      `<button type="button" class="timeReasonBtn" data-reason="${r.replace(/"/g,'&quot;')}"
+        style="width:100%;min-height:44px;padding:10px 14px;margin-bottom:7px;font-size:12.5px;font-weight:600;
+        border:none;border-radius:10px;background:#123a63;color:#fff;cursor:pointer;text-align:left">${r}</button>`
+    ).join('');
+    modal.innerHTML = `
+      <div style="background:#0c2340;width:100%;max-width:480px;max-height:82vh;overflow-y:auto;border-radius:16px 16px 0 0;padding:20px 16px calc(24px + env(safe-area-inset-bottom,0px));box-shadow:0 -4px 24px rgba(0,0,0,.5);font-family:sans-serif">
+        <div style="text-align:center;color:#fff;font-weight:bold;font-size:15px;margin-bottom:6px;letter-spacing:1px">DOWN TIME — REASON</div>
+        <div style="text-align:center;color:#7effc8;font-size:10px;margin-bottom:14px">Select a reason (default: Mud Shortage)</div>
+        ${btnsHTML}
+        <button type="button" id="timeReasonCancelBtn" style="width:100%;min-height:46px;padding:12px;margin-top:4px;font-size:13px;border:1px solid rgba(255,255,255,.35);border-radius:12px;background:transparent;color:#fff;cursor:pointer">SKIP (keep Mud Shortage)</button>
+      </div>`;
+    document.body.appendChild(modal);
+    modal.querySelectorAll('.timeReasonBtn').forEach(b => {
+      b.onclick = () => _timeReasonPicked(b.getAttribute('data-reason'));
+    });
+    document.getElementById('timeReasonCancelBtn').onclick = _timeCloseReasonPopup;
+    modal.addEventListener('click', ev => { if (ev.target === modal) _timeCloseReasonPopup(); });
+  }
+  modal.style.display = 'flex';
+}
+function _timeCloseReasonPopup() {
+  const modal = document.getElementById('timeReasonPopup');
+  if (modal) modal.style.display = 'none';
+  _timeReasonKey = null;
+}
+function _timeReasonPicked(reason) {
+  const key = _timeReasonKey;
+  _timeCloseReasonPopup();
+  if (!key) return;
+  if (reason === 'Others/Custom Type') {
+    const custom = window.prompt('Enter custom down-time reason:', '');
+    reason = (custom && custom.trim()) ? custom.trim() : 'Mud Shortage';
+  }
+  const e = _timeEntry(key);
+  if (e.pauses.length) e.pauses[e.pauses.length - 1].reason = reason;
+  _timeAppendAutoLog(key);
+  _timeRenderCell(key);
+  if (typeof _liveAutosaveDebounced === 'function') _liveAutosaveDebounced();
+}
+
 function toggleTimeMode() {
   window._timeMode = window._timeMode === 'manual' ? 'live' : 'manual';
   document.querySelectorAll('.time-mode-label').forEach(el => el.textContent = window._timeMode === 'manual' ? '⌨ MANUAL' : '▶ LIVE');
-  document.querySelectorAll('[id^="time-c-"]').forEach(c => {
-    const key = c.id.slice('time-c-'.length);
-    c.innerHTML = _timeInnerHTML(key);
+  document.querySelectorAll('[id^="time-c-start-"]').forEach(c => {
+    const key = c.id.slice('time-c-start-'.length);
+    _timeRenderCell(key);
   });
 }
 
-// ── Cell markup — ONE big action at a time, never several small
-// buttons together (field-glove / thick-finger friendly). ──
-function _timeInnerHTML(key) {
+// ── MODERN 4-COLUMN TIME SYSTEM — one visible column each for
+// START TIME / FINISH TIME / DOWN TIME / DRILL TIME. In LIVE mode, the
+// single big action button lives in whichever column matches the
+// state it's about to change (▶ START in Start col, ⏹ STOP/ACTION &
+// ▶ RESUME in Finish col — field-glove / thick-finger friendly, one
+// action at a time). DRILL TIME is always a derived, read-only value. ──
+function _timeStartInner(key) {
+  const e = _timeEntry(key);
   if (window._timeMode === 'manual') {
-    const e = _timeEntry(key);
-    return `
-      <div style="margin-bottom:2px">Start: <span id="time-start-manual-${key}" contenteditable="true" data-ph="—"
-        oninput="onTimeManualEdit(this,'${key}','start')" onblur="onTimeManualEdit(this,'${key}','start')"
-        style="color:#7effc8;display:inline-block;min-width:40px;min-height:16px">${(e.manualStart || '').replace(/</g,'&lt;')}</span></div>
-      <div style="margin-bottom:2px">Finish: <span id="time-finish-manual-${key}" contenteditable="true" data-ph="—"
-        oninput="onTimeManualEdit(this,'${key}','finish')" onblur="onTimeManualEdit(this,'${key}','finish')"
-        style="color:#ff9944;display:inline-block;min-width:40px;min-height:16px">${(e.manualFinish || '').replace(/</g,'&lt;')}</span></div>
-      <div>Total: <span id="time-total-${key}" style="color:#00ffc8;font-weight:bold">—</span></div>`;
+    return `<span id="time-start-manual-${key}" contenteditable="true" data-ph="—"
+      oninput="onTimeManualEdit(this,'${key}','start')" onblur="onTimeManualEdit(this,'${key}','start')"
+      style="color:#7effc8;display:inline-block;min-width:36px;min-height:16px">${(e.manualStart || '').replace(/</g,'&lt;')}</span>`;
   }
-  const st = _timeState(key), e = _timeEntry(key);
+  const st = _timeState(key);
   if (st === 'idle') {
     return `<button type="button" onclick="_timeDoStart('${key}')"
-      style="width:100%;min-height:42px;padding:8px 4px;font-size:12px;font-weight:bold;border:none;border-radius:8px;background:#00d4ff;color:#001;cursor:pointer">▶ START</button>`;
+      style="width:100%;min-height:38px;padding:6px 2px;font-size:10.5px;font-weight:bold;border:none;border-radius:8px;background:#00d4ff;color:#001;cursor:pointer">▶ START</button>`;
   }
+  const editable = (st === 'completed' && typeof SMART_EDIT_ON !== 'undefined' && SMART_EDIT_ON);
+  const val = e.startOverride || _timeFmtClock(e.startTs);
+  return `<span id="time-start-live-${key}" ${editable ? `contenteditable="true" onblur="onTimeSmartEdit(this,'${key}','start')"` : ''}
+    style="color:#7effc8">${val}</span>`;
+}
+function _timeFinishInner(key) {
+  const e = _timeEntry(key);
+  if (window._timeMode === 'manual') {
+    return `<span id="time-finish-manual-${key}" contenteditable="true" data-ph="—"
+      oninput="onTimeManualEdit(this,'${key}','finish')" onblur="onTimeManualEdit(this,'${key}','finish')"
+      style="color:#ff9944;display:inline-block;min-width:36px;min-height:16px">${(e.manualFinish || '').replace(/</g,'&lt;')}</span>`;
+  }
+  const st = _timeState(key);
+  if (st === 'idle') return `<span style="color:#556">—</span>`;
   if (st === 'running') {
-    return `<div style="font-size:9px;color:#7effc8;margin-bottom:5px">Start: <span id="time-start-live-${key}">${_timeFmtClock(e.startTs)}</span></div>
-      <button type="button" onclick="_timeOpenPopup('${key}')"
-        style="width:100%;min-height:42px;padding:8px 4px;font-size:10px;font-weight:bold;border:none;border-radius:8px;background:#ff5566;color:#fff;cursor:pointer">⏹ STOP / ACTION</button>`;
+    return `<button type="button" onclick="_timeOpenPopup('${key}')"
+      style="width:100%;min-height:38px;padding:6px 2px;font-size:8.5px;font-weight:bold;border:none;border-radius:8px;background:#ff5566;color:#fff;cursor:pointer">⏹ STOP/ACTION</button>`;
   }
   if (st === 'paused') {
-    return `<div style="font-size:9px;color:#7effc8;margin-bottom:3px">Start: <span id="time-start-live-${key}">${_timeFmtClock(e.startTs)}</span></div>
-      <div style="font-size:9px;color:#ff9944;margin-bottom:5px">⏸ Paused</div>
-      <button type="button" onclick="_timeDoResume('${key}')"
-        style="width:100%;min-height:42px;padding:8px 4px;font-size:12px;font-weight:bold;border:none;border-radius:8px;background:#7effc8;color:#001;cursor:pointer">▶ RESUME</button>`;
+    return `<button type="button" onclick="_timeDoResume('${key}')"
+      style="width:100%;min-height:38px;padding:6px 2px;font-size:10.5px;font-weight:bold;border:none;border-radius:8px;background:#7effc8;color:#001;cursor:pointer">▶ RESUME</button>`;
   }
-  // completed — clean, compact, no buttons
-  let gap = 0; e.pauses.forEach(p => { if (p.p && p.r) gap += (p.r - p.p) / 1000; });
-  const totalSec = (e.finishTs - e.startTs) / 1000 - gap;
-  return `<div>Start: <span id="time-start-live-${key}" style="color:#7effc8">${_timeFmtClock(e.startTs)}</span></div>
-    <div>Finish: <span id="time-finish-live-${key}" style="color:#ff9944">${_timeFmtClock(e.finishTs)}</span></div>
-    <div>Total: <span id="time-total-${key}" style="color:#00ffc8;font-weight:bold">${_timeFmtDur(totalSec)}</span></div>`;
+  const editable = (typeof SMART_EDIT_ON !== 'undefined' && SMART_EDIT_ON);
+  const val = e.finishOverride || _timeFmtClock(e.finishTs);
+  return `<span id="time-finish-live-${key}" ${editable ? `contenteditable="true" onblur="onTimeSmartEdit(this,'${key}','finish')"` : ''}
+    style="color:#ff9944">${val}</span>`;
+}
+function _timeDownInner(key) {
+  const e = _timeEntry(key);
+  if (window._timeMode === 'manual') {
+    const optHTML = TIME_DOWN_REASONS.map(r =>
+      `<option value="${r}" ${((e.manualDownReason || 'Mud Shortage') === r) ? 'selected' : ''}>${r}</option>`).join('');
+    return `<span id="time-down-manual-${key}" contenteditable="true" data-ph="—"
+      oninput="onTimeManualEdit(this,'${key}','down')" onblur="onTimeManualEdit(this,'${key}','down')"
+      style="color:#ffcf7e;display:inline-block;min-width:36px;min-height:16px">${(e.manualDown || '').replace(/</g,'&lt;')}</span>
+      <select onchange="onTimeDownReasonChange(this,'${key}')"
+        style="font-size:7.5px;width:100%;margin-top:2px;background:#123a63;color:#fff;border:none;border-radius:4px;padding:1px">${optHTML}</select>`;
+  }
+  const st = _timeState(key);
+  const sec = _timeGetDownSec(key);
+  const editable = (st === 'completed' && typeof SMART_EDIT_ON !== 'undefined' && SMART_EDIT_ON);
+  const val = sec ? _timeFmtDur(sec) : '—';
+  return `<span id="time-down-${key}" ${editable ? `contenteditable="true" onblur="onTimeSmartEdit(this,'${key}','down')"` : ''}
+    style="color:#ffcf7e">${val}</span>`;
+}
+function _timeDrillInner(key) {
+  const sec = _timeGetDrillSec(key);
+  return `<span id="time-drill-${key}" style="color:#00ffc8;font-weight:bold">${sec != null ? _timeFmtDur(sec) : '—'}</span>`;
 }
 function _timeRenderCell(key) {
-  const c = document.getElementById('time-c-' + key);
-  if (c) c.innerHTML = _timeInnerHTML(key);
+  const cs = document.getElementById('time-c-start-'  + key); if (cs) cs.innerHTML = _timeStartInner(key);
+  const cf = document.getElementById('time-c-finish-' + key); if (cf) cf.innerHTML = _timeFinishInner(key);
+  const cd = document.getElementById('time-c-down-'   + key); if (cd) cd.innerHTML = _timeDownInner(key);
+  const cr = document.getElementById('time-c-drill-'  + key); if (cr) cr.innerHTML = _timeDrillInner(key);
 }
-// Shared cell markup — called by every mode's row template, right
-// before the Remarks cell (kept last so it doesn't disturb the
-// calculation columns' fixed order). Column count itself never changes.
+// Shared 4-column cell markup — called by every mode's row template,
+// right before the Remarks cell (kept last so it doesn't disturb the
+// calculation columns' fixed order). Replaces the old single TIME
+// column with 4 real <td>s: START TIME | FINISH TIME | DOWN TIME | DRILL TIME.
 function _timeCellHTML(key) {
-  return `<td style="font-size:9px;text-align:left;padding:4px;min-width:72px;line-height:1.4"><div id="time-c-${key}">${_timeInnerHTML(key)}</div></td>`;
+  return `<td style="font-size:8.5px;text-align:left;padding:4px 3px;min-width:54px;line-height:1.4"><div id="time-c-start-${key}">${_timeStartInner(key)}</div></td>` +
+         `<td style="font-size:8.5px;text-align:left;padding:4px 3px;min-width:54px;line-height:1.4"><div id="time-c-finish-${key}">${_timeFinishInner(key)}</div></td>` +
+         `<td style="font-size:8.5px;text-align:left;padding:4px 3px;min-width:56px;line-height:1.4"><div id="time-c-down-${key}">${_timeDownInner(key)}</div></td>` +
+         `<td style="font-size:8.5px;text-align:left;padding:4px 3px;min-width:54px;line-height:1.4"><div id="time-c-drill-${key}">${_timeDrillInner(key)}</div></td>`;
 }
 // Toggle button markup — identical everywhere it's placed.
 function _timeToggleButtonHTML() {
@@ -14831,7 +15019,7 @@ function _cwRenderInline(d) {
   const _gpsOnCw = !!(typeof gpsSurveyBothComplete === 'function' && gpsSurveyBothComplete());
   const _gpsSurvCw = _gpsOnCw ? gpsSurveyGetValues() : null;
   function _gpsCellHTMLCw(n, e) { return (typeof n === 'number' && typeof e === 'number') ? `N ${n}<br>E ${e}` : ''; }
-  const _cwColspan = (_rlCw ? 10 : 8) + (_gpsOnCw ? 1 : 0) + 1; // +1 for TIME column (always present)
+  const _cwColspan = (_rlCw ? 10 : 8) + (_gpsOnCw ? 1 : 0) + 4; // +4 for START/FINISH/DOWN/DRILL TIME columns (always present)
   if (thead) {
     thead.innerHTML = `
       <th>ROD No.</th><th>DISTANCE (m)</th>
@@ -14839,7 +15027,7 @@ function _cwRenderInline(d) {
       <th>RADIUS OF CURVATURE (m)</th>` +
       (_gpsOnCw ? `<th>SURVEY GPS (N/E)</th>` : '') +
       (_rlCw ? `<th>SURVEY REDUCED LEVEL (m)</th><th>ACTUAL DEPTH FROM RL (m)</th>` : '') +
-      `<th>ACTUAL ANGLE</th><th>ACTUAL DEPTH (m)</th><th>TIME</th><th>REMARKS</th>`;
+      `<th>ACTUAL ANGLE</th><th>ACTUAL DEPTH (m)</th><th>START TIME</th><th>FINISH TIME</th><th>DOWN TIME</th><th>DRILL TIME</th><th>REMARKS</th>`;
   }
 
   // ── 3. Build table rows HTML ─────────────────────────────────────────
