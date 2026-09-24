@@ -1375,7 +1375,8 @@ details[open] summary .lr-arrow{transform:rotate(180deg);}
   background:var(--bg)!important;border-color:rgba(30,45,84,.5)!important;
   color:var(--t3)!important;cursor:not-allowed!important;}
 .fi{display:flex;flex-direction:column;gap:4px;}
-.fi label{font-size:10px;color:var(--t2);font-weight:600;letter-spacing:.3px;}
+.fi label{font-size:10px;color:var(--t2);font-weight:600;letter-spacing:.3px;
+  display:block;line-height:1.3;min-height:2.6em;}
 .req{color:var(--danger);font-size:9px;margin-left:3px;font-weight:700;}
 .opt{display:inline-block;font-size:9px;padding:1px 5px;border-radius:3px;
   background:rgba(0,255,150,.15);color:#00ff96;margin-left:4px;}
@@ -1473,7 +1474,7 @@ select option{background:var(--bg3);color:var(--text);}
   padding:10px 14px;margin-bottom:10px;}
 .exp-title{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;
   color:var(--accent);letter-spacing:1px;}
-.exp-btns{display:flex;gap:6px;flex-wrap:wrap;}
+.exp-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
 .btn-exp{padding:7px 13px;border-radius:7px;border:1px solid var(--border);
   background:var(--bg3);color:var(--t2);font-family:'Rajdhani',sans-serif;
   font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;letter-spacing:1px;}
@@ -1740,7 +1741,7 @@ td.rla-cell:empty:before{content:attr(data-ph);color:var(--t3);font-size:10px;}
     </button>
   </div>
   <div class="smenu-version">HDD PRE-BORE DESIGNER PRO · v7_8_6-90 Built by Saiyad Hussain</div>
-  <div id="smenuTestBuildTag" style="padding:0 20px 12px;font-size:9px;color:rgba(255,255,255,.22)">Build: v7_8_6-90</div>
+  <div id="smenuTestBuildTag" style="padding:0 20px 12px;font-size:9px;color:rgba(255,255,255,.22)">Build: v7_8_6-95-test</div>
 </div>
 
 <!-- ═══════ LOGIN ═══════ -->
@@ -2193,7 +2194,7 @@ document.addEventListener('click',function(e){
     </div>
     <button class="btn-hdr" onclick="openProjModal()" style="background:rgba(0,255,136,.07);border-color:rgba(0,255,136,.25);color:var(--green)">💾 Projects</button>
     <button class="btn-hdr" id="adminBtn" onclick="openAdmin()" style="display: block;">⚙️ Admin</button>
-    <div class="hdr-btn-group" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
+    <div class="hdr-btn-group" style="display:flex;align-items:center;gap:6px;flex-wrap:nowrap;overflow-x:auto;justify-content:flex-end;-webkit-overflow-scrolling:touch;">
       <button class="btn-hdr" onclick="doLogout()">🚪 Logout</button>
       <button class="btn-hdr" id="hdrLiveDraftsBtn" onclick="openLiveDraftsModal()" style="background:rgba(0,212,255,.07);border-color:rgba(0,212,255,.25);color:var(--accent)">📝 Drafts</button>
       <div class="utog" id="themeSelector" style="flex-shrink:0;">
@@ -9619,7 +9620,18 @@ function _liveRestoreInputs(inputs) {
 // chart (that can always be rebuilt in a minute anyway, per Saiyad's
 // own distinction between design data and live field data).
 function _liveHasRealData(domRows, timeLog) {
-  const hasCell = domRows.some(r => (r.r5 && r.r5.trim()) || (r.r6 && r.r6.trim()) || (r.r7 && r.r7.trim()) || (r.gps && r.gps.trim()));
+  // FIX (Saiyad Hussain — Mode 1 Live Draft never auto-saving): Modes 2-4
+  // have a separate "Actual Angle/Actual Depth" pair (r5/r6) that the
+  // operator fills in the field, distinct from the auto-computed
+  // "Calculated Angle" plan — that's what this check was written for.
+  // Mode 1 (Trial Bore Draft) has no such separate pair: "Rod 0's angle
+  // IS the entry angle" (see tbdCalcFrom) — the CALCULATED ANGLE cell
+  // (r2) itself is the operator's live typed entry, and r5/r6 stay empty
+  // by design. So Mode 1 could type real data all day and this always
+  // returned false, meaning it could never autosave. Scoped strictly to
+  // CURRENT_MODE === 1 — zero effect on Modes 2/3/4's existing check.
+  const hasCell = domRows.some(r => (r.r5 && r.r5.trim()) || (r.r6 && r.r6.trim()) || (r.r7 && r.r7.trim()) || (r.gps && r.gps.trim()) ||
+    (typeof CURRENT_MODE !== 'undefined' && CURRENT_MODE === 1 && r.r2 && r.r2.trim()));
   const hasTime = Object.keys(timeLog || {}).some(k => {
     const e = timeLog[k];
     return e && (e.startTs || e.manualStart || e.manualFinish);
@@ -9901,21 +9913,41 @@ function switchProjTab(tab) {
 }
 
 // Show current project summary before saving
+// FIX (Saiyad Hussain — Save Project blocked in Modes 1/3/4): this used to
+// check only `if (!G)`, but G is exclusively Mode 2's data object — Modes
+// 1/3/4 store their generated chart in _tbdRows/window._cwData/window.
+// _zdcData instead (same per-mode pattern already established and used
+// elsewhere, e.g. lrCollectData's chartGenerated check). So Save Project
+// always reported "no chart" for Modes 1/3/4 even right after a real
+// chart was generated. Now checks the correct object for the current mode.
+function _spChartGenerated() {
+  if (CURRENT_MODE === 1) return !!(_tbdRows && _tbdRows.length);
+  if (CURRENT_MODE === 2) return !!G;
+  if (CURRENT_MODE === 3) return !!window._cwData;
+  if (CURRENT_MODE === 4) return !!window._zdcData;
+  return !!G;
+}
 function populateSaveInfo() {
   const el = document.getElementById('spInfo');
-  if (!G) {
+  if (!_spChartGenerated()) {
     el.textContent = '⚠️ No chart generated yet. Generate a chart first.';
     return;
   }
-  el.innerHTML =
-    `Bore: ${G.bl}m | Rods: ${G.totalRods} × ${G.rl}m | Pipe: ${G.pipT} OD=${G.odMM.toFixed(0)}mm<br>` +
-    `Entry: ${toD(-G.plan.entPct)} | Exit: ${toD(G.plan.extPct)} | MaxD: ${G.maxD}m<br>` +
-    `Project: ${document.getElementById('projN').value || '—'} | Bore ID: ${document.getElementById('boreID').value || '—'}`;
+  if (CURRENT_MODE === 2 && G) {
+    el.innerHTML =
+      `Bore: ${G.bl}m | Rods: ${G.totalRods} × ${G.rl}m | Pipe: ${G.pipT} OD=${G.odMM.toFixed(0)}mm<br>` +
+      `Entry: ${toD(-G.plan.entPct)} | Exit: ${toD(G.plan.extPct)} | MaxD: ${G.maxD}m<br>` +
+      `Project: ${document.getElementById('projN').value || '—'} | Bore ID: ${document.getElementById('boreID').value || '—'}`;
+  } else {
+    el.innerHTML =
+      `Chart generated — ready to save.<br>` +
+      `Project: ${document.getElementById('projN').value || '—'} | Bore ID: ${document.getElementById('boreID').value || '—'}`;
+  }
 }
 
 // Open save tab directly (from results button)
 function openSaveTab() {
-  if (!G) { toast('⚠️ Generate a chart first!','wn'); return; }
+  if (!_spChartGenerated()) { toast('⚠️ Generate a chart first!','wn'); return; }
   openProjModal();
   switchProjTab('save');
   // Pre-fill name from project fields
@@ -9938,27 +9970,36 @@ function doSaveProject() {
     msg.style.color = 'var(--warn)';
     return;
   }
-  if (!G) {
+  if (!_spChartGenerated()) {
     msg.textContent = '⚠️ No chart generated yet';
     msg.style.color = 'var(--warn)';
     return;
   }
 
   // Detect if user manually edited any table cells
+  // FIX (Saiyad Hussain): this comparison only makes sense for Mode 2
+  // (the only mode where G/G.rows/G.plan exist) — guard it so Modes 1/3/4
+  // don't crash on G being null; for those modes just fall back to
+  // "edited" whenever any Actual Angle/Depth was typed (still correct,
+  // just without the extra calculated-vs-actual cross-check Mode 2 gets).
   const domRows  = collectDOMRows();
-  const autoRows = G.rows.map((r,idx) => {
-    const rc = getRC(idx);
-    return {
-      r2: typeof toD === 'function' ? toD(r.isPI ? -G.plan.entPct : r.isPO ? G.plan.extPct : r.angle) : '',
-      r3: typeof fmtDepth === 'function' ? fmtDepth(r.depth, r.isPI, r.isPO) : ''
-    };
-  });
   let isEdited = false;
-  domRows.forEach((dr, i) => {
-    if (!autoRows[i]) return;
-    if (dr.r2 !== autoRows[i].r2 || dr.r3 !== autoRows[i].r3) isEdited = true;
-    if (dr.r5 || dr.r6) isEdited = true; // actual angle/depth filled
-  });
+  if (CURRENT_MODE === 2 && G && G.rows) {
+    const autoRows = G.rows.map((r,idx) => {
+      const rc = getRC(idx);
+      return {
+        r2: typeof toD === 'function' ? toD(r.isPI ? -G.plan.entPct : r.isPO ? G.plan.extPct : r.angle) : '',
+        r3: typeof fmtDepth === 'function' ? fmtDepth(r.depth, r.isPI, r.isPO) : ''
+      };
+    });
+    domRows.forEach((dr, i) => {
+      if (!autoRows[i]) return;
+      if (dr.r2 !== autoRows[i].r2 || dr.r3 !== autoRows[i].r3) isEdited = true;
+      if (dr.r5 || dr.r6) isEdited = true; // actual angle/depth filled
+    });
+  } else {
+    domRows.forEach(dr => { if (dr.r5 || dr.r6) isEdited = true; });
+  }
 
   const proj = {
     id: Date.now(),
@@ -9967,9 +10008,19 @@ function doSaveProject() {
     savedAt: new Date().toISOString(),
     editedByUser: isEdited,
     user: (typeof CU !== 'undefined' && CU) ? CU.u : 'unknown',
+    mode: CURRENT_MODE,
     inputs: collectFormInputs(),
-    gData: serializeG(G),
+    gData: (CURRENT_MODE === 2) ? serializeG(G) : null,
     domRows,
+    // FIX (Saiyad Hussain — Save Project lost Start/Finish/Down/Drill
+    // Time): TIME data lives entirely in window._timeLog, never in the
+    // DOM cells that domRows captures (see collectDOMRows' own comment
+    // above) — the auto-draft-on-logout path already saves/restores this
+    // correctly (_liveAutosaveNow / _liveResumeWork), but this manual
+    // Save Project path never did. This is exactly why a manually-saved
+    // project showed the chart/rod structure but not the logged times.
+    timeLog: (typeof window._timeLog === 'object') ? window._timeLog : {},
+    timeUiMode: window._timeMode,
     drwGPS: (typeof _drwSnapshotGPS === 'function') ? _drwSnapshotGPS() : null,
     // PART 1 / SAVE-LOAD PERSISTENCE: full current crossing records (type,
     // label, chainage, depth, offset, northing, easting, gl — whatever
@@ -10014,7 +10065,12 @@ function renderProjList() {
     const d = new Date(p.savedAt);
     const dateStr = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
     const g = p.gData;
-    const meta = g ? `${g.bl}m bore | ${g.totalRods} rods × ${g.rl}m | ${g.pipT||'—'} OD=${g.odMM?g.odMM.toFixed(0):'—'}mm | MaxD=${g.maxD}m` : '';
+    const _modeNames = {1:'Trial Draft',2:'Standard',3:'City/Curve',4:'Zero Degree'};
+    const meta = g
+      ? `${g.bl}m bore | ${g.totalRods} rods × ${g.rl}m | ${g.pipT||'—'} OD=${g.odMM?g.odMM.toFixed(0):'—'}mm | MaxD=${g.maxD}m`
+      : (p.inputs && (p.inputs.boreL || p.inputs.rodL))
+        ? `${_modeNames[p.mode]||''} | ${p.inputs.boreL||'—'}m bore | ${p.inputs.rodL||'—'}m rod`
+        : (_modeNames[p.mode] || '');
     const tag  = p.editedByUser
       ? '<span class="proj-card-tag tag-edited">✏️ Edited</span>'
       : '<span class="proj-card-tag tag-auto">⚡ Auto</span>';
@@ -10059,26 +10115,54 @@ function loadProject(id) {
     if (typeof drwCrossRenderList === 'function') drwCrossRenderList(); // refresh the visible list
   }
 
-  // 2. Restore G object
-  if (proj.gData) {
-    G = proj.gData;
-    // Re-attach functions G needs are global so this is safe
-  }
+  // FIX (Saiyad Hussain — Save Project only ever restored Mode 2's chart):
+  // switch to the project's own saved mode first (if a different mode is
+  // currently open), then regenerate the chart via that mode's own
+  // existing engine — same dispatch already proven correct by the
+  // auto-draft recovery path (_liveResumeWork), instead of the old code
+  // which unconditionally assumed Mode 2's G object.
+  const targetMode = proj.mode || 2;
+  const modeBtn = (typeof document !== 'undefined') ? document.getElementById('modeBtn' + targetMode) : null;
+  const needSwitch = modeBtn && typeof CURRENT_MODE !== 'undefined' && CURRENT_MODE !== targetMode;
+  if (needSwitch) modeBtn.click();
 
-  // 3. Re-render everything using restored G
-  if (G && G.rows && G.rows.length) {
-    renderAll();
-    document.getElementById('results').style.display = 'block';
+  const _finishLoad = () => {
+    if (targetMode === 2) {
+      if (proj.gData) G = proj.gData;
+      if (G && G.rows && G.rows.length) {
+        renderAll();
+        document.getElementById('results').style.display = 'block';
+      }
+    } else if (targetMode === 3 && typeof calcCityMode === 'function') {
+      _cwFromGenerate = true; calcCityMode();
+    } else if (targetMode === 4 && typeof calcZeroDegree === 'function') {
+      _zdcFromGenerate = true; calcZeroDegree();
+    } else if (targetMode === 1 && typeof tbdAutoRows === 'function') {
+      tbdAutoRows();
+    }
     setTimeout(() => {
-      drawProfile(_isLightTheme);
-      // 4. Restore manually edited DOM cells on top
+      if (targetMode === 1 && typeof tbdDrawProfile === 'function') tbdDrawProfile();
+      else if (typeof drawProfile === 'function') drawProfile(_isLightTheme);
+      // Restore manually edited DOM cells on top
       restoreDOMEdits(proj.domRows);
-    }, 120);
-  }
+      // FIX (Saiyad Hussain — TIME never restored on manual Save/Load):
+      // Start/Finish/Down/Drill Time live in window._timeLog, not in
+      // domRows — restore it the same way auto-draft recovery does.
+      if (proj.timeLog) {
+        window._timeLog = proj.timeLog;
+        if (proj.timeUiMode && proj.timeUiMode !== window._timeMode && typeof toggleTimeMode === 'function') toggleTimeMode();
+        Object.keys(window._timeLog).forEach(key => {
+          if (typeof _timeRenderCell === 'function') _timeRenderCell(key);
+        });
+      }
+    }, 150);
+  };
+
+  if (needSwitch) setTimeout(_finishLoad, 300); else _finishLoad();
 
   closeProjModal();
   toast(`📂 "${proj.name}" loaded!`,'ok');
-  setTimeout(() => document.getElementById('results').scrollIntoView({behavior:'smooth'}), 300);
+  setTimeout(() => document.getElementById('results').scrollIntoView({behavior:'smooth'}), 500);
 }
 
 // Restore manually edited cells back into DOM
@@ -11416,6 +11500,23 @@ function calcZeroDegree() {
     toast('⚠️ Fill all Zero Degree Crossing fields', 'wn'); return;
   }
 
+  // v7_8_6-97 / FIX (Saiyad Hussain, Mode 4 rule 2): Punch-In Angle and
+  // Punch-In→Entry Space are mutually-exclusive manual overrides. Both
+  // entered together was previously silently resolved by giving Angle
+  // priority (Space just got ignored) — now show a clear error instead.
+  if (userPI > 0 && userNcSp > 0) {
+    toast('⚠️ Punch-In Angle और Punch-In→Entry Space दोनों भरे हैं — सिर्फ एक ही भरें (कोई एक हटाएं)।', 'wn');
+    return;
+  }
+  // v7_8_6-97 / FIX (Saiyad Hussain, Mode 4 rule 2): respect the existing
+  // Punch-In maximum allowed limit for a manually-typed angle too — the
+  // auto-calc escalation loop below already treats 25% as its ceiling;
+  // a manual entry beyond that is not a safe Punch-In angle either.
+  if (userPI > 25) {
+    toast('⚠️ Punch-In Angle ' + userPI.toFixed(2) + '% बहुत ज्यादा है (अधिकतम 25% तक ही मान्य) — इंजीनियर से जांच कराएं।', 'wn');
+    return;
+  }
+
   const n       = Math.ceil(bl / rl);
   const lastSeg = bl - (n - 1) * rl;
   const BR      = getMBR(odMM);
@@ -11437,9 +11538,14 @@ function calcZeroDegree() {
   // ══════════════════════════════════════════════════════════════════
 
   const ssNC      = userStep > 0 ? userStep : safeStep(rl);
-  const STEP      = ssNC * 1.5;
+  // v7_8_6-96 / FIX (Saiyad Hussain): Punch-In → Entry Pit step doubled
+  // (was 1.5×ssNC, now 2×ssNC) — e.g. 9.5m rod: normal 2.5% → NC step 5.0%.
+  const STEP      = ssNC * 2;
   const STEP_FINE = 0.5;
-  const PIT_TOL   = 0.25;
+  // v7_8_6-96 / FIX (Saiyad Hussain): target-achieve depth tolerance
+  // widened ±0.25m → ±0.30m to give the auto-calc more room to land
+  // cleanly on Entry/Exit Pit depth.
+  const PIT_TOL   = 0.30;
 
   function rampDepth(peakA, step) {
     const st = step || STEP;
@@ -11458,9 +11564,17 @@ function calcZeroDegree() {
     while (rampDepth(peakAngle, usedSTEP) < ed - PIT_TOL && peakAngle < 25) peakAngle += usedSTEP;
   }
 
-  let spaceWarnHTML = '';
+  // v7_8_6-97 / FIX (Saiyad Hussain, Mode 4 rules 2 & 5): this search used
+  // to start ABOVE the doubled Punch-In maximum (STEP+0.5) and search up
+  // to STEP*3 — i.e. past the "existing Punch-In maximum allowed limit" —
+  // and if nothing fit, it generated the chart anyway with just a soft
+  // warning div. Now: search from the smallest normal step up to STEP
+  // (the actual double-step maximum) so a larger angle (shorter space) is
+  // only used when a smaller one doesn't fit; if even the maximum can't
+  // fit the requested space, stop and show a clear error — no chart.
   if (maxNcRods > 0 && userPI <= 0) {
-    for (let tryS = STEP + 0.5; tryS <= 5.0; tryS += 0.5) {
+    let fitFound = false;
+    for (let tryS = ssNC; tryS <= STEP + 0.001; tryS += 0.25) {
       const tryGeo  = Math.sqrt(2 * ed * 100 * tryS / rl);
       const tryPeak = Math.max(tryS * 2, Math.ceil(tryGeo / tryS) * tryS);
       let rods = 0, a = tryPeak, d = 0;
@@ -11470,14 +11584,13 @@ function calcZeroDegree() {
         a = next; d += rl * a / 100; rods++;
         if (d >= ed - PIT_TOL) break;
       }
-      if (rods <= maxNcRods) { peakAngle = tryPeak; usedSTEP = tryS; break; }
-      if (tryS >= 5.0) {
-        spaceWarnHTML = `<div style="background:rgba(255,51,102,.1);border:1px solid rgba(255,51,102,.3);
-          border-radius:6px;padding:6px 10px;font-size:10px;color:var(--danger);margin-bottom:8px;">
-          ⚠️ NC Space constraint: ${userNcSp}m (${maxNcRods} rods) is too short to achieve Entry Depth ${ed}m safely.
-          Verify with engineer. Consider increasing space or reducing entry depth.
-        </div>`;
-      }
+      if (rods <= maxNcRods) { peakAngle = tryPeak; usedSTEP = tryS; fitFound = true; break; }
+    }
+    if (!fitFound) {
+      toast('⚠️ Punch-In→Entry Space ' + userNcSp + 'm (' + maxNcRods + ' rods) में Entry Depth ' +
+        ed + 'm तक पहुँचना, Punch-In की अधिकतम double-step सीमा (±' + STEP.toFixed(2) +
+        '%) के अंदर भी संभव नहीं — Space बढ़ाएं या Entry Depth कम करें।', 'wn');
+      return;
     }
   }
 
@@ -11495,7 +11608,6 @@ function calcZeroDegree() {
       </div>`;
     }
   }
-  stepWarnHTML = spaceWarnHTML + stepWarnHTML;
 
   // ── Rod 0 (Punch-In) Air Distance / Ground Penetration — same physics
   // already used in Modes 1/2/3 (machH / tan(entryAngleRad)) ──
@@ -11532,19 +11644,37 @@ function calcZeroDegree() {
     if (ncDepth >= ed - PIT_TOL) break;
   }
 
-  // Ramp-down: every rod steps by at most usedSTEP (or STEP_FINE near 0%)
-  // — never an illegal single-rod jump to "land" exactly on target; the
-  // loop simply stops once depth is within the ±0.25m tolerance band.
+  // v7_8_6-97 / FIX (Saiyad Hussain, Mode 4 rule 1 — reported bug: Entry
+  // Pit landed at 4.70m against a 3.70-4.30m target): this loop used to
+  // only check the LOWER tolerance bound (ncDepth >= ed-PIT_TOL) before
+  // stopping — it never checked whether committing to a FULL step would
+  // blow straight past the UPPER bound in a single rod, which is exactly
+  // what happened (one rod added 1.43m of depth, jumping clean over the
+  // whole 0.60m tolerance band). Now: before taking a full step, check
+  // where it would land; if that overshoots ed+PIT_TOL, solve for the
+  // precise angle that lands ncDepth on `ed` instead — never larger than
+  // the previous rod's angle (still a strictly decreasing ramp, so this
+  // is not an "illegal jump", just a smaller final step).
   let ramping = true, ncGuard = 0;
   while (ramping && curNcA > 0.001 && ncGuard++ < 60) {
     if (maxNcRods > 0 && rodNum > maxNcRods) break;
-    const prevA = curNcA;
-    curNcA = curNcA > STEP_FINE * 1.1
-      ? Math.max(0, curNcA - usedSTEP)
-      : Math.max(0, curNcA - STEP_FINE);
-    ncDepth += rl * curNcA / 100;
-    _zdcPushNcRow(rl, -curNcA, ncDepth, _cwCalcRC(rl, prevA, curNcA));
-    if (ncDepth >= ed - PIT_TOL) ramping = false;
+    const prevA     = curNcA;
+    const stepDown  = curNcA > STEP_FINE * 1.1 ? usedSTEP : STEP_FINE;
+    const trialA    = Math.max(0, curNcA - stepDown);
+    const trialDepth = ncDepth + rl * trialA / 100;
+
+    if (trialDepth > ed + PIT_TOL) {
+      const neededAngle = Math.max(0, Math.min(prevA, (ed - ncDepth) * 100 / rl));
+      curNcA  = Math.round(neededAngle * 100) / 100;
+      ncDepth += rl * curNcA / 100;
+      _zdcPushNcRow(rl, -curNcA, ncDepth, _cwCalcRC(rl, prevA, curNcA));
+      ramping = false;
+    } else {
+      curNcA  = trialA;
+      ncDepth = trialDepth;
+      _zdcPushNcRow(rl, -curNcA, ncDepth, _cwCalcRC(rl, prevA, curNcA));
+      if (ncDepth >= ed - PIT_TOL) ramping = false;
+    }
   }
 
   const ncRods      = ncRows.length;
@@ -11553,20 +11683,18 @@ function calcZeroDegree() {
 
   // ══ SECTION B: Entry Pit → Exit Pit (COUNTABLE) ══
   const actualED  = ncDepth;  // NC section की final achieved depth (Entry Pit depth)
-  // FIX (Mode 4 audit, rule 4 — Saiyad Hussain): the Entry Pit → Exit Pit
-  // main section's per-rod angle limit must be HALF the normal safeStep
-  // for the rod length in use — not a flat ±3% regardless of rod length.
-  // Examples given: 9.5m rod → normal ±2.5%/rod elsewhere, so Mode 4 main
-  // section here is ±0–1.25%; 3m rod → normal ±1%/rod elsewhere, so here
-  // ±0–0.50%. (Punch-In→Entry Pit keeps the SAME step as Mode 3 — that
-  // section, above, is untouched by this change.)
-  // FIX (custom-step gap, Saiyad Hussain): previously normalTol always used
-  // the auto safeStep(rl)/2 and completely ignored a user-entered Custom
-  // Step (zdcCustomStep) — so on a bore where the default limit couldn't
-  // reach the required Exit Pit depth, the user had no way to relax it
-  // here (unlike Modes 2/3, where Custom Step already works). Custom Step
-  // now relaxes this main-section limit too, same halving rule as before.
-  const normalTol = (userStep > 0 ? userStep : safeStep(rl)) / 2;
+  // v7_8_6-97 / FIX (Saiyad Hussain, Mode 4 rule 3 — final clarification):
+  // half of the normal rod step (ssNC/2) is the PREFERRED/ideal starting
+  // point — use the smallest slope that still hits both targets — but it
+  // is NOT a hard rejection limit. The confirmed hard ceiling for the
+  // Main Section is a flat ±3% (same for every rod length). If the slope
+  // actually required to hit both Entry and Exit targets is between the
+  // ideal half-step and this ±3% ceiling, use the REQUIRED value (not
+  // force-clamped down to the half-step) so the targets are genuinely
+  // achieved. Only beyond ±3% is it truly impossible — show an error.
+  const normalTol   = ssNC / 2;   // ideal/preferred reference (badges only)
+  const mainHardCap = 3.0;        // confirmed flat hard ceiling, all rod lengths
+
 
   // ── Step 1: SHAPE RULE VALIDATION ──
   // 0 Degree Crossing mode में countable section (Entry Pit → Exit Pit) straight bore है।
@@ -11662,66 +11790,75 @@ function calcZeroDegree() {
   if (!_manualAngSet) {
     const absSlope = Math.abs(calculatedSlope);
 
-    if (absSlope > normalTol) {
-      // Beyond ±3% — clamp and warn
-      const minBoreNeeded  = Math.ceil(Math.abs(ed - xd) / (normalTol / 100));
-      const achievableExit = +(ed - (calculatedSlope > 0 ? normalTol : -normalTol) * bl / 100).toFixed(2);
-      elevWarnHTML = `<div style="background:rgba(255,51,102,.12);border:2px solid rgba(255,51,102,.5);
-        border-radius:8px;padding:11px 15px;font-size:11px;color:var(--danger);margin-bottom:12px;line-height:2.0;">
-        <strong>⚠ चेतावनी: Entry और Exit का Depth Difference ±3% की अधिकतम सीमा से ज्यादा है!</strong><br>
-        Entry Pit Depth: <b>${ed.toFixed(2)}m</b> → Exit Pit Required: <b>${xd.toFixed(2)}m</b><br>
-        Required Slope: <b>${toD(calculatedSlope)}</b> (max allowed: ±${toDmag(normalTol)})<br>
-        Max Achievable Exit: <b>${achievableExit.toFixed(2)}m</b> | Min Bore Length Needed: <b>${minBoreNeeded}m</b><br>
-        ✔ Fix: Bore length ≥${minBoreNeeded}m करें OR Exit Depth को ${achievableExit.toFixed(2)}m रखें।
-      </div>`;
-      ang = parseFloat((calculatedSlope > 0 ? normalTol : -normalTol).toFixed(2));
+    if (absSlope > mainHardCap) {
+      // v7_8_6-97 / FIX (Saiyad Hussain, Mode 4 rule 3 & 5): beyond the
+      // confirmed flat ±3% Main Section hard ceiling, the target genuinely
+      // cannot be reached — stop and show a clear error instead of
+      // generating a chart that quietly falls short of the Exit target
+      // (same early-return pattern already used for an invalid shape).
+      const minBoreNeeded  = Math.ceil(Math.abs(ed - xd) / (mainHardCap / 100));
+      const achievableExit = +(ed - (calculatedSlope > 0 ? mainHardCap : -mainHardCap) * bl / 100).toFixed(2);
+      toast('⚠️ Entry (' + ed.toFixed(2) + 'm) → Exit (' + xd.toFixed(2) + 'm) के लिए ज़रूरी Slope ' +
+        toD(calculatedSlope) + ' है, जो Main Section की अधिकतम सीमा ±' + mainHardCap.toFixed(2) +
+        '% से ज्यादा है। Bore Length ≥' + minBoreNeeded + 'm करें, या Exit Depth को ' +
+        achievableExit.toFixed(2) + 'm रखें।', 'wn');
+      return;
 
-    } else if (absSlope > 2.0) {
+    } else if (absSlope > normalTol) {
+      // v7_8_6-97 / FIX (Saiyad Hussain, Mode 4 rule 3): within the ±3%
+      // hard ceiling but above the ideal half-step — use the ACTUAL
+      // required slope (previously this was still force-clamped down to
+      // normalTol here, so Exit Pit was never really reached even when
+      // the real requirement was safely inside ±3%). Informational only.
       elevWarnHTML = `<div style="background:rgba(255,204,0,.08);border:1px solid rgba(255,204,0,.3);
         border-radius:8px;padding:8px 12px;font-size:10px;color:var(--warn);margin-bottom:8px;line-height:1.8;">
-        ℹ️ Elevation Slope: <b>${toD(calculatedSlope)}</b> (±${toDmag(normalTol)} limit के करीब)<br>
+        ℹ️ Elevation Slope: <b>${toD(calculatedSlope)}</b> (ideal ±${toDmag(normalTol)} से ज्यादा, पर ±${mainHardCap.toFixed(2)}% सीमा के अंदर)<br>
         Entry Pit: ${ed.toFixed(2)}m → Exit Pit: ${xd.toFixed(2)}m
       </div>`;
-      ang = parseFloat(Math.max(-normalTol, Math.min(normalTol, calculatedSlope)).toFixed(2));
+      ang = parseFloat(calculatedSlope.toFixed(2));
 
     } else {
-      // Normal — minimum possible angle (document: always try minimum first)
-      ang = parseFloat(Math.max(-normalTol, Math.min(normalTol, calculatedSlope)).toFixed(2));
+      // Normal — required slope already within the ideal half-step
+      ang = parseFloat(calculatedSlope.toFixed(2));
     }
   }
 
   stepWarnHTML = elevWarnHTML + stepWarnHTML;
 
   // Update slope display badge if element exists (document point 5)
-  // FIX (Mode 4 audit, rule 4): scale with rod-length-aware normalTol
-  // (same reasoning as the angQuality badge below).
+  // v7_8_6-97 / FIX (Saiyad Hussain, Mode 4 rule 3): "OK"/"WARN" tiers now
+  // read against normalTol (ideal) vs mainHardCap (true ±3% ceiling).
   const _zdcAngleVal = document.getElementById('zdcAngleVal');
   const _zdcAngleBdg = document.getElementById('zdcAngleBadge');
   if (_zdcAngleVal) {
     _zdcAngleVal.textContent = toD(ang);
     _zdcAngleVal.className = 'zdc-angle-val ' +
-      (Math.abs(ang) <= normalTol / 3 ? 'zdc-angle-ideal' : Math.abs(ang) <= normalTol * 2 / 3 ? 'zdc-angle-ok' : 'zdc-angle-warn');
+      (Math.abs(ang) <= normalTol ? 'zdc-angle-ideal' : Math.abs(ang) <= mainHardCap ? 'zdc-angle-ok' : 'zdc-angle-warn');
   }
   if (_zdcAngleBdg) {
-    _zdcAngleBdg.textContent = Math.abs(ang) === 0 ? 'IDEAL' : Math.abs(ang) <= normalTol / 3 ? 'OK' : 'WARN';
+    _zdcAngleBdg.textContent = Math.abs(ang) === 0 ? 'IDEAL' : Math.abs(ang) <= normalTol ? 'OK' : Math.abs(ang) <= mainHardCap ? 'WARN' : 'LIMIT';
   }
 
-  const angClamped = Math.max(-normalTol, Math.min(normalTol, ang));
+  // v7_8_6-97 / FIX (Saiyad Hussain, Mode 4 rule 3): clamp against the true
+  // hard ceiling (mainHardCap, ±3%) — clamping here at normalTol would have
+  // silently pulled `ang` straight back down to the half-step ideal every
+  // time, undoing the "use the actual required slope" fix above entirely.
+  const angClamped = Math.max(-mainHardCap, Math.min(mainHardCap, ang));
 
   // ── Angle quality badge ──
-  // FIX (Mode 4 audit, rule 4): thresholds now scale with the rod-length-
-  // aware normalTol above instead of hardcoded absolute percentages that
-  // only made sense for the old flat ±3% cap (e.g. a 3m rod's ±0.50%
-  // limit would never even reach the old "≤1.0%" tier).
-  const absAng     = Math.abs(angClamped);
-  const tolExc = normalTol / 6, tolAcc = normalTol / 3, tolMax = normalTol * 2 / 3;
+  // v7_8_6-97 / FIX (Saiyad Hussain, Mode 4 rule 3): tiers now span from
+  // the ideal half-step (normalTol) up to the confirmed ±3% hard ceiling
+  // (mainHardCap), instead of topping out at normalTol as if that were
+  // the max.
+  const absAng = Math.abs(angClamped);
+  const tolExc = normalTol / 3, tolAcc = normalTol;
   const angQuality = absAng === 0 ? 'IDEAL (0%)' :
                      absAng <= tolExc ? `EXCELLENT (≤±${tolExc.toFixed(2)}%)` :
                      absAng <= tolAcc ? `ACCEPTABLE (≤±${tolAcc.toFixed(2)}%)` :
-                     absAng <= tolMax ? `MAX LIMIT (≤±${tolMax.toFixed(2)}%)` : `GRADE BUFFER (≤±${normalTol.toFixed(2)}%)`;
+                     absAng <= mainHardCap ? `WITHIN ±${mainHardCap.toFixed(2)}% LIMIT` : `EXCEEDS LIMIT`;
   const angBadgeCls = absAng <= tolExc ? 'zdc-sb-ideal' :
                       absAng <= tolAcc ? 'zdc-sb-ok' :
-                      absAng <= tolMax ? 'zdc-sb-warn' : 'zdc-sb-bad';
+                      absAng <= mainHardCap ? 'zdc-sb-warn' : 'zdc-sb-bad';
 
   // ── Step 3: Build countable rows — apply calculatedSlope per rod (document point 5) ──
   // Entry Pit → Exit Pit: each rod gets angClamped (minimum possible slope)
@@ -11731,27 +11868,13 @@ function calcZeroDegree() {
   // global chainage (NC + Count) instead of section-local — so Total −
   // Separate always equals the user's Bore Length, cross-checkable exactly
   // like Mode 3.
-  // REVERT (Sept 22 field check, Saiyad Hussain — screenshot showed Rod 3
-  // at -10.00% and Rod 15 landing at -8.10m against a 5.00m Exit Pit
-  // target): the "ease toward angClamped" continuity fix above was itself
-  // the bug — it let early rods in this section run at whatever angle the
-  // NC section had ended on (e.g. -11.25%), far past the hard ±normalTol
-  // ceiling for this section (e.g. ±1.25% for a 9.5m rod), and by the time
-  // it eased down to angClamped the profile had already overshot the
-  // target depth by several metres. There is no rule requiring a smooth
-  // transition here — the NC section (double step allowed) dropping to
-  // the flatter main section (half step) at the Entry Pit is a normal,
-  // expected change, not a jump to fix. Restored: every rod in this
-  // section uses the SAME angClamped (already capped to ±normalTol), so
-  // it never exceeds the limit and lands exactly on Exit Pit by
-  // construction (rod count × seg sums to bl exactly).
   const countRows = [];
   let cumCountDist4 = 0;
   for (let rod = 1; rod <= n; rod++) {
     const seg      = rod === n ? lastSeg : rl;
     const prevD    = rod === 1 ? actualED : countRows[rod-2].depth; // pipe actualED पर है
+    const depth    = prevD - seg * angClamped / 100;
     const rodAngle = angClamped;
-    const depth    = prevD - seg * rodAngle / 100;
     let rc = null;
     if (countRows.length > 0) {
       const dA = Math.abs(rodAngle - countRows[countRows.length-1].rodAngle);
@@ -14996,34 +15119,12 @@ function calcCityMode() {
         }
         return { finalDepth: d, peak };
       }
-      // FIX (split-point selection bug, reported by Saiyad Hussain, Sept
-      // 2026 — 9.5m rod / 120m bore case: Max Depth 8m target achieved only
-      // 7.53m): the old score (exitErr*10 + peakErr) always chased the
-      // smallest possible Exit Pit error even when doing so meant giving up
-      // on Max Depth by a full metre or more — on bores with fewer/larger
-      // rods this could pick a split that barely descended at all. Fix:
-      // among all splits, first look for any that land BOTH Exit Pit AND
-      // Max Depth within the same ±0.25m tolerance already used everywhere
-      // else — pick whichever of those fits tightest. Only when NO split
-      // can satisfy both (a genuinely infeasible combination for the
-      // current rod length / step) fall back to minimising the WORSE of
-      // the two errors, so Max Depth is never sacrificed more than the
-      // situation actually requires just to shave a little off Exit Pit.
-      let splitPoint = 1;
-      let bestBoth = null, bestBothScore = Infinity;
-      let bestFallback = 1, bestFallbackScore = Infinity;
+      let splitPoint = 1, bestScore = Infinity;
       for (let sp = 1; sp <= n - 1; sp++) {
         const r = _cwSimSplit(sp);
-        const exitErr = Math.abs(r.finalDepth - xd);
-        const peakErr = Math.abs(r.peak - maxBore);
-        if (exitErr <= PIT_TOL && peakErr <= PIT_TOL) {
-          const s = exitErr + peakErr;
-          if (s < bestBothScore) { bestBothScore = s; bestBoth = sp; }
-        }
-        const fbScore = Math.max(exitErr, peakErr) * 10 + (exitErr + peakErr);
-        if (fbScore < bestFallbackScore) { bestFallbackScore = fbScore; bestFallback = sp; }
+        const score = Math.abs(r.finalDepth - xd) * 10 + Math.abs(r.peak - maxBore);
+        if (score < bestScore) { bestScore = score; splitPoint = sp; }
       }
-      splitPoint = (bestBoth !== null) ? bestBoth : bestFallback;
 
       let depth        = actualED;
       let prevCAngle   = ncEndAngle > 0.001 ? -ncEndAngle : 0;  // smooth NC→count continuity
