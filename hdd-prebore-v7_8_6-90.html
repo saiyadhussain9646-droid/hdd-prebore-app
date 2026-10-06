@@ -1684,6 +1684,7 @@ td.rla-cell:empty:before{content:attr(data-ph);color:var(--t3);font-size:10px;}
 .rl-diff-box{margin-top:6px;padding:5px 8px;border-radius:5px;font-size:11px;
   background:rgba(0,255,150,.08);border:1px solid rgba(0,255,150,.2);
   color:#00ff96;display:none;} /* default stays hidden for City/ZDC modes — unchanged from before; Standard mode's box overrides this with its own inline style to stay permanently visible */
+
 </style>
 <link rel="manifest" href="/hdd-prebore-app/manifest.json">
 </head>
@@ -1741,7 +1742,7 @@ td.rla-cell:empty:before{content:attr(data-ph);color:var(--t3);font-size:10px;}
     </button>
   </div>
   <div class="smenu-version">HDD PRE-BORE DESIGNER PRO · v7_8_6-90 Built by Saiyad Hussain</div>
-  <div id="smenuTestBuildTag" style="padding:0 20px 12px;font-size:9px;color:rgba(255,255,255,.22)">Build: v7_8_6-95-test</div>
+  <div id="smenuTestBuildTag" style="padding:0 20px 12px;font-size:9px;color:rgba(255,255,255,.22)">Build: v7_8_6-91-test</div>
 </div>
 
 <!-- ═══════ LOGIN ═══════ -->
@@ -4795,6 +4796,7 @@ document.addEventListener('click',function(e){
   <div id="finalStatus" class="fs-safe">✅ DESIGN SAFE — All checks passed</div>
     </div>
   </div>
+
 </div>
 
 </div><!-- /mainApp -->
@@ -5225,7 +5227,16 @@ async function _loadAllUsers() {
 // setMode(1) calls) so the app enters through the one existing session path —
 // no parallel session system. No signInWithEmailAndPassword(), no password
 // prompt, no second Firebase instance.
-const _googleProvider = new firebase.auth.GoogleAuthProvider();
+// Guarded so a failed/unavailable Firebase Auth load (offline, cached
+// page reopened with no network, CDN hiccup, etc.) can never throw here
+// and halt the rest of this script's initialization — Google Sign-In
+// itself still fails safely inside signInWithGoogle()'s own try/catch
+// below (same as it already would if _auth.signInWithPopup rejected),
+// nothing about the sign-in flow changes when Firebase IS available.
+const _googleProvider = (() => {
+  try { return new firebase.auth.GoogleAuthProvider(); }
+  catch (e) { console.warn('Google Sign-In unavailable: Firebase Auth failed to load', e); return null; }
+})();
 async function signInWithGoogle(source) {
   const btn = document.getElementById(source === 'signup' ? 'signupGoogleBtn' : 'loginGoogleBtn');
   if (!btn || btn.disabled) return; // one click = one attempt, blocks duplicate popups/writes
@@ -9144,8 +9155,6 @@ function _doChartPDF(){
   try{
     const info=getInfoLines(), rows=collectRows();
     const proj=v('projN')||'—';
-    const RPP=32;
-    const pages=Math.ceil(rows.length/RPP);
     const rlActive = rows.some(r => r.rlSurvey !== null && r.rlSurvey !== undefined);
     // COLUMN-ORDER FIX: mirrors the exact same fixed order the live Bore
     // Chart uses (ROD, DISTANCE, CALC ANGLE, CALC DEPTH, RC, [SURVEY GPS
@@ -9200,7 +9209,9 @@ function _doChartPDF(){
       }).join('');
     }
 
-    function hdr(pn,tp){
+    // Full header (logo + title + the whole Project/Client/.../Ground RL
+    // info grid) — used on PAGE 1 ONLY, per this round's pagination fix.
+    function hdrFull(pn,tp){
       return `<div class="dh">
         <div class="dl">${logoHtml}</div>
         <div class="dc"><div class="dt">⛏️ HDD PRE-BORE CHART</div>
@@ -9208,6 +9219,14 @@ function _doChartPDF(){
         <div class="dp">Page ${pn}/${tp}</div>
       </div>
       <div class="ig">${info.slice(1).map(l=>`<div class="ii"><span class="id">▸</span>${l}</div>`).join('')}</div>`;
+    }
+    // Minimal continuation-page header (title + page number only, no
+    // project/client/.../ground-RL info grid) — used on page 2+.
+    function hdrCont(pn,tp){
+      return `<div class="dh">
+        <div class="dc"><div class="dt">⛏️ HDD PRE-BORE CHART</div></div>
+        <div class="dp">Page ${pn}/${tp} (continued)</div>
+      </div>`;
     }
 
     const pw = calcPipeWeight(); // read-only — does not affect table/rows/formulas above
@@ -9221,23 +9240,109 @@ function _doChartPDF(){
           <div><b>Estimated Required Rig:</b> ${pw.estRigTon.toFixed(2)} Ton <span style="color:#888">(${pw.rigSafetyFactorPct}% estimation safety factor included)</span></div>
         </div>
       </div>` : '';
-
-    let allPages='';
-    for(let p=0;p<pages;p++){
-      const pRows=rows.slice(p*RPP,(p+1)*RPP);
-      const photoHtml=(p===pages-1 && getPDFPhotoHTML)?getPDFPhotoHTML():'';
-      allPages+=`<div class="page">${hdr(p+1,pages)}
-        <div class="sl">📋 ROD-BY-ROD DATA TABLE${pages>1?' (Page '+(p+1)+'/'+pages+')':''}</div>
-        <table><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
-        <tbody>${buildRows(pRows)}</tbody></table>
-        ${p===pages-1 ? pwHTML : ''}
-        ${photoHtml}
-        <div class="pf">Formula: Depth=Prev+(Angle%×Seg÷100) | Min BR(m)=OD(m)×100 | RC=Seg÷ΔAngle(rad) | API RP 1107 &nbsp;|&nbsp;
-        <strong>Saiyad Hussain</strong> — HDD Driller &amp; Locator · 14+ Yrs · Saudi Arabia</div>
-      </div>`;
-    }
+    const photoHtml = getPDFPhotoHTML ? (getPDFPhotoHTML() || '') : ''; // static — same content regardless of which page it lands on
+    const pfHTML = `<div class="pf">Formula: Depth=Prev+(Angle%×Seg÷100) | Min BR(m)=OD(m)×100 | RC=Seg÷ΔAngle(rad) | API RP 1107 &nbsp;|&nbsp;
+        <strong>Saiyad Hussain</strong> — HDD Driller &amp; Locator · 14+ Yrs · Saudi Arabia</div>`;
+    const theadRowHTML = `<tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr>`;
 
     const _orient = _chartPdfPickOrient(cols.length);
+    const pageCSS = `table{width:100%;border-collapse:collapse;font-size:8px;}
+thead{display:table-header-group;}
+th{background:#1a3a6a;color:#fff;padding:5px 3px;text-align:center;border:1px solid #0d2b55;font-size:7.5px;white-space:nowrap;}
+td{padding:3px;text-align:center;border:1px solid #ccd;line-height:1.4;vertical-align:middle;}
+td:last-child{text-align:left;}
+${colWidthCSS}
+.dh{display:flex;align-items:flex-start;gap:8px;border-bottom:3px solid #1a3a6a;padding-bottom:6px;margin-bottom:6px;}
+.dl{flex:0 0 auto;}.dl img{height:44px;max-width:110px;object-fit:contain;}
+.dc{flex:1;}.dt{font-size:15px;font-weight:900;color:#1a3a6a;letter-spacing:1px;}
+.ds{font-size:9px;color:#555;margin-top:2px;line-height:1.5;}
+.dp{font-size:9px;color:#888;white-space:nowrap;}
+.ig{display:grid;grid-template-columns:1fr 1fr;gap:2px 12px;background:#f0f4ff;
+  border:1px solid #c5d0f0;border-radius:4px;padding:5px 8px;margin-bottom:6px;}
+.ii{font-size:8px;color:#333;line-height:1.8;display:flex;gap:4px;}
+.id{color:#1a3a6a;font-weight:bold;flex-shrink:0;}
+.sl{font-size:9px;font-weight:700;color:#1a3a6a;letter-spacing:1px;
+  border-left:3px solid #1a3a6a;padding-left:6px;margin-bottom:4px;}
+.site-photo-wrap{margin:5px 0;text-align:center;}
+.site-photo-wrap img{max-width:60%;max-height:100px;border-radius:4px;border:1px solid #ccd;}
+.site-photo-caption{font-size:7.5px;color:#666;margin-top:2px;}
+.pf{margin-top:5px;padding:4px 7px;background:#f0fff4;border:1px solid #aaccaa;
+  border-radius:3px;font-size:7.5px;color:#333;line-height:1.7;}
+.pws{margin-top:6px;padding:6px 8px;background:#fff8e1;border:1px solid #e0c060;border-radius:4px;}
+.pws-t{font-size:9px;font-weight:700;color:#7a5c00;letter-spacing:.5px;margin-bottom:4px;}
+.pws-g{display:grid;grid-template-columns:1fr 1fr;gap:2px 12px;font-size:8px;color:#333;line-height:1.6;}`; // exact copy of the styles below (kept in sync manually) — used only for off-screen measurement, never rendered to the user
+
+    // ── DATA-DRIVEN PAGINATION ──────────────────────────────────────
+    // Replaces the old fixed "RPP=32 rows/page" guess (which, once rows
+    // got taller — the 4 TIME columns, multi-line GPS/RL cells — no longer
+    // reliably fit a physical A4 page, causing the print engine to silently
+    // overflow mid-page and produce sparse pages). Instead: render the real
+    // header/thead/footer/each-row HTML off-screen at the exact printable
+    // page width, measure their real heights, then pack rows to fill each
+    // page's real printable height — page 1 reserves space for the full
+    // project-info header, continuation pages use the smaller header, and
+    // only the true last page reserves space for the pipe-weight/photo block.
+    const _mBox=document.createElement('div');
+    _mBox.style.cssText='position:fixed;left:-99999px;top:0;visibility:hidden;pointer-events:none;';
+    const _PXMM=96/25.4;
+    const _wMM=_orient==='landscape'?297:210, _hMM=_orient==='landscape'?210:297;
+    const _printableWidthPx=(_wMM-16)*_PXMM, _printableHeightPx=(_hMM-20)*_PXMM;
+    _mBox.style.width=_printableWidthPx+'px';
+    _mBox.innerHTML=`<style>${pageCSS}#_pdfMTbl{table-layout:fixed;}</style>
+      <div id="_mHF">${hdrFull(1,1)}</div>
+      <div id="_mHC">${hdrCont(1,1)}</div>
+      <div id="_mSl" class="sl">📋 ROD-BY-ROD DATA TABLE (Page 99/99)</div>
+      <table id="_pdfMTbl"><thead>${theadRowHTML}</thead><tbody>${buildRows(rows)}</tbody></table>
+      <div id="_mPf">${pfHTML}</div>
+      <div id="_mExtra">${pwHTML}${photoHtml}</div>`;
+    document.body.appendChild(_mBox);
+    const _mHeaderFullPx=_mBox.querySelector('#_mHF').offsetHeight;
+    const _mHeaderContPx=_mBox.querySelector('#_mHC').offsetHeight;
+    const _mSlPx=_mBox.querySelector('#_mSl').offsetHeight;
+    const _mTheadPx=_mBox.querySelector('#_pdfMTbl thead').offsetHeight;
+    const _mPfPx=_mBox.querySelector('#_mPf').offsetHeight;
+    const _mExtraLastPx=_mBox.querySelector('#_mExtra').offsetHeight;
+    const _rowHeightsPx=Array.prototype.map.call(_mBox.querySelectorAll('#_pdfMTbl tbody tr'), el=>el.offsetHeight);
+    document.body.removeChild(_mBox);
+
+    const _perRowFixedPx=_mSlPx+_mTheadPx+_mPfPx; // repeats on every page
+    const _capFirstPx=Math.max(1,_printableHeightPx-_mHeaderFullPx-_perRowFixedPx);
+    const _capContPx =Math.max(1,_printableHeightPx-_mHeaderContPx-_perRowFixedPx);
+    const _pageGroups=[]; // array of arrays of row indices
+    let _ri=0;
+    while(_ri<rows.length){
+      const cap=_pageGroups.length===0?_capFirstPx:_capContPx;
+      const grp=[]; let used=0;
+      while(_ri<rows.length && (used+_rowHeightsPx[_ri]<=cap || grp.length===0)){
+        used+=_rowHeightsPx[_ri]; grp.push(_ri); _ri++;
+      }
+      _pageGroups.push(grp);
+    }
+    // Reserve room for the pipe-weight/photo block on the TRUE last page —
+    // if it doesn't fit, move trailing rows onto a fresh final page instead
+    // of letting the browser overflow it onto an uncontrolled extra sheet.
+    for(;;){
+      const lastGrp=_pageGroups[_pageGroups.length-1];
+      const cap=_pageGroups.length===1?_capFirstPx:_capContPx;
+      const used=lastGrp.reduce((s,i)=>s+_rowHeightsPx[i],0);
+      if(used+_mExtraLastPx<=cap || lastGrp.length<=1) break;
+      _pageGroups.push([lastGrp.pop()]);
+    }
+    const pages=_pageGroups.length;
+
+    let allPages='';
+    _pageGroups.forEach((grp,p)=>{
+      const pRows=grp.map(i=>rows[i]);
+      const isLastPage=(p===pages-1);
+      allPages+=`<div class="page">${p===0?hdrFull(p+1,pages):hdrCont(p+1,pages)}
+        <div class="sl">📋 ROD-BY-ROD DATA TABLE${pages>1?' (Page '+(p+1)+'/'+pages+')':''}</div>
+        <table><thead>${theadRowHTML}</thead>
+        <tbody>${buildRows(pRows)}</tbody></table>
+        ${isLastPage?pwHTML:''}
+        ${isLastPage?photoHtml:''}
+        ${pfHTML}
+      </div>`;
+    });
     const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>HDD Chart</title>
 <style>*{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:Arial,sans-serif;background:#fff;color:#111;}
