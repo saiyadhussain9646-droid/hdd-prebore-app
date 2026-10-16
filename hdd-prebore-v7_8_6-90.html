@@ -10945,9 +10945,9 @@ function renderProjList() {
     const d = new Date(p.savedAt);
     const dateStr = d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
     const g = p.gData;
-    const _modeNames = {1:'Trial Draft',2:'Standard',3:'City/Curve',4:'Zero Degree'};
+    const _modeNames = {1:'Trial Draft',2:'Standard HDD',3:'City/Curve',4:'Zero Degree'};
     const meta = g
-      ? `${g.bl}m bore | ${g.totalRods} rods × ${g.rl}m | ${g.pipT||'—'} OD=${g.odMM?g.odMM.toFixed(0):'—'}mm | MaxD=${g.maxD}m`
+      ? `${_modeNames[p.mode] ? _modeNames[p.mode] + ' | ' : ''}${g.bl}m bore | ${g.totalRods} rods × ${g.rl}m | ${g.pipT||'—'} OD=${g.odMM?g.odMM.toFixed(0):'—'}mm | MaxD=${g.maxD}m`
       : (p.inputs && (p.inputs.boreL || p.inputs.rodL))
         ? `${_modeNames[p.mode]||''} | ${p.inputs.boreL||'—'}m bore | ${p.inputs.rodL||'—'}m rod`
         : (_modeNames[p.mode] || '');
@@ -13279,6 +13279,111 @@ function calcZeroDegree() {
     }
   }
 
+  // ── NC ANGLE-JUMP GUARD (Mode 4, Punch-In → Entry Pit only) ──────────────
+  // Rule: along the whole chain  Rod0 → NC rods → FIRST Main-Section rod  every
+  // consecutive angle difference must be <= L (L = STEP = 2 × Safe/Custom Step),
+  // and the Entry Pit depth must land within ±PIT_TOL.
+  // Old behaviour stopped the NC ramp as soon as the depth reached tolerance,
+  // so the last NC rod could still be steep (e.g. -10%) while the Main Section
+  // starts at ~-0.6%  → one big jump at the Entry Pit. The existing result is
+  // kept UNCHANGED when it already satisfies the rule; otherwise other Starting
+  // Angle / Angle Step combinations are searched (ramp continues down to the
+  // Main-Section angle). If none is valid the chart is NOT generated and a
+  // clear error + suggestion is shown. User inputs are never modified.
+  let ncConstrained = false;
+  let _ncAbort = false;
+  let _ncSim = null;
+  const _ncLimit = STEP;
+  const _ncMachH = (function () {
+    const el = document.getElementById('machH'); const v = el ? parseFloat(el.value) : NaN;
+    return (isNaN(v) || v <= 0) ? 1.00 : v;
+  })();
+  const _ncEntElev = (function () { const el = document.getElementById('zdcEntryElev'); return el ? (parseFloat(el.value) || 0) : 0; })();
+  const _ncExitElev = (function () { const el = document.getElementById('zdcExitElev'); return el ? (parseFloat(el.value) || 0) : 0; })();
+  // Main-Section angle exactly as Section B computes it (display convention).
+  function _ncMainAngle(depth) {
+    if (_manualAngSet) return Math.max(-3, Math.min(3, ang));
+    const s = bl > 0 ? (depth + _ncEntElev - (xd + _ncExitElev)) / bl * 100 : 0;
+    return Math.max(-3, Math.min(3, parseFloat(s.toFixed(2))));
+  }
+  function _simNc(peak, step, constrained, rodCap) {
+    const rad  = peak > 0 ? Math.atan(peak / 100) : 0;
+    const air  = rad > 0 ? _ncMachH / Math.tan(rad) : 0;
+    const g0   = Math.max(0, rl - Math.min(air, rl));
+    let depth = g0 * peak / 100, cur = peak, rodNum = 1;
+    const angles = [peak];
+    const chainOK = function () { return Math.abs(cur + _ncMainAngle(depth)) <= _ncLimit + 0.011; };
+    while (rampDepth(cur, step) < ed - PIT_TOL && depth + rl * cur / 100 < ed - PIT_TOL) {
+      if (rodCap > 0 && rodNum > rodCap) break;
+      depth += rl * cur / 100; angles.push(cur); rodNum++;
+      if (depth >= ed - PIT_TOL) break;
+    }
+    let ramping = true, guard = 0;
+    if (constrained && depth >= ed - PIT_TOL && chainOK()) ramping = false;
+    while (ramping && guard++ < 80) {
+      if (rodCap > 0 && rodNum > rodCap) break;
+      if (cur <= 0.001) break;
+      const prevA = cur;
+      const stepDown = cur > STEP_FINE * 1.1 ? step : STEP_FINE;
+      const trialA = Math.max(0, cur - stepDown);
+      const trialDepth = depth + rl * trialA / 100;
+      if (trialDepth > ed + PIT_TOL) {
+        let need = Math.max(0, Math.min(prevA, (ed - depth) * 100 / rl));
+        if (constrained) need = Math.max(Math.max(0, prevA - _ncLimit), Math.min(prevA, (ed - depth) * 100 / rl));
+        cur = Math.round(need * 100) / 100;
+        depth += rl * cur / 100; angles.push(cur); rodNum++; ramping = false;
+      } else {
+        cur = trialA; depth = trialDepth; angles.push(cur); rodNum++;
+        if (constrained) { if (depth >= ed - PIT_TOL && chainOK()) ramping = false; }
+        else if (depth >= ed - PIT_TOL) ramping = false;
+      }
+    }
+    let maxDrop = 0;
+    for (let i = 1; i < angles.length; i++) maxDrop = Math.max(maxDrop, Math.abs(angles[i] - angles[i - 1]));
+    const joint = Math.abs(cur + _ncMainAngle(depth));          // last NC rod → first Main rod
+    maxDrop = Math.max(maxDrop, joint);
+    const inTol = depth >= ed - PIT_TOL - 1e-9 && depth <= ed + PIT_TOL + 1e-9;
+    const rods  = angles.length - 1;
+    const ok    = inTol && maxDrop <= _ncLimit + 0.011 && (rodCap <= 0 || rods <= rodCap);
+    return { ok, depth, maxDrop, joint, rods, peak, step, angles };
+  }
+  function _ncPeaks() { const f = []; for (let a = 1; a <= 25.0001; a += 0.25) f.push(Math.round(a * 100) / 100); return f; }
+  function _searchNc(peaks, rodCap) {
+    let best = null;
+    for (let si = 0; si <= 40; si++) {
+      const s = STEP - si * 0.25; if (s < STEP_FINE - 1e-9) break;
+      for (let k = 0; k < peaks.length; k++) {
+        const r = _simNc(peaks[k], s, true, rodCap);
+        if (!r.ok) continue;
+        const err = Math.abs(r.depth - ed);
+        if (!best || r.rods < best.rods || (r.rods === best.rods && (err < best.err - 1e-9 ||
+            (Math.abs(err - best.err) <= 1e-9 && r.peak < best.peak)))) { best = { ...r, err }; }
+      }
+    }
+    return best;
+  }
+  (function () {
+    const cur = _simNc(peakAngle, usedSTEP, false, maxNcRods);
+    if (cur.ok) return;                       // existing result already valid → unchanged
+    const best = _searchNc(userPI > 0 ? [userPI] : _ncPeaks(), maxNcRods);
+    if (best) { peakAngle = best.peak; usedSTEP = best.step; ncConstrained = true; _ncSim = best; return; }
+    // No valid combination: error + suggestion only (inputs untouched), no chart.
+    let hint = '';
+    if (userPI > 0) {
+      const alt = _searchNc(_ncPeaks(), maxNcRods);
+      if (alt) hint = ' सुझाव: Punch-In Angle लगभग ' + alt.peak.toFixed(2) + '% आज़माएँ (या खाली छोड़कर Auto करें)।';
+    }
+    if (!hint && maxNcRods > 0) {
+      const alt = _searchNc(userPI > 0 ? [userPI] : _ncPeaks(), 0);
+      if (alt) hint = ' सुझाव: Punch-In→Entry Space कम से कम ' + ((alt.rods + 1) * rl).toFixed(1) + 'm रखें (अभी ' + userNcSp + 'm)।';
+    }
+    if (!hint) hint = ' सुझाव: Entry Pit Depth बदलें या Custom Step बढ़ाएँ।';
+    toast('⚠️ Punch-In → Entry Pit → Main Section: Entry ' + ed + 'm (±' + PIT_TOL + 'm) तक पहुँचते हुए हर लगातार रॉड का Angle अंतर ' +
+          _ncLimit.toFixed(2) + '% सीमा के भीतर रखना संभव नहीं — chart नहीं बना।' + hint, 'wn');
+    _ncAbort = true;
+  })();
+  if (_ncAbort) return;
+
   // RC Warning for aggressive custom step
   let stepWarnHTML = '';
   if (userStep > safeStep(rl)) {
@@ -13320,8 +13425,18 @@ function calcZeroDegree() {
     return row;
   }
 
+  // Constrained path (angle-jump guard): rows come from the validated simulation.
+  if (ncConstrained && _ncSim) {
+    for (let k = 1; k < _ncSim.angles.length; k++) {
+      const a = _ncSim.angles[k], pa = _ncSim.angles[k - 1];
+      ncDepth += rl * a / 100;
+      _zdcPushNcRow(rl, -a, ncDepth, _cwCalcRC(rl, pa, a));
+      curNcA = a;
+    }
+  }
+
   // Hold rods (if rampDepth still < ed even at peak)
-  while (rampDepth(curNcA, usedSTEP) < ed - PIT_TOL && ncDepth + rl * curNcA / 100 < ed - PIT_TOL) {
+  while (!ncConstrained && rampDepth(curNcA, usedSTEP) < ed - PIT_TOL && ncDepth + rl * curNcA / 100 < ed - PIT_TOL) {
     if (maxNcRods > 0 && rodNum > maxNcRods) break;
     const prevA = Math.abs(ncRows[ncRows.length - 1].angle);
     ncDepth += rl * curNcA / 100;
@@ -13341,7 +13456,7 @@ function calcZeroDegree() {
   // the previous rod's angle (still a strictly decreasing ramp, so this
   // is not an "illegal jump", just a smaller final step).
   let ramping = true, ncGuard = 0;
-  while (ramping && curNcA > 0.001 && ncGuard++ < 60) {
+  while (!ncConstrained && ramping && curNcA > 0.001 && ncGuard++ < 60) {
     if (maxNcRods > 0 && rodNum > maxNcRods) break;
     const prevA     = curNcA;
     const stepDown  = curNcA > STEP_FINE * 1.1 ? usedSTEP : STEP_FINE;
@@ -13349,7 +13464,9 @@ function calcZeroDegree() {
     const trialDepth = ncDepth + rl * trialA / 100;
 
     if (trialDepth > ed + PIT_TOL) {
-      const neededAngle = Math.max(0, Math.min(prevA, (ed - ncDepth) * 100 / rl));
+      const neededAngle = ncConstrained
+        ? Math.max(Math.max(0, prevA - STEP), Math.min(prevA, (ed - ncDepth) * 100 / rl))
+        : Math.max(0, Math.min(prevA, (ed - ncDepth) * 100 / rl));
       curNcA  = Math.round(neededAngle * 100) / 100;
       ncDepth += rl * curNcA / 100;
       _zdcPushNcRow(rl, -curNcA, ncDepth, _cwCalcRC(rl, prevA, curNcA));
@@ -16718,6 +16835,112 @@ function calcCityMode() {
         }
       }
 
+      // ── MODE 3 MAX-DEPTH / ENTRY / EXIT GUARD ────────────────────────────
+      // Problem: the NC (Punch-In → Entry Pit) ramp stops as soon as depth
+      // reaches the Entry tolerance, usually while still steep. The count
+      // section then has to flatten under the ±ss%/rod limit, so it keeps
+      // descending and OVERSHOOTS the required Max Depth (and sometimes Entry /
+      // Exit tolerance). Rule enforced here (all ±PIT_TOL):
+      //   • Entry Pit depth (end of NC) within ed ± tol
+      //   • Max Depth reached must NOT exceed Max Depth + tol (falling short is
+      //     allowed — bore length / step limit — and keeps the existing warning)
+      //   • Exit Pit depth within xd ± tol
+      // If the default Punch-In Angle / Step already satisfies this it is kept
+      // UNCHANGED. Otherwise other Starting-Angle / Step combinations are
+      // simulated with the SAME count-section rules and the best valid one is
+      // used. If none is valid the chart is NOT generated (clear error).
+      // User inputs (Punch-In Angle, Space, Punch-Out Angle) are never modified.
+      let _c3Abort = false;
+      (function () {
+        const nFull = Math.floor(bl / rl), lastSeg = bl - nFull * rl;
+        const n = nFull + (lastSeg > 0.01 ? 1 : 0);
+        const maxBore = (md > 0 && md >= Math.max(ed, xd)) ? md : Math.max(ed, xd);
+        const mhEl = document.getElementById('machH'); const mhV = mhEl ? parseFloat(mhEl.value) : NaN;
+        const mh = (isNaN(mhV) || mhV <= 0) ? 1.00 : mhV;
+        function mono(prevA, a, st) {
+          if (Math.abs(a - prevA) < 1e-9) return a;
+          const d = a > prevA ? 1 : -1;
+          if (st.dir === 0) { st.dir = d; return a; }
+          if (st.dir !== d) return prevA;
+          return a;
+        }
+        function evalCombo(peak, step) {
+          const rad = peak > 0 ? Math.atan(peak / 100) : 0;
+          const air = rad > 0 ? mh / Math.tan(rad) : 0;
+          const g0  = Math.max(0, rl - Math.min(air, rl));
+          let depth = g0 * peak / 100, cur = peak, rods = 1;
+          while (rampDepth(cur, step) < ed - PIT_TOL && depth + rl * cur / 100 < ed - PIT_TOL) {
+            depth += rl * cur / 100; rods++;
+            if (depth >= ed - PIT_TOL) break;
+          }
+          let ramping = true, g = 0;
+          while (ramping && cur > 0.001 && g++ < 60) {
+            cur = cur > STEP_FINE * 1.1 ? Math.max(0, cur - step) : Math.max(0, cur - STEP_FINE);
+            depth += rl * cur / 100; rods++;
+            if (depth >= ed - PIT_TOL) ramping = false;
+          }
+          const entryOK = depth >= ed - PIT_TOL - 1e-9 && depth <= ed + PIT_TOL + 1e-9;
+          const actED = Math.min(ed + PIT_TOL, Math.max(ed - PIT_TOL, depth));
+          const ncEnd = cur;
+          let best = null;
+          for (let sp = 1; sp <= n - 1; sp++) {
+            let d = actED, prevA = ncEnd > 0.001 ? -ncEnd : 0, pk = actED, mj = 0;
+            const d1 = { dir: 0 }, d2 = { dir: 0 };
+            for (let rod = 1; rod <= n; rod++) {
+              const seg = (rod === n && lastSeg > 0.01) ? lastSeg : rl;
+              const target = (rod <= sp) ? maxBore : xd;
+              const end = (rod <= sp) ? sp : n;
+              const rem = end - rod + 1;
+              const ideal = rem > 0 ? ((d - target) / (rem * seg / 100)) : 0;
+              let a = Math.max(prevA - ss, Math.min(prevA + ss, ideal));
+              if (rod > sp) {
+                const smoothCap = Math.max(0, peak - 3.0);
+                if (a < -smoothCap) a = -smoothCap;
+                if (USE_MANUAL_EXT && a < -userExitPct) a = -userExitPct;
+              }
+              a = mono(prevA, a, rod <= sp ? d1 : d2);
+              if (Math.abs(a - prevA) > mj) mj = Math.abs(a - prevA);
+              d = d - seg * a / 100;
+              if (d > pk) pk = d;
+              prevA = a;
+            }
+            const score = Math.abs(d - xd) * 10 + Math.abs(pk - maxBore);
+            if (!best || score < best.score) best = { score, fin: d, pk, mj };
+          }
+          if (!best) return { ok: false };
+          const noOver = best.pk <= maxBore + PIT_TOL + 1e-9;
+          const exitOK = Math.abs(best.fin - xd) <= PIT_TOL + 1e-9;
+          const jumpOK = best.mj <= ss + 0.011;       // every count-section rod (incl. NC→count joint) within ±ss
+          const rodCapOK = !(maxNcRods > 0) || (rods - 1) <= maxNcRods;
+          return { ok: entryOK && noOver && exitOK && jumpOK && rodCapOK, peak, step, rods,
+                   pk: best.pk, fin: best.fin, reach: Math.abs(best.pk - maxBore) <= PIT_TOL + 1e-9,
+                   gap: Math.abs(best.pk - maxBore), eerr: Math.abs(depth - ed) };
+        }
+        if (n < 2) return;
+        const cur0 = evalCombo(peakAngle, usedSTEP);
+        if (cur0.ok) return;                         // existing result already valid → unchanged
+        const peaks = [];
+        if (USE_MANUAL_ENT) peaks.push(userPeakPct);
+        else for (let a = 1; a <= 25.0001; a += 0.25) peaks.push(Math.round(a * 100) / 100);
+        let best = null;
+        for (let si = 0; si <= 60; si++) {
+          const s = STEP - si * 0.25; if (s < STEP_FINE - 1e-9) break;
+          for (let k = 0; k < peaks.length; k++) {
+            const r = evalCombo(peaks[k], s);
+            if (!r.ok) continue;
+            if (!best || (r.reach && !best.reach) ||
+                (r.reach === best.reach && (r.rods < best.rods || (r.rods === best.rods && (r.gap < best.gap - 1e-9 ||
+                  (Math.abs(r.gap - best.gap) <= 1e-9 && r.eerr < best.eerr)))))) best = r;
+          }
+        }
+        if (best) { peakAngle = best.peak; usedSTEP = best.step; return; }
+        hideOv();
+        toast('⚠️ City Mode: Entry ' + ed + 'm, Max Depth ' + maxBore + 'm, Exit ' + xd + 'm (±' + PIT_TOL +
+              'm) एक साथ हासिल नहीं हो पा रहे — Max Depth से आगे निकले बिना chart संभव नहीं (chart नहीं बना)। सुझाव: Max Depth / Exit Pit Depth बदलें, Bore Length बढ़ाएँ या Custom Step बढ़ाएँ।', 'wn');
+        _c3Abort = true;
+      })();
+      if (_c3Abort) return;
+
       // ── Rod 0 (Punch-In) Air Distance / Ground Penetration ──────────
       // Machine Boom Height: user-entered, default 1.00m if left blank
       // (per spec). Uses the SAME physics/formula already used for Rod 0
@@ -19894,11 +20117,35 @@ function drwCollectData() {
     exitPitDepthRaw:  v('pitExitDepth')
   };
 
+  // ── Min Radius of Curvature (BORE) and Min Bend Radius (PIPE) for the
+  // drawing's PROFILE DATA panel. Same sources/logic as lrCollectData()
+  // and the Safety & Design Check (nothing new is calculated): the mode's
+  // own minRC, and Min BR = Pipe OD(m) x 100 via the existing getMBR(). ──
+  let _drwMinRC = null, _drwMinBR = null, _drwMinRCStraight = false;
+  try {
+    let _vals = [];
+    if (CURRENT_MODE === 2 && G && Array.isArray(G.rows)) _vals = G.rows.map(function (_, i) { return getRC(i); });
+    else if (CURRENT_MODE === 1 && Array.isArray(_tbdRows)) _vals = _tbdRows.map(function (r) { return r.rc; });
+    else if (CURRENT_MODE === 3 && window._cwData) _vals = [window._cwData.minRC];
+    else if (CURRENT_MODE === 4 && window._zdcData) _vals = [window._zdcData.minRC];
+    _vals = _vals.filter(function (x) { return typeof x === 'number' && isFinite(x) && x > 0; });
+    _drwMinRC = _vals.length ? Math.min.apply(null, _vals) : null;
+    // Mode 4 (Zero Degree): the countable Entry→Exit bore is straight, so it has no
+    // bend radius at all (same as the Safety Check, which shows "Min RC: ∞"). Flag it
+    // so the drawing says STRAIGHT instead of silently leaving the line out.
+    if (_drwMinRC === null && CURRENT_MODE === 4 && window._zdcData && Array.isArray(window._zdcData.countRows) && window._zdcData.countRows.length) _drwMinRCStraight = true;
+    const _odMMdrw = getODmm();
+    _drwMinBR = _odMMdrw > 0 ? getMBR(_odMMdrw) : null;
+  } catch (e) { _drwMinRC = null; _drwMinBR = null; }
+
   return {
     mode: CURRENT_MODE,
     unit: (typeof UNIT !== 'undefined') ? UNIT : 'pct',
     rows,
     boreLength,
+    minRC: _drwMinRC,
+    minRCStraight: _drwMinRCStraight,
+    minBR: _drwMinBR,
     entryRL,
     exitRL,
     rlActive: rlBothPresent,
@@ -20127,6 +20374,9 @@ function drwBuildScene(snapshot) {
       unit: snapshot.unit,
       columnCount: snapshot.columnCount,
       boreLength: (typeof snapshot.boreLength === 'number') ? snapshot.boreLength : null,
+      minRC: (typeof snapshot.minRC === 'number') ? snapshot.minRC : null,
+      minRCStraight: snapshot.minRCStraight === true,
+      minBR: (typeof snapshot.minBR === 'number') ? snapshot.minBR : null,
       rowCount: points.length
     },
     bounds: bounds,
@@ -21510,6 +21760,16 @@ function drwRenderSVG(scene, snapshot) {
       if (layout.bounds.maxY > 0) {
         tp.push({ label: 'MAX DEPTH', value: _drwFmtNum(layout.bounds.maxY, 2) + ' m' });
       }
+      // Long labels: same row as the others (label left, value right-aligned).
+      // Falls back to label-above-value ONLY if the row would not fit the panel width.
+      if (typeof scene.meta.minRC === 'number' && isFinite(scene.meta.minRC)) {
+        tp.push({ label: 'MIN. RADIUS OF CURVATURE (BORE)', value: _drwFmtNum(scene.meta.minRC, 2) + ' m', stack: false });
+      } else if (scene.meta.minRCStraight === true) {
+        tp.push({ label: 'MIN. RADIUS OF CURVATURE (BORE)', value: 'STRAIGHT', stack: false });
+      }
+      if (typeof scene.meta.minBR === 'number' && isFinite(scene.meta.minBR)) {
+        tp.push({ label: 'MIN. BEND RADIUS (PIPE)', value: _drwFmtNum(scene.meta.minBR, 2) + ' m', stack: false });
+      }
       if (!tp.length) return;
 
       parts.push('<line x1="' + tbX.toFixed(2) + '" y1="' + cy.toFixed(2) + '" x2="' + layout.vbW +
@@ -21519,8 +21779,15 @@ function drwRenderSVG(scene, snapshot) {
         'font-family="sans-serif" font-size="8" font-weight="700" fill="#1a1a1a">PROFILE DATA</text>');
       cy += 10;
       tp.forEach(function (f) {
+        // Width guard (estimates: 7px label ≈ 0.55em/char, 8px bold value ≈ 0.62em/char).
+        if (f.stack === false) {
+          const _availW = (tbX + tbW - padX) - innerX;
+          const _need = String(f.label).length * 7 * 0.55 + String(f.value).length * 8 * 0.62 + 6;
+          if (_need > _availW) f.stack = true;
+        }
         parts.push('<text x="' + innerX.toFixed(2) + '" y="' + cy.toFixed(2) + '" ' +
           'font-family="sans-serif" font-size="7" fill="#666">' + _drwSvgEsc(f.label) + '</text>');
+        if (f.stack) cy += 10;
         parts.push('<text x="' + (tbX + tbW - padX).toFixed(2) + '" y="' + cy.toFixed(2) + '" ' +
           'text-anchor="end" font-family="sans-serif" font-size="8" font-weight="700" fill="#1a1a1a">' +
           _drwSvgEsc(f.value) + '</text>');
