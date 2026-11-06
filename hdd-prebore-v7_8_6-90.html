@@ -101,7 +101,8 @@ body::before{content:'';position:fixed;inset:0;
   display:flex;align-items:center;justify-content:center;
   font-size:18px;cursor:pointer;color:#fff;transition:all .25s;flex-shrink:0;}
 .btn-hamburger:hover{background:rgba(0,212,255,.18);border-color:var(--accent);color:var(--accent);}
-.login-inner{padding:4px 22px 18px;overflow-y:auto;flex:1;min-height:0;}
+.login-inner{padding:4px 22px 18px;overflow-y:auto;flex:1;min-height:0;display:flex;flex-direction:column;justify-content:space-evenly;}   /* v7_8_6-21 / B21-1: spare height is shared evenly between the blocks, so the card looks full top to bottom */
+.login-inner > *{flex-shrink:0;}
 .login-logo{text-align:center;margin-bottom:10px;}
 .login-logo .icon{width:72px;height:72px;
   background:linear-gradient(135deg,var(--accent),#0055cc);
@@ -2576,7 +2577,7 @@ body.high-contrast-theme #mfcCard .mfc-rc[data-st="calc"]{border-inline-start:6p
     </button>
   </div>
   <div class="smenu-version">HDD PRE-BORE DESIGNER PRO · v7_8_6-92 Built by Saiyad Hussain</div>
-  <div id="smenuTestBuildTag" style="padding:0 20px 4px;font-size:9px;color:rgba(255,255,255,.22)">Build: v7_8_6-20</div>
+  <div id="smenuTestBuildTag" style="padding:0 20px 4px;font-size:9px;color:rgba(255,255,255,.22)">Build: v7_8_6-21</div>
   <input type="hidden" id="autoStepUsed" value="">
   <div id="hddSyncStatus" onclick="try{HddSync.syncNow(true)}catch(e){}" style="padding:0 20px 12px;font-size:9px;color:rgba(255,255,255,.4);cursor:pointer"></div>
   <div class="hddProf-foot" id="hddProfFoot">
@@ -2725,18 +2726,7 @@ body.high-contrast-theme #mfcCard .mfc-rc[data-st="calc"]{border-inline-start:6p
         </button>
       </div>
 
-      <div class="login-bottom">
-        <!-- Language selector -->
-        <div style="padding:9px 0 2px;border-top:1px solid rgba(255,255,255,.08);">
-          <div id="loginSelectLangLbl" style="font-size:10px;color:rgba(255,255,255,.4);margin-bottom:6px;text-align:center;letter-spacing:.5px;">🌐 &nbsp;SELECT LANGUAGE</div>
-          <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;">
-            <button class="lang-btn on" id="loginLangEN" onclick="setLang('en')" style="font-size:11px;padding:5px 11px;">🇬🇧 English</button>
-            <button class="lang-btn" id="loginLangAR" onclick="setLang('ar')" style="font-size:11px;padding:5px 11px;">🇸🇦 عربي</button>
-            <button class="lang-btn" id="loginLangHI" onclick="setLang('hi')" style="font-size:11px;padding:5px 11px;">🇮🇳 हिंदी</button>
-          </div>
-        </div>
-
-      </div>
+      <!-- v7_8_6-21 / B21-1: the SELECT LANGUAGE buttons were removed from Login and Sign-up (language stays in the menu / profile) -->
     </div>
   </div>
 </div>
@@ -3400,7 +3390,7 @@ document.addEventListener('click',function(e){
       <div class="iu"><input type="number" id="pullT" placeholder="e.g. 360">
       <span class="iu-u">TON</span></div></div>
   </div>
-  <div id="preview" class="ibox" style="margin-top:11px"><b>Total Rods:</b> 211×9.5m + 1 partial (5.0m) | <b>Max Depth:</b> 25m | <b>Safe Step:</b> ±2.5%/rod | <b>Min BR:</b> 61.0m</div>
+  <div id="preview" class="ibox" style="margin-top:11px">Fill required fields → preview</div>
 
   <!-- Custom Step Override (Smart Edit) -->
   <div id="customStepBox" style="margin-top:8px;padding:8px 10px;background:rgba(255,204,0,.07);border:1px solid rgba(255,204,0,.25);border-radius:6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
@@ -7284,7 +7274,7 @@ function pipeWeightFieldsComplete() {
   const odUnit  = _resolvedPipeUnit('pipODUnit');
   const wt      = parseFloat((document.getElementById('pipWT')  || {}).value);
   const wtUnit  = _resolvedPipeUnit('pipWTUnit');
-  return !!(rl > 0 && bl > 0 && pipeType && od > 0 && odUnit && wt > 0 && wtUnit);
+  return !!(bl > 0 && pipeType && od > 0 && odUnit && wt > 0 && wtUnit);   // v7_8_6-21 / B21-3: the four details Bore Length, Pipe Type, Pipe OD, Wall Thickness (Rod Length is not needed for the weight)
 }
 
 // Renders the live card below Wall Thickness. Read-only display — writes
@@ -7295,6 +7285,7 @@ function renderPipeWeightCard() {
   const body = document.getElementById('pipeWeightBody');
   if (!body) return;
   const r = calcPipeWeight();
+  if (card) card.style.display = (pipeWeightFieldsComplete() && r) ? '' : 'none';   // B21-3: never show a weight for incomplete / invalid pipe data
   if (!r) {
     body.innerHTML = 'Fill Pipe Type, Pipe OD, Wall Thickness &amp; Bore Length to see live estimate.';
     return;
@@ -11514,6 +11505,13 @@ let _liveAutosaveTimer = null;
 function _liveAutosaveDebounced() {
   if (window._draftRestoring) return;     // B20-24: Resume filling the boxes is not a user change
   window._draftDirty = true;              // B20-24: any real user action counts, even if the number stays the same
+  if (!window._draftId) {                 // v7_8_6-21 / B21-4: a chart opened from Projects (or whose draft was deleted) has no draft yet - the first real edit starts one
+    try {
+      var _cb4 = document.getElementById('chartBody');
+      var _has4 = !!(_cb4 && Array.prototype.some.call(_cb4.querySelectorAll('tr'), function (t) { return t.querySelectorAll('td').length >= 8; }));
+      if (_has4 && typeof CURRENT_MODE !== 'undefined' && CURRENT_MODE) { window._draftId = 'draft_' + Date.now(); window._draftForkFrom = null; }
+    } catch (e4) {}
+  }
   clearTimeout(_liveAutosaveTimer);
   _liveAutosaveTimer = setTimeout(_liveAutosaveNow, 800);
 }
@@ -11559,6 +11557,7 @@ function _liveAutosaveNow() {
 }
 function _liveDeleteDraft(id) {
   _saveAutoDrafts(_getAutoDrafts().filter(d => d.id !== id));
+  if (window._draftId === id) { window._draftId = null; window._draftForkFrom = null; clearTimeout(_liveAutosaveTimer); }   // B21-4: a deleted draft is never written back; the next real edit starts a NEW draft
 }
 
 // One delegated listener catches every typed live edit (Actual Angle,
@@ -22540,6 +22539,7 @@ function _drwMapY(layout, depth) {
 // delivery. ──
 function _drwBuildPath(layout, x0, x1) {
   if (x0 === null || x1 === null || !isFinite(x0) || !isFinite(x1) || x1 === x0) return '';
+  if (layout.straight) return 'M ' + x0.toFixed(2) + ' ' + layout.straight.y0.toFixed(2) + ' L ' + x1.toFixed(2) + ' ' + layout.straight.y1.toFixed(2);   // B21-5 (Mode 4 only)
   const gY = layout.groundY;
   const dipY = layout.groundY + layout.boreBandH;
   const c1x = x0 + (x1 - x0) / 3;
@@ -22563,6 +22563,7 @@ function _drwCurveYAtX(layout, x0, x1, x) {
   if (x0 === null || x1 === null || !isFinite(x0) || !isFinite(x1) || x1 === x0) return layout.groundY;
   let t = (x - x0) / (x1 - x0);
   if (t < 0) t = 0; else if (t > 1) t = 1;
+  if (layout.straight) return layout.straight.y0 + (layout.straight.y1 - layout.straight.y0) * t;   // B21-5 (Mode 4 only): sticks / markers end ON the straight line
   const gY = layout.groundY, dipY = layout.groundY + layout.boreBandH;
   const mt = 1 - t;
   return gY * (mt * mt * mt + t * t * t) + dipY * 3 * t * mt;
@@ -22728,6 +22729,22 @@ function drwRenderSVG(scene, snapshot) {
   const layout = _drwComputeLayout(scene, !!(snapshot && snapshot.drawingInfo &&
     typeof snapshot.drawingInfo.drawingTitle === 'string' && snapshot.drawingInfo.drawingTitle.trim()));
   const parts = [];
+  // v7_8_6-21 / B21-5: Mode 4 (Zero Degree) never curves - the Drawing profile is ONE straight line from the Entry Pit point to the Exit Pit point
+  // (flat when both pit depths are equal, a straight slope when they differ), exactly like the Graph's main section. Only the profile path's
+  // shape changes; the vertical sticks, their X positions, labels and every Depth / Distance / RL / GPS / Chainage value are untouched.
+  if (scene.meta && scene.meta.mode === 4) {
+    try {
+      const _sp = scene.points.filter(function (p) { return typeof p.distance === 'number' && isFinite(p.distance) && typeof _drwPointDepth(p) === 'number'; })
+        .sort(function (a, b) { return a.distance - b.distance; });
+      if (_sp.length >= 2) {
+        const _d0 = Math.abs(_drwPointDepth(_sp[0])), _d1 = Math.abs(_drwPointDepth(_sp[_sp.length - 1])), _dm = Math.max(_d0, _d1);
+        if (_dm > 0) layout.straight = { y0: layout.groundY + (_d0 / _dm) * layout.boreBandH, y1: layout.groundY + (_d1 / _dm) * layout.boreBandH };
+        // typed Entry Pit depth = typed Exit Pit depth -> a perfectly horizontal line (the chart lands within +-0.30 m, never exactly equal)
+        const _di5 = snapshot && snapshot.drawingInfo, _tE = _di5 ? parseFloat(_di5.entryPitDepthRaw) : NaN, _tX = _di5 ? parseFloat(_di5.exitPitDepthRaw) : NaN;
+        if (layout.straight && isFinite(_tE) && isFinite(_tX) && Math.abs(_tE - _tX) < 0.005) layout.straight.y0 = layout.straight.y1 = layout.groundY + layout.boreBandH;
+      }
+    } catch (eStr) {}
+  }
 
   // v7_8_6-88 / shared real chart points (sorted), used to auto-read the
   // real bore depth at any crossing's station — same source data as the
@@ -29617,15 +29634,16 @@ function hflExDemoXlsx(m) {
         }
       }
     } catch (e) { have = false; nums = []; }
-    if (have && nums.length) {
+    // v7_8_6-21 / B21-2: no big red card under the Generate button any more (same rod list, same calculation) -
+    // the warning now lives inside the Safety & Design Check panel as one line.
+    bar.classList.remove('show'); bar.style.setProperty('display', 'none', 'important');
+    var sc = document.getElementById('safetyContent'), row = document.getElementById('curvRodsRow');
+    if (have && nums.length && sc) {
       var s = (typeof LANG_STRINGS !== 'undefined' && LANG_STRINGS[CURRENT_LANG]) || (typeof LANG_STRINGS !== 'undefined' ? LANG_STRINGS.en : {}) || {};
-      var t = document.getElementById('curvAlertTitle'), mg = document.getElementById('curvAlertMsg');
-      if (t) t.textContent = s.curvAlertTitle || t.textContent;
-      if (mg) mg.textContent = nums.length + ' rod(s) below min BR (' + br.toFixed(0) + 'm): ' + nums.map(function (n) { return 'Rod ' + n; }).join(', ');
-      bar.classList.add('show');
-    } else {
-      bar.classList.remove('show');
-    }
+      var txt = '\u26A0 ' + (s.curvAlertTitle || 'BEND RADIUS VIOLATION').replace(/^[^A-Za-z\u0900-\u097F\u0600-\u06FF]+/, '') + ': ' + nums.length + ' rod(s) below min BR (' + br.toFixed(0) + 'm): ' + nums.map(function (n) { return 'Rod ' + n; }).join(', ');
+      if (!row) { row = document.createElement('div'); row.id = 'curvRodsRow'; row.className = 'srow'; sc.appendChild(row); }
+      if (row.getAttribute('data-t') !== txt) { row.setAttribute('data-t', txt); row.innerHTML = ''; var sp = document.createElement('span'); sp.className = 'slbl'; sp.style.color = 'var(--danger,#dc2626)'; sp.style.fontWeight = '700'; sp.textContent = txt; row.appendChild(sp); }
+    } else if (row) { row.remove(); }
   }
   window.hddBannerSync = sync;
   window.checkCurvatureAlert = sync;      // the three existing callers (renderAll / edits / recalc) now use the mode-aware version
@@ -29650,6 +29668,7 @@ function hflExDemoXlsx(m) {
     var cb = document.getElementById('chartBody'), res = document.getElementById('results');
     try { if (cb) new MutationObserver(soon).observe(cb, { childList: true }); } catch (e) {}
     try { if (res) new MutationObserver(soon).observe(res, { attributes: true, attributeFilter: ['style'] }); } catch (e) {}
+    try { var _sc = document.getElementById('safetyContent'); if (_sc) new MutationObserver(soon).observe(_sc, { childList: true }); } catch (e) {}   // B21-2: the panel is rebuilt on every render - put the line back
     ['pipT', 'pipOD', 'pipWT', 'pipGrade', 'odUnitSel', 'pipODUnit', 'pipWTUnit'].forEach(function (id) {
       var el = document.getElementById(id); if (el) { el.addEventListener('input', soon); el.addEventListener('change', soon); }
     });
@@ -29672,6 +29691,62 @@ function hflExDemoXlsx(m) {
   }
   document.addEventListener('input', h, true);
   document.addEventListener('change', h, true);
+})();
+</script>
+<script id="hddPwSync">
+/* v7_8_6-21 / B21-3: the Pipe Weight card is re-checked after every action that clears or refills the Bore Details
+   (login/logout, new project, Save/Load, Draft resume, mode change), so it can never keep showing an old weight over empty boxes. */
+(function () {
+  'use strict';
+  /* B21-6: the grey summary strip under Bore Details ("Total Rods ... Safe Step ... Min BR") is written only from what the user has typed:
+     no Rod Length + Bore Length = no numbers (it used to keep a fixed sample text, or the last bore's text after logout / login). */
+  function previewSync() {
+    try {
+      var el = document.getElementById('preview'); if (!el) return;
+      var rl = parseFloat((document.getElementById('rodL') || {}).value) || 0, bl = parseFloat((document.getElementById('boreL') || {}).value) || 0, md = parseFloat((document.getElementById('maxD') || {}).value) || 0;
+      var mode = (typeof CURRENT_MODE !== 'undefined') ? CURRENT_MODE : 2;
+      if (!rl || !bl || (mode !== 1 && !md)) { el.innerHTML = 'Fill required fields \u2192 preview'; return; }
+      if (mode !== 1) return;   // Modes 2-4: onIC() already wrote the strip from the typed values
+      var n = Math.ceil(bl / rl), last = bl - (n - 1) * rl, ss = safeStep(rl), ess = getEffectiveStep(rl), odMM = getODmm(), BR = odMM > 0 ? getMBR(odMM) : 0;
+      var stepLabel = (ess !== ss) ? '<span style="color:#ffb800">\u00B1' + toDmag(ess) + '/rod (custom)</span>' : '\u00B1' + toDmag(ss) + '/rod';
+      el.innerHTML = '<b>Total Rods:</b> ' + n + '\u00D7' + rl + 'm' + (last < rl - 0.01 ? ' + 1 partial (' + last.toFixed(1) + 'm)' : '') +
+        (md ? ' | <b>Max Depth:</b> ' + md + 'm' : '') + ' | <b>Safe Step:</b> ' + stepLabel + (BR > 0 ? ' | <b>Min BR:</b> ' + BR.toFixed(1) + 'm' : '');
+    } catch (e) {}
+  }
+  function sync() { try { if (typeof renderPipeWeightCard === 'function') renderPipeWeightCard(); } catch (e) {} previewSync(); }
+  function hook(name, quick) {
+    var f = window[name]; if (typeof f !== 'function' || f.__pwHooked) return;
+    var w = function () {
+      var r = f.apply(this, arguments);
+      sync();
+      if (quick) return r;
+      if (r && typeof r.then === 'function') { try { r.then(sync, function () {}); } catch (e) {} }
+      [0, 400, 1300].forEach(function (ms) { setTimeout(sync, ms); });   // restores fill the boxes a little later
+      return r;
+    };
+    w.__pwHooked = true; window[name] = w;
+  }
+  ['_clearAllBoreData', 'restoreFormInputs', '_liveRestoreInputs', 'loadProject', '_liveResumeWork', 'setMode', 'doLogout', 'doLogin'].forEach(function (n) { hook(n, false); });
+  hook('onIC', true);
+  window.addEventListener('pageshow', sync);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sync); else setTimeout(sync, 0);
+})();
+</script>
+<script id="hddProjectDraft">
+/* v7_8_6-21 / B21-4: opening a saved Project is a fresh draft session. Filling the boxes / table is not a user change (so just looking saves nothing);
+   the first real edit afterwards starts one new draft (lazy id in _liveAutosaveDebounced) and never overwrites another session's draft. */
+(function () {
+  'use strict';
+  var f = window.loadProject;
+  if (typeof f !== 'function' || f.__draftHooked) return;
+  var w = function () {
+    window._draftId = null; window._draftForkFrom = null; window._draftRestoring = true; window._draftDirty = false;
+    try { clearTimeout(_liveAutosaveTimer); } catch (e) {}
+    var r = f.apply(this, arguments);
+    setTimeout(function () { try { clearTimeout(_liveAutosaveTimer); } catch (e) {} window._draftRestoring = false; window._draftDirty = false; }, 1100);
+    return r;
+  };
+  w.__draftHooked = true; window.loadProject = w;
 })();
 </script>
 <script id="hflRefreshModule">
