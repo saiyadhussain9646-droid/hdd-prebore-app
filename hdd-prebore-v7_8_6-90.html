@@ -21,7 +21,7 @@
 // every user automatically, no "Clear Cache" or reinstall needed.
 // This never touches any calculation, UI, ID, or existing feature — it
 // only decides whether to silently reload the page.
-const APP_BUILD_VERSION = 'v7.8.6-90-2026-09-13-high-contrast-theme';
+const APP_BUILD_VERSION = 'v7.8.6-90-2026-11-07-build23';   // v7_8_6-23: changed on purpose - a phone holding an older cached copy reloads once to get this build
 (function(){
   try {
     if (location.search.indexOf('_v=') !== -1) return; // just did a fresh cache-busted load — nothing more to do
@@ -757,6 +757,9 @@ body.high-contrast-theme .smenu-item:hover *{color:#000000!important;}
 body.high-contrast-theme .login-box{background:#000000!important;border:2px solid #ffffff!important;border-radius:0!important;}
 body.high-contrast-theme .lf input{background:#000000!important;border:2px solid #ffffff!important;border-radius:0!important;}
 body.high-contrast-theme .lf input::placeholder{color:#ffffff!important;opacity:.6!important;}
+/* v7_8_6-23 / B23-4: High Contrast only - text that vanished into its own background */
+body.high-contrast-theme .btn-google,body.high-contrast-theme .btn-google *{color:#000000!important;}
+body.high-contrast-theme .hddProf-btn,body.high-contrast-theme .hddProf-btn *,body.high-contrast-theme .smenu-avatar,body.high-contrast-theme .smenu-avatar *{color:#000000!important;}
 body.high-contrast-theme canvas{border:2px solid #ffffff!important;border-radius:0!important;}
 body.high-contrast-theme .mode-btn{background:#000000!important;border:2px solid #ffffff!important;border-radius:0!important;}
 body.high-contrast-theme .mode-btn:hover:not(.mode-active){background:#000000!important;}
@@ -2577,7 +2580,7 @@ body.high-contrast-theme #mfcCard .mfc-rc[data-st="calc"]{border-inline-start:6p
     </button>
   </div>
   <div class="smenu-version">HDD PRE-BORE DESIGNER PRO · v7_8_6-92 Built by Saiyad Hussain</div>
-  <div id="smenuTestBuildTag" style="padding:0 20px 4px;font-size:9px;color:rgba(255,255,255,.22)">Build: v7_8_6-21</div>
+  <div id="smenuTestBuildTag" style="padding:0 20px 4px;font-size:9px;color:rgba(255,255,255,.22)">Build: v7_8_6-23</div>
   <input type="hidden" id="autoStepUsed" value="">
   <div id="hddSyncStatus" onclick="try{HddSync.syncNow(true)}catch(e){}" style="padding:0 20px 12px;font-size:9px;color:rgba(255,255,255,.4);cursor:pointer"></div>
   <div class="hddProf-foot" id="hddProfFoot">
@@ -11446,6 +11449,9 @@ window._draftId = window._draftId || null; // set fresh by _startFreshDraftSessi
 // v7_8_6-20 / B20-24: _draftDirty = the user really did something since the last save; _draftRestoring = Resume is filling the boxes itself
 // (never counts as a change); _draftForkFrom = id of the draft that was Resumed - the first real change saves a NEW draft and leaves that one untouched.
 window._draftDirty = false; window._draftRestoring = false; window._draftForkFrom = null;
+// v7_8_6-23 / B23-1: provenance. _userCells = the field cells (Actual Angle / Actual Depth / Remarks / Survey GPS / Survey RL, and Mode 1's typed angle) that the USER really edited
+// in this session (key 'rowIndex|field'). _baseData = the chart was opened (Project / old Draft) with manual data already in it. The app's own texts never enter either.
+window._userCells = {}; window._baseData = false; window._draftsOverLimit = false;
 
 function _liveCollectInputs() {
   const base = collectFormInputs();  // reuse existing, untouched function
@@ -11467,7 +11473,42 @@ function _liveRestoreInputs(inputs) {
 // never creates/keeps an autosave entry for an empty freshly-generated
 // chart (that can always be rebuilt in a minute anyway, per Saiyad's
 // own distinction between design data and live field data).
-function _liveHasRealData(domRows, timeLog) {
+// v7_8_6-23 / B23-1: is there MANUAL field data? Decided by WHO wrote a cell, not by what it says:
+//  - a fresh chart: only cells the user edited (_userCells, filled by _liveMarkUserCell from real input events) and real Time entries count;
+//  - a chart opened from a Project / an old Draft that has no record of who typed what: _baseData (judged once at opening, see _liveLegacyHasData).
+// The app's own Remarks (PUNCH IN / PUNCH OUT / ENTRY - EXIT TIE-IN PIT, in any language) and the "—" placeholders never count.
+function _liveIsPlaceholder(v) { v = String(v == null ? '' : v).trim(); return !v || /^[\u2014\u2013\u2212\-]+$/.test(v); }
+function _liveIsAutoRemark(t) {
+  t = String(t == null ? '' : t).trim(); if (!t) return false;
+  return /^(\u26A0\uFE0F?\s*)?(PUNCH[\s-]*(IN|OUT)|ENTRY\s*\/\s*TIE-IN|EXIT\s*\/\s*TIE-IN)/i.test(t) ||
+    /^(\u26A0\uFE0F?\s*)?(\u092A\u0902\u091A|\u090F\u0902\u091F\u094D\u0930\u0940\s*\/|\u090F\u0915\u094D\u091C\u093C\u093F\u091F\s*\/)/.test(t) ||
+    /^(\u26A0\uFE0F?\s*)?(\u0646\u0642\u0637\u0629 \u0627\u0644(\u062F\u062E\u0648\u0644|\u062E\u0631\u0648\u062C)|\u062A\u062D\u0630\u064A\u0631 \u0646\u0642\u0637\u0629|\u062D\u0641\u0631\u0629 \u0627\u0644(\u062F\u062E\u0648\u0644|\u062E\u0631\u0648\u062C))/.test(t);
+}
+function _liveHasTimeData(timeLog) {
+  return Object.keys(timeLog || {}).some(function (k) { var e = timeLog[k]; return e && (e.startTs || e.manualStart || e.manualFinish); });
+}
+function _liveLegacyHasData(domRows, timeLog, mode) {
+  if (_liveHasTimeData(timeLog)) return true;
+  return (domRows || []).some(function (r) {
+    return (!_liveIsPlaceholder(r.r5)) || (!_liveIsPlaceholder(r.r6)) || (r.r7 && r.r7.trim() && !_liveIsAutoRemark(r.r7)) ||
+      (r.gps && r.gps.trim()) || (r.rl && r.rl.trim()) || (mode === 1 && r.r2 && r.r2.trim());
+  });
+}
+function _liveHasRealData(domRows, timeLog, userCells, base, mode) {
+  mode = mode || (typeof CURRENT_MODE !== 'undefined' ? CURRENT_MODE : 2);
+  if (_liveHasTimeData(timeLog)) return true;
+  if (base) return true;
+  if (userCells && typeof userCells === 'object') {
+    return Object.keys(userCells).some(function (k) {
+      var p = k.split('|'), r = (domRows || [])[+p[0]], v = r ? r[p[1]] : '';
+      if (_liveIsPlaceholder(v)) return false;
+      if (p[1] === 'r7' && _liveIsAutoRemark(v)) return false;    // the user cleared it and the app wrote its own text back
+      return true;
+    });
+  }
+  return _liveLegacyHasData(domRows, timeLog, mode);              // no record of who typed what (old draft)
+}
+function _liveHasRealDataOld(domRows, timeLog) {
   // FIX (Saiyad Hussain — Mode 1 Live Draft never auto-saving): Modes 2-4
   // have a separate "Actual Angle/Actual Depth" pair (r5/r6) that the
   // operator fills in the field, distinct from the auto-computed
@@ -11491,14 +11532,21 @@ function _getAutoDrafts() {
   catch (e) { return []; }
 }
 function _saveAutoDrafts(list) {
-  try { localStorage.setItem(_hddKey(AUTO_DRAFTS_KEY), JSON.stringify(list)); } catch (e) {}
+  // v7_8_6-23 / B23-3: the LOCAL save result is now known and kept apart from the cloud sync result (HddSync is untouched).
+  let ok = true, err = '';
+  try { localStorage.setItem(_hddKey(AUTO_DRAFTS_KEY), JSON.stringify(list)); } catch (e) { ok = false; err = String((e && e.message) || e); }
+  window._draftLocalStatus = { ok: ok, at: Date.now(), err: err };
   try { HddSync.noteLocalChange('d', list); } catch (e) {}
+  try { if (typeof _hddStatusRefresh === 'function') _hddStatusRefresh(); } catch (e) {}
+  if (!ok) { window._draftFailedList = list; try { if (typeof _draftSaveFailedUI === 'function') _draftSaveFailedUI(); } catch (e) {} }
+  return ok;
 }
 // Called once at the very top of every real "Generate" click (all 4
 // modes go through modeGenerate()) — never on internal recalcs.
 function _startFreshDraftSession() {
   window._draftId = 'draft_' + Date.now();
   window._draftDirty = false; window._draftRestoring = false; window._draftForkFrom = null;   // B20-24: a new Generate is a brand-new draft session
+  window._userCells = {}; window._baseData = false;                                           // B23-1: nothing typed by the user yet
   window._timeLog = {};             // brand-new bore = brand-new TIME grid, always
 }
 let _liveAutosaveTimer = null;
@@ -11522,7 +11570,7 @@ function _liveAutosaveNow() {
     const domRows = collectDOMRows();
     if (!domRows.length) return;
     let list = _getAutoDrafts();
-    if (!_liveHasRealData(domRows, window._timeLog)) {
+    if (!_liveHasRealData(domRows, window._timeLog, window._userCells, window._baseData, CURRENT_MODE)) {
       if (window._draftForkFrom && window._draftId === window._draftForkFrom) return;   // B20-24: never delete the Resumed draft
       // Nothing live yet for THIS draft — don't keep a stale/empty entry
       // for it (other drafts in the list are untouched).
@@ -11542,17 +11590,31 @@ function _liveAutosaveNow() {
       inputs: _liveCollectInputs(),
       domRows,
       timeLog: window._timeLog,
-      timeUiMode: window._timeMode
+      timeUiMode: window._timeMode,
+      userCells: JSON.parse(JSON.stringify(window._userCells || {})),   // B23-1: which cells the user typed
+      base: !!window._baseData
     };
     const idx = list.findIndex(d => d.id === window._draftId);
     if (idx >= 0) list[idx] = entry; else list.push(entry);
     // FIFO: keep only the AUTO_DRAFTS_MAX most-recently-updated drafts
     list.sort((a,b) => new Date(b.savedAt) - new Date(a.savedAt));
     // v7_8_6-93: the 6-draft limit counts normal auto-saves only; conflict copies / imported old drafts (keep:true) are never dropped
-    { const _kp = list.filter(d => d.keep), _nm = list.filter(d => !d.keep).slice(0, AUTO_DRAFTS_MAX);
-      list = _nm.concat(_kp).sort((a,b) => new Date(b.savedAt) - new Date(a.savedAt)); }
-    _saveAutoDrafts(list);
-    window._draftDirty = false;
+    // v7_8_6-23 / B23-2: the limit (6) counts normal drafts. Over the limit, ONLY drafts with no manual field data are removed (oldest first, never the one
+    // being saved). If every draft holds manual data NOTHING is deleted automatically: the list stays above 6 until the user confirms (_liveDraftsFullPrompt).
+    {
+      let _nm = list.filter(d => !d.keep);
+      if (_nm.length > AUTO_DRAFTS_MAX) {
+        const _junk = _nm.filter(d => d.id !== window._draftId && !(typeof _draftHasManual === 'function' ? _draftHasManual(d) : true))
+          .sort((a,b) => new Date(a.savedAt) - new Date(b.savedAt));
+        for (let _i = 0; _i < _junk.length && _nm.length > AUTO_DRAFTS_MAX; _i++) { list = list.filter(d => d.id !== _junk[_i].id); _nm = list.filter(d => !d.keep); }
+      }
+      window._draftsOverLimit = _nm.length > AUTO_DRAFTS_MAX;
+    }
+    const _okSave = _saveAutoDrafts(list);
+    if (_okSave) {
+      window._draftDirty = false;
+      if (window._draftsOverLimit && idx < 0 && typeof _liveDraftsFullPrompt === 'function') _liveDraftsFullPrompt();
+    }   // a failed save keeps _draftDirty so the next edit / app-hide tries again; the failure window (Retry / Backup) is opened by _saveAutoDrafts
   } catch (e) { /* storage full/blocked — autosave must never crash the app */ }
 }
 function _liveDeleteDraft(id) {
@@ -11567,6 +11629,7 @@ function _liveDeleteDraft(id) {
 function _liveInitAutosaveListener() {
   const cb = document.getElementById('chartBody');
   if (cb && !cb._liveAutosaveBound) {
+    cb.addEventListener('input', function (ev) { if (typeof _liveMarkUserCell === 'function') _liveMarkUserCell(ev); }, true);   // B23-1: who typed it
     cb.addEventListener('input', _liveAutosaveDebounced);
     cb._liveAutosaveBound = true;
   }
@@ -11642,14 +11705,14 @@ function openLiveDraftsModal() {
     const lastRod = (d.domRows||[]).length ? d.domRows[d.domRows.length-1].r0 : '—';
     let savedWhen = d.savedAt; try { savedWhen = new Date(d.savedAt).toLocaleString(); } catch(e){}
     return `<div style="border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:10px 12px;margin-bottom:8px">
-      <div style="font-weight:bold;font-size:13px;color:#fff">${modeNames[d.mode]||d.mode}</div>
+      <div style="font-weight:bold;font-size:13px;color:#fff">${modeNames[d.mode]||d.mode}${typeof _draftProj === 'function' ? _draftProj(d) : ''}</div>
       <div style="font-size:11px;color:rgba(255,255,255,.7);margin:4px 0 8px">Rows recorded: ${completedRows} · Last Rod: ${lastRod} · Saved: ${savedWhen}</div>
       <button onclick="_liveDraftResumeFromModal('${d.id}')" style="background:#00d4ff;color:#001;border:none;padding:6px 14px;border-radius:6px;font-weight:bold;margin-right:6px;cursor:pointer;font-size:12px">Resume</button>
       <button onclick="_liveDraftDeleteFromModal('${d.id}')" style="background:transparent;color:#ff6b6b;border:1px solid #ff6b6b;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:12px">Delete</button>
     </div>`;
   }).join('') : '<div style="color:rgba(255,255,255,.6);font-size:13px;text-align:center;padding:20px 0">No incomplete live drafts right now.</div>';
   modal.innerHTML = `<div style="background:#0c2340;width:100%;max-width:480px;max-height:80vh;overflow-y:auto;border-radius:14px;padding:18px;font-family:sans-serif">
-    <div style="font-weight:bold;font-size:15px;color:#fff;margin-bottom:12px">📝 Live Drafts (auto-saved, max ${AUTO_DRAFTS_MAX})</div>
+    <div style="font-weight:bold;font-size:15px;color:#fff;margin-bottom:12px">📝 Live Drafts (auto-saved, ${list.filter(d => !d.keep).length}/${AUTO_DRAFTS_MAX})</div>
     ${itemsHtml}
     <button onclick="document.getElementById('liveDraftsModal').remove()" style="width:100%;margin-top:8px;background:transparent;color:#fff;border:1px solid rgba(255,255,255,.35);padding:10px;border-radius:8px;cursor:pointer">Close</button>
   </div>`;
@@ -11657,7 +11720,7 @@ function openLiveDraftsModal() {
   modal.addEventListener('click', ev => { if (ev.target === modal) modal.remove(); });
 }
 function _liveDraftDeleteFromModal(id) {
-  if (!confirm('Delete this auto-saved live draft? This cannot be undone.')) return;
+  { const _dd = _getAutoDrafts().find(x => x.id === id); if (!confirm('Delete this auto-saved live draft?\n' + (typeof _draftLabel === 'function' && _dd ? _draftLabel(_dd) : '') + '\nThis cannot be undone.')) return; }
   _liveDeleteDraft(id);
   openLiveDraftsModal();
 }
@@ -11672,6 +11735,8 @@ function _liveResumeWork(saved) {
   try {
     window._draftId = saved.id;    // resuming — reuse the SAME draft id, don't start a new one
     window._draftRestoring = true; window._draftDirty = false; window._draftForkFrom = saved.id;   // B20-24
+    window._userCells = saved.userCells ? JSON.parse(JSON.stringify(saved.userCells)) : {};          // B23-1: an old draft has no record -> judged once, below
+    window._baseData = saved.userCells ? !!saved.base : _liveLegacyHasData(saved.domRows, saved.timeLog, saved.mode);
     clearTimeout(_liveAutosaveTimer);
     const modeBtn = document.getElementById('modeBtn' + saved.mode);
     if (modeBtn) modeBtn.click();
@@ -29743,10 +29808,199 @@ function hflExDemoXlsx(m) {
     window._draftId = null; window._draftForkFrom = null; window._draftRestoring = true; window._draftDirty = false;
     try { clearTimeout(_liveAutosaveTimer); } catch (e) {}
     var r = f.apply(this, arguments);
-    setTimeout(function () { try { clearTimeout(_liveAutosaveTimer); } catch (e) {} window._draftRestoring = false; window._draftDirty = false; }, 1100);
+    setTimeout(function () {
+      try { clearTimeout(_liveAutosaveTimer); } catch (e) {}
+      try { window._userCells = {}; window._baseData = _liveLegacyHasData(collectDOMRows(), window._timeLog, CURRENT_MODE); } catch (e) {}   // B23-1: an opened Project has no record of who typed what
+      window._draftRestoring = false; window._draftDirty = false;
+    }, 1100);
     return r;
   };
   w.__draftHooked = true; window.loadProject = w;
+})();
+</script>
+<script id="hddImeFix">
+/* v7_8_6-22 / B22-1: typing "-" in an angle cell on Android. The keyboard treated the lone "-" as a word being composed (it offered "-11", "-9"
+   in its suggestion strip) and only put it into the cell after the strip was tapped; "+" is a separator so it always went in directly.
+   Every editable cell of the chart tables and the logbook sheets now tells the keyboard: no suggestions, no auto-correct, no spell-check,
+   no auto-capital. Only these attributes are set - no text, value, key handling or layout is touched. */
+(function () {
+  'use strict';
+  function apply(el) {
+    try {
+      if (!el || el.nodeType !== 1 || el.__imeFixed) return;
+      el.setAttribute('spellcheck', 'false'); el.spellcheck = false;
+      el.setAttribute('autocorrect', 'off');
+      el.setAttribute('autocomplete', 'off');
+      el.setAttribute('autocapitalize', 'off');
+      el.setAttribute('data-gramm', 'false');
+      el.__imeFixed = true;
+    } catch (e) {}
+  }
+  function scan(root) {
+    try {
+      if (!root || root.nodeType !== 1) return;
+      if (root.hasAttribute && root.hasAttribute('contenteditable') && root.getAttribute('contenteditable') !== 'false') apply(root);
+      var list = root.querySelectorAll ? root.querySelectorAll('[contenteditable]:not([contenteditable="false"])') : [];
+      for (var i = 0; i < list.length; i++) apply(list[i]);
+    } catch (e) {}
+  }
+  function start() {
+    scan(document.body);
+    try {
+      new MutationObserver(function (muts) {
+        for (var i = 0; i < muts.length; i++) {
+          var m = muts[i];
+          if (m.type === 'attributes') { if (m.target.getAttribute('contenteditable') !== 'false') apply(m.target); continue; }   // Smart Edit switches cells to editable later
+          var a = m.addedNodes; for (var j = 0; j < a.length; j++) scan(a[j]);
+        }
+      }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['contenteditable'] });
+    } catch (e) {}
+    document.addEventListener('focusin', function (e) {   // safety net: a cell created some other way is fixed the moment it is tapped
+      var t = e.target && e.target.closest ? e.target.closest('[contenteditable]:not([contenteditable="false"])') : null; if (t) apply(t);
+    }, true);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
+</script>
+<script id="hddDraftSafety">
+/* v7_8_6-23 : Draft safety helpers (B23-1 provenance, B23-2 limit confirmation, B23-3 Local-save vs Cloud-sync status, Retry, Backup).
+   New helper functions only; HddSync, Projects, charts, PDF and Excel are not touched. */
+(function () {
+  'use strict';
+  var MODES = { 1: 'Trial Bore Draft', 2: 'Standard HDD', 3: 'Pit To Pit Curve / City Mode', 4: 'Pit To Pit Zero Degree' };
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function fmt(iso) { try { var d = new Date(iso); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()); } catch (e) { return String(iso); } }
+  function proj(d) { var i = (d && d.inputs) || {}; return (i.projN || i.boreID || i.drwDrawingTitle || '').toString().trim(); }
+  window._draftProj = function (d) { var p = proj(d); return p ? ' \u00B7 ' + p.replace(/[<>&"]/g, '') : ''; };
+  window._draftLabel = function (d) { return (MODES[d.mode] || ('Mode ' + d.mode)) + (proj(d) ? ' \u00B7 ' + proj(d) : '') + ' \u00B7 saved ' + fmt(d.savedAt); };
+  window._draftHasManual = function (d) { try { return !!_liveHasRealData(d.domRows, d.timeLog, d.userCells, d.base, d.mode); } catch (e) { return true; } };
+
+  /* B23-1: which cell did the USER edit? (real input events only; Resume / Project open fill the boxes with _draftRestoring set) */
+  window._liveMarkUserCell = function (e) {
+    try {
+      if (window._draftRestoring) return;
+      var t = e && e.target; if (!t || !t.closest) return;
+      var td = t.closest('td'); if (!td) return;
+      var tr = td.parentElement, cb = document.getElementById('chartBody'); if (!cb) return;
+      var rows = Array.prototype.filter.call(cb.querySelectorAll('tr'), function (x) { return x.querySelectorAll('td').length >= 8; });
+      var ri = rows.indexOf(tr); if (ri < 0) return;
+      var cells = tr.querySelectorAll('td'), n = cells.length, idx = Array.prototype.indexOf.call(cells, td), f = null;
+      if (t.closest('[data-gpsrod]:not([data-gpsauto])')) f = 'gps';
+      else if (t.closest('[data-srlrod][oninput]')) f = 'rl';
+      else if (idx === n - 7) f = 'r5';
+      else if (idx === n - 6) f = 'r6';
+      else if (idx === n - 1) f = 'r7';
+      else if (idx === 2 && typeof CURRENT_MODE !== 'undefined' && CURRENT_MODE === 1) f = 'r2';
+      if (!f) return;
+      if (!window._userCells || typeof window._userCells !== 'object') window._userCells = {};
+      window._userCells[ri + '|' + f] = 1;
+    } catch (err) {}
+  };
+
+  /* ---------- small modal helper ---------- */
+  function box(id, html) {
+    var old = document.getElementById(id); if (old) old.remove();
+    var m = document.createElement('div'); m.id = id;
+    m.style.cssText = 'position:fixed;inset:0;z-index:100001;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:16px';
+    m.innerHTML = '<div style="background:#0c2340;color:#fff;width:100%;max-width:460px;max-height:86vh;overflow-y:auto;border-radius:14px;padding:18px;font-family:sans-serif;font-size:13px;line-height:1.5">' + html + '</div>';
+    document.body.appendChild(m); return m;
+  }
+  function btn(label, cls) { return '<button data-b="' + cls + '" style="width:100%;margin-top:8px;padding:9px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.35);background:' + (cls === 'go' ? '#00d4ff' : 'transparent') + ';color:' + (cls === 'go' ? '#001' : '#fff') + ';font-weight:bold;font-size:13px">' + label + '</button>'; }
+  function wire(m, map) { Array.prototype.forEach.call(m.querySelectorAll('button[data-b]'), function (b) { b.onclick = function () { var f = map[b.getAttribute('data-b')]; if (f) f(m); }; }); }
+  function normals() { return _getAutoDrafts().filter(function (d) { return !d.keep; }); }
+
+  /* ---------- B23-2 : limit full -> ask, never delete by itself ---------- */
+  window._liveDraftsFullPrompt = function () {
+    try {
+      var list = normals(), cur = window._draftId;
+      var cands = list.filter(function (d) { return d.id !== cur && _draftHasManual(d); }).sort(function (a, b) { return new Date(a.savedAt) - new Date(b.savedAt); });
+      var oldest = cands[0];
+      var html = '<div style="font-weight:bold;font-size:15px;margin-bottom:8px">\u26A0 Drafts are full (' + list.length + ' of ' + AUTO_DRAFTS_MAX + ')</div>' +
+        '<div>Your new working draft is <b>saved</b>. Every draft already holds manual field data, so <b>nothing is deleted unless you confirm</b>.<br>' +
+        'Drafts \u092D\u0930 \u0917\u090F \u0939\u0948\u0902\u0964 \u0928\u092F\u093E Draft \u0938\u0947\u0935 \u0939\u0948; \u0906\u092A\u0915\u0940 \u092A\u0941\u0937\u094D\u091F\u093F \u0915\u0947 \u092C\u093F\u0928\u093E \u0915\u0941\u091B \u0928\u0939\u0940\u0902 \u0939\u091F\u0947\u0917\u093E\u0964</div>' +
+        (oldest ? '<div style="margin-top:10px;padding:8px;border:1px solid rgba(255,255,255,.25);border-radius:8px"><b>Oldest draft:</b><br>' + _draftLabel(oldest).replace(/[<>&]/g, '') + '</div>' : '') +
+        btn('Open Live Drafts (choose what to delete)', 'open') +
+        (oldest ? btn('Yes, delete the oldest draft shown above', 'del') : '') +
+        btn('Keep all for now', 'keep');
+      var m = box('liveDraftsFullModal', html);
+      wire(m, {
+        open: function (mm) { mm.remove(); openLiveDraftsModal(); },
+        del: function (mm) { _liveDeleteDraft(oldest.id); mm.remove(); if (typeof toast === 'function') toast('\uD83D\uDDD1 Deleted: ' + _draftLabel(oldest)); },
+        keep: function (mm) { mm.remove(); }
+      });
+    } catch (e) {}
+  };
+
+  /* ---------- B23-3 : Local save and Cloud sync are two separate things ---------- */
+  function cloudText() { var el = document.getElementById('hddSyncStatus'); return el ? (el.textContent || '').trim() : ''; }
+  function cloudBad() { return /Sync problem/i.test(cloudText()); }
+  function localLine() {
+    var s = window._draftLocalStatus;
+    if (s && !s.ok) return '\uD83D\uDCBE Local save: \u274C FAILED (' + String(s.err || 'storage problem').slice(0, 80) + ')';
+    var n = 0; try { n = _getAutoDrafts().length; } catch (e) {}
+    return '\uD83D\uDCBE Local save: \u2705 OK' + (s && s.at ? ' ' + pad(new Date(s.at).getHours()) + ':' + pad(new Date(s.at).getMinutes()) : '') + ' \u00B7 ' + n + ' draft' + (n === 1 ? '' : 's') + ' on this phone';
+  }
+  window._hddStatusRefresh = function () {
+    try {
+      var cl = document.getElementById('hddSyncStatus'); if (!cl) return;
+      var el = document.getElementById('hddLocalStatus');
+      if (!el) { el = document.createElement('div'); el.id = 'hddLocalStatus'; el.style.cssText = 'padding:0 20px 4px;font-size:9px;cursor:pointer'; cl.parentNode.insertBefore(el, cl); el.onclick = function () { var s = window._draftLocalStatus; if (s && !s.ok) _draftSaveFailedUI(); else cloudWarn(true); }; }
+      var bad = window._draftLocalStatus && !window._draftLocalStatus.ok;
+      el.style.color = bad ? '#ff7a7a' : 'rgba(255,255,255,.55)'; el.textContent = localLine();
+    } catch (e) {}
+  };
+  function download(name, obj) {
+    var blob = new Blob([JSON.stringify(obj, null, 1)], { type: 'application/json' });
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+  }
+  function stamp() { var d = new Date(); return d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + '-' + pad(d.getHours()) + pad(d.getMinutes()); }
+  window._draftBackupDownload = function (list) {
+    var l = list || window._draftFailedList || (function () { try { return _getAutoDrafts(); } catch (e) { return []; } })();
+    download('hdd-drafts-backup-' + stamp() + '.json', { app: 'HDD Pre-Bore Designer Pro', build: 'v7_8_6-23', exportedAt: new Date().toISOString(), drafts: l });
+    if (typeof toast === 'function') toast('\uD83D\uDCE5 Backup file downloaded');
+  };
+  function statusBlock() {
+    var s = window._draftLocalStatus, localOk = !(s && !s.ok), cb = cloudBad();
+    return '<div style="padding:8px;border:1px solid rgba(255,255,255,.25);border-radius:8px;margin:8px 0">' +
+      '<div>\uD83D\uDCBE <b>Local save (this phone):</b> ' + (localOk ? '\u2705 OK \u2014 your data is safe on this phone' : '\u274C FAILED \u2014 ' + String(s.err || '').slice(0, 90).replace(/[<>&]/g, '')) + '</div>' +
+      '<div>\u2601 <b>Cloud sync (Firebase):</b> ' + (cb ? '\u274C FAILED \u2014 ' + cloudText().replace(/^\u2601\s*/, '').slice(0, 110).replace(/[<>&]/g, '') : (/Offline|waiting/i.test(cloudText()) ? '\u23F3 ' + cloudText().replace(/^\u2601\s*/, '').slice(0, 110).replace(/[<>&]/g, '') : '\u2705 no problem reported')) + '</div></div>';
+  }
+  window._draftSaveFailedUI = function () {
+    var html = '<div style="font-weight:bold;font-size:15px;margin-bottom:6px">\u274C Draft could NOT be saved on this phone</div>' + statusBlock() +
+      '<div>The phone storage is full or blocked. Do not close the app. <b>Download a backup</b> now, or free space (delete old drafts / projects) and press Retry.<br>' +
+      '\u092B\u093C\u094B\u0928 \u092E\u0947\u0902 Draft \u0938\u0947\u0935 \u0928\u0939\u0940\u0902 \u0939\u0941\u0906\u0964 \u092A\u0939\u0932\u0947 Backup \u0921\u093E\u0909\u0928\u0932\u094B\u0921 \u0915\u0930\u0947\u0902, \u092B\u093F\u0930 Retry\u0964</div>' +
+      btn('Retry save', 'go') + btn('Download backup file', 'bk') + btn('Open Live Drafts (free space)', 'open') + btn('Close', 'x');
+    var m = box('draftSaveFailModal', html);
+    wire(m, {
+      go: function (mm) { var ok = _saveAutoDrafts(window._draftFailedList || _getAutoDrafts()); if (ok) { window._draftDirty = false; mm.remove(); if (typeof toast === 'function') toast('\u2705 Saved on this phone'); } },
+      bk: function () { _draftBackupDownload(window._draftFailedList); },
+      open: function (mm) { mm.remove(); openLiveDraftsModal(); },
+      x: function (mm) { mm.remove(); }
+    });
+  };
+  var warned = false;
+  function cloudWarn(force) {
+    var html = '<div style="font-weight:bold;font-size:15px;margin-bottom:6px">\u2601 Cloud sync status</div>' + statusBlock() +
+      (cloudBad() ? '<div>Your data is <b>not lost</b> \u2014 it is saved on this phone and will upload when the problem clears. You can retry now.<br>\u0921\u0947\u091F\u093E \u092B\u093C\u094B\u0928 \u092E\u0947\u0902 \u0938\u0941\u0930\u0915\u094D\u0937\u093F\u0924 \u0939\u0948; Cloud sync \u092C\u093E\u0926 \u092E\u0947\u0902 \u0939\u094B\u0917\u093E\u0964</div>' : '') +
+      btn('Retry cloud sync', 'go') + btn('Download backup file', 'bk') + btn('Close', 'x');
+    var m = box('draftCloudModal', html);
+    wire(m, {
+      go: function (mm) { try { HddSync.syncNow(true); } catch (e) {} mm.querySelector('button[data-b="go"]').textContent = 'Retrying\u2026'; setTimeout(function () { if (document.getElementById('draftCloudModal')) cloudWarn(true); }, 4500); },
+      bk: function () { _draftBackupDownload(); },
+      x: function (mm) { mm.remove(); }
+    });
+  }
+  function watchCloud() {
+    var el = document.getElementById('hddSyncStatus'); if (!el) return;
+    new MutationObserver(function () {
+      if (cloudBad()) { if (!warned) { warned = true; cloudWarn(false); } }
+      else { warned = false; var m = document.getElementById('draftCloudModal'); if (m && document.getElementById('hddSyncStatus') && !cloudBad()) cloudWarn(true); }
+      _hddStatusRefresh();
+    }).observe(el, { childList: true, characterData: true, subtree: true });
+    _hddStatusRefresh();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watchCloud); else watchCloud();
 })();
 </script>
 <script id="hflRefreshModule">
