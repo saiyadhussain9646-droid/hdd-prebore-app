@@ -21,7 +21,7 @@
 // every user automatically, no "Clear Cache" or reinstall needed.
 // This never touches any calculation, UI, ID, or existing feature — it
 // only decides whether to silently reload the page.
-const APP_BUILD_VERSION = 'v7.8.6-90-2026-11-07-build23';   // v7_8_6-23: changed on purpose - a phone holding an older cached copy reloads once to get this build
+const APP_BUILD_VERSION = 'v7.8.6-90-2026-11-09-build26';   // v7_8_6-26: changed on purpose (old: v7.8.6-90-2026-11-09-build25) - a phone holding an older cached copy reloads once to get this build
 (function(){
   try {
     if (location.search.indexOf('_v=') !== -1) return; // just did a fresh cache-busted load — nothing more to do
@@ -2580,7 +2580,7 @@ body.high-contrast-theme #mfcCard .mfc-rc[data-st="calc"]{border-inline-start:6p
     </button>
   </div>
   <div class="smenu-version">HDD PRE-BORE DESIGNER PRO · v7_8_6-92 Built by Saiyad Hussain</div>
-  <div id="smenuTestBuildTag" style="padding:0 20px 4px;font-size:9px;color:rgba(255,255,255,.22)">Build: v7_8_6-23</div>
+  <div id="smenuTestBuildTag" style="padding:0 20px 4px;font-size:9px;color:rgba(255,255,255,.22)">Build: v7_8_6-26</div>
   <input type="hidden" id="autoStepUsed" value="">
   <div id="hddSyncStatus" onclick="try{HddSync.syncNow(true)}catch(e){}" style="padding:0 20px 12px;font-size:9px;color:rgba(255,255,255,.4);cursor:pointer"></div>
   <div class="hddProf-foot" id="hddProfFoot">
@@ -7069,20 +7069,22 @@ function _lrCalcMaxDepth() {
     return (typeof v === 'number' && isFinite(v) && v > 0) ? v : null;
   } catch (e) { return null; }
 }
+function _lrMd(x) { if (x === null || x === undefined || x === '') return '\u2014'; const n = parseFloat(x); return isFinite(n) ? n.toFixed(2) : x; }
 function _lrDepthRows(d) {   // [[label, value], ...] - one line when the typed and calculated depth agree, two lines when they differ
   const dash = x => (x !== null && x !== undefined && x !== '') ? x : '—';
   const req = parseFloat(d.maxDepth), calc = d.calcMaxDepth;
   const hasReq = isFinite(req) && req > 0;
   if (hasReq && calc != null) {
-    if (Math.abs(req - calc) < 0.005) return [['Maximum Depth', dash(d.maxDepth) + ' m']];
-    return [['User Required Max Depth', dash(d.maxDepth) + ' m'], ['Design Max Depth (calculated)', calc.toFixed(2) + ' m']];
+    if (Math.abs(req - calc) < 0.005) return [['Maximum Depth', _lrMd(d.maxDepth) + ' m']];
+    return [['User Required Max Depth', _lrMd(d.maxDepth) + ' m'], ['Design Max Depth (calculated)', calc.toFixed(2) + ' m']];
   }
   if (!hasReq && calc != null) return [['Design Max Depth (calculated)', calc.toFixed(2) + ' m']];
-  return [['Maximum Depth', dash(d.maxDepth) + ' m']];
+  return [['Maximum Depth', _lrMd(d.maxDepth) + ' m']];
 }
 // v7_8_6-19 / A4: the quality tag already carries its own brackets, so inside '( )' it must not nest: 'EXCELLENT (≤±0.33%)' -> 'EXCELLENT ≤±0.33%'.
 function _angQ(q) { return String(q == null ? '' : q).replace(/ \(([^)]*)\)\s*$/, ' $1'); }
 // v7_8_6-19 / A4: the 'Acceptable' tolerance in header/footer comes from the same value angQuality uses (normalTol = half a safe step).
+function _zdcAngQX(d) { let q = _angQ(d.angQuality); try { const c = +(d && d.mainHardCap) || 3; if (d && Array.isArray(d.countRows) && d.countRows.some(function (r) { return typeof r.rodAngle === 'number' && Math.abs(r.rodAngle) > c + 0.005; })) q = 'EXCEEDS \u00b1' + c.toFixed(2) + '% LIMIT'; } catch (e) {} return q; }
 function _zdcAccTol(d) { const t = d && +d.normalTol; return (t > 0 && isFinite(t)) ? +t.toFixed(2) : 1; }
 // v7_8_6-19 / A9: one wording for the Punch-In remark everywhere.
 function _gpTxt(x) { return _m3('Ground penetration: ~' + x + ' m', 'ज़मीन के अंदर: ~' + x + ' मी', 'الاختراق داخل الأرض: ~' + x + ' م'); }
@@ -7877,7 +7879,7 @@ function lrExportPDF() {
     <div>
       <h1>📊 PIPE PULLING LOAD REPORT PACKAGE</h1>
       <div class="sub">Engineering Load Report · Planning &amp; Design Package</div>
-      <div class="sub">Mode: ${d.modeName} &nbsp;|&nbsp; Generated: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}</div>
+      <div class="sub">Mode: ${d.modeName} &nbsp;|&nbsp; Generated: ${(function () { const n = new Date(), p = function (x) { return String(x).padStart(2, '0'); }; return n.getFullYear() + '-' + p(n.getMonth() + 1) + '-' + p(n.getDate()) + ' ' + p(n.getHours()) + ':' + p(n.getMinutes()) + ':' + p(n.getSeconds()); })()}</div>
     </div>
     <div>
       <div class="lr-badge">A4 · PLANNING DOCUMENT</div>
@@ -8001,7 +8003,7 @@ function lrExportPDF() {
       const _what = [dia, mat].filter(Boolean).join(' ');
       _ln.push('Standard HDD installation' + (_what ? ' for ' + _what + ' pipe' : '') + (bl ? ' over ' + bl + ' m' : '') + '.');
       if (_m4d !== null) _ln.push(_m3('Depth at mid-bore (countable section) ' + _m4d + ' m.', 'मध्य-बोर पर गहराई (गिनती योग्य हिस्सा) ' + _m4d + ' मी.', 'العمق في منتصف الحفر (القسم المحتسب) ' + _m4d + ' م.'));
-      else if (dep) _ln.push('Maximum design depth ' + dep + ' m.');
+      else if (dep) _ln.push('Maximum design depth ' + _lrMd(dep) + ' m.');
       if (ream) _ln.push('Recommended reamer diameter ' + ream + '.');
       _ln.push('Maintain proper drilling fluid viscosity.', 'Monitor pullback force continuously.', 'Verify bore cleaning before pullback.');
       return _ln.join('\n').replace(/</g,'&lt;');
@@ -8158,7 +8160,7 @@ function diagnoseManualAngleFail(rl,bl,maxD,entPct,extPct,ss,machH){
   let dFlat=0;
   for(let i=1;i<=flatN;i++) dFlat+=rl*Math.max(0,entPct-i*ss)/100;
   const dprIN=rl*entPct/100;
-  if(dprIN<=0) return 'Punch-In angle must be greater than 0%.';
+  if(dprIN<=0) return _m4('Punch-In angle must be greater than 0%.', 'Punch-In angle 0% से ज़्यादा होना चाहिए।');
   // v94: same Row-0 ground-depth accounting as buildPlanManual, and the
   // same ±0.25m tolerance, so the reported reason matches what actually
   // failed.
@@ -8168,15 +8170,14 @@ function diagnoseManualAngleFail(rl,bl,maxD,entPct,extPct,ss,machH){
   let simDepth=d0;
   for(let i=0;i<inN;i++) simDepth+=dprIN;
   for(let i=1;i<=flatN;i++) simDepth+=rl*Math.max(0,entPct-i*ss)/100;
-  const stepHint = ` Or type your own step in Custom Step (below Bore Details) — `+
-                   `the app will still build the chart from your exact step, `+
-                   `at your own responsibility.`;
+  const stepHint = _m4(` Or type your own step in Custom Step (below Bore Details) — the app will still build the chart from your exact step, at your own responsibility.`,
+                   ` या Custom Step (Bore Details के नीचे) में अपना Step खुद भरें — ऐप आपके दिए Step से ही Chart बनाएगा, आपकी अपनी ज़िम्मेदारी पर।`);
 
   // Condition 1: Depth overshoot
   if(simDepth>maxD+TOL){
     const excess=(simDepth-maxD).toFixed(1);
-    return `Punch-In angle ${toD(entPct)} overshoots by ${excess}m. `+
-           `Reduce Punch-In angle or increase Max Depth by ${excess}m.`+stepHint;
+    return _m4(`Punch-In angle ${toD(entPct)} overshoots by ${excess}m. Reduce Punch-In angle or increase Max Depth by ${excess}m.`,
+           `Punch-In angle ${toD(entPct)} से ${excess}m ज़्यादा गहराई हो जाती है। Punch-In angle घटाएँ या Max Depth ${excess}m बढ़ाएँ।`)+stepHint;
   }
 
   // Condition 2: Too many rods needed
@@ -8195,18 +8196,18 @@ function diagnoseManualAngleFail(rl,bl,maxD,entPct,extPct,ss,machH){
   const totalNeeded=inN+flatN+riseN+outN;
   if(totalNeeded>n){
     const addM=Math.ceil((totalNeeded-n)*rl/5)*5;
-    return `Bore too short for these angles at the safe step. Increase bore length by ~${addM}m, `+
-           `or reduce Punch-In angle.`+stepHint;
+    return _m4(`Bore too short for these angles at the safe step. Increase bore length by ~${addM}m, or reduce Punch-In angle.`,
+           `इन angles के लिए Safe Step पर Bore बहुत छोटा है। Bore Length ~${addM}m बढ़ाएँ, या Punch-In angle घटाएँ।`)+stepHint;
   }
 
   // Condition 3: Punch-Out too shallow — still underground at exit
   if(depAfterRise>TOL){
-    return `Punch-Out angle ${toD(extPct)} too small — bore ends ${depAfterRise.toFixed(2)}m underground. `+
-           `Increase Punch-Out angle.`+stepHint;
+    return _m4(`Punch-Out angle ${toD(extPct)} too small — bore ends ${depAfterRise.toFixed(2)}m underground. Increase Punch-Out angle.`,
+           `Punch-Out angle ${toD(extPct)} बहुत कम है — Bore अंत में ${depAfterRise.toFixed(2)}m ज़मीन के नीचे रह जाता है। Punch-Out angle बढ़ाएँ।`)+stepHint;
   }
 
-  return `Cannot generate bore plan at the safe step. Try: increase bore length, reduce max depth, `+
-         `reduce Punch-In angle,`+stepHint;
+  return _m4(`Cannot generate bore plan at the safe step. Try: increase bore length, reduce max depth, reduce Punch-In angle,`,
+         `Safe Step पर Bore plan नहीं बन पाया। कोशिश करें: Bore Length बढ़ाएँ, Max Depth घटाएँ, Punch-In angle घटाएँ,`)+stepHint;
 }
 
 function buildPlan(rl,bl,maxD,entPct,extPct,ss,n,machH){
@@ -8398,13 +8399,15 @@ function generate(){
       hideOv();
       const usedStep = CUSTOM_STEP_VALUE > 0 ? `Custom Step ±${toDmag(CUSTOM_STEP_VALUE)}` : `Safe Step ±${toDmag(safeStep(parseFloat(document.getElementById('rodL').value)||9.5))}`;
       // v7_8_6-1: tell the truth about the step that was really used
-      if (G && !(CUSTOM_STEP_VALUE > 0) && G.autoStep > 0) {
+      if (G && !(CUSTOM_STEP_VALUE > 0) && G.autoStep > 0 && G.autoRecovery) {
+        toast(_m4(`✅ Chart ready! Auto step could not meet the targets, so Smart Step ±${toDmag(G.autoStep)}/rod was used (Max Safe Step ±${toDmag(safeStep(parseFloat(document.getElementById('rodL').value)))})`, `✅ Chart तैयार! Auto Step लक्ष्य पूरा नहीं कर पाया, इसलिए Smart Step ±${toDmag(G.autoStep)}/rod लगाया गया (Max Safe Step ±${toDmag(safeStep(parseFloat(document.getElementById('rodL').value)))})`), 'ok');
+      } else if (G && !(CUSTOM_STEP_VALUE > 0) && G.autoStep > 0) {
         toast(`✅ Chart ready! Auto-gentle step ±${toDmag(G.autoStep)}/rod (Safe Step ±${toDmag(safeStep(parseFloat(document.getElementById('rodL').value)))}) — larger radius of curvature`, 'ok');
       }
       if (G && CUSTOM_STEP_VALUE > 0) {                       // a typed Custom Step that misses the targets must be said out loud
         let pk = 0; G.rows.forEach(function (r) { if (r.depth > pk) pk = r.depth; });
         const ex = G.rows[G.rows.length - 1].depth, tm = parseFloat(document.getElementById('maxD').value);
-        if (Math.abs(pk - tm) > 0.30 || Math.abs(ex) > 0.30) toast('⚠️ Custom Step ±' + CUSTOM_STEP_VALUE + '%/rod: Max Depth ' + pk.toFixed(2) + 'm (target ' + tm + 'm), Punch-Out depth ' + ex.toFixed(2) + 'm — लक्ष्य ±0.30m से बाहर। Custom Step बदलें, या खाली करके Auto-gentle चलाएँ।', 'wn');
+        if (Math.abs(pk - tm) > 0.30 || Math.abs(ex) > 0.30) toast(_m4('⚠️ Custom Step ±' + CUSTOM_STEP_VALUE + '%/rod: Max Depth ' + pk.toFixed(2) + 'm (target ' + tm + 'm), Punch-Out depth ' + ex.toFixed(2) + 'm — outside the ±0.30m target. Change the Custom Step, or clear it to run Auto.', '⚠️ Custom Step ±' + CUSTOM_STEP_VALUE + '%/rod: Max Depth ' + pk.toFixed(2) + 'm (target ' + tm + 'm), Punch-Out depth ' + ex.toFixed(2) + 'm — लक्ष्य ±0.30m से बाहर। Custom Step बदलें, या खाली करके Auto चलाएँ।'), 'wn');
       }
       if (!(G && !(CUSTOM_STEP_VALUE > 0) && G.autoStep > 0)) toast(`✅ Chart ready! Step used: ${usedStep}/rod`, 'ok');
       // FIX: blur first, then wait for layout/keyboard to settle before smooth-scrolling
@@ -8467,19 +8470,54 @@ function _autoGentleStep() {
     return hits[0].s;
   } finally { _AUTO_STEP_OVERRIDE = 0; _AUTO_STEP_BUSY = false; G = prevG; }
 }
+// ═════════════════════════════════════════════════════════════════════
+// v7_8_6-26 — MODE 2 SMART STEP RECOVERY (Saiyad Hussain, approved Nov 9 2026)
+// Runs ONLY when (a) no Custom Step is typed, (b) no manual Punch-In/Punch-Out angle is typed, (c) the existing Auto result
+// (gentle step, or else the plain Safe-Step chart) FAILS a design condition. It tries steps 0.05, 0.10 … up to the existing Maximum
+// Safe Step of the rod length (3m 1.0, 4.5m 1.5, 6m 2.0, 9.5m 2.5, 12m 3.0 — never above) through the same loose path a typed
+// Custom Step uses, and takes the FIRST step whose chart passes every condition. A passing existing result is never touched.
+// ═════════════════════════════════════════════════════════════════════
+function _smartPass(rows, maxD, bl) {
+  if (!rows || !rows.length) return false;
+  const TOL = 0.30, last = rows[rows.length - 1]; let peak = 0, above = 0;
+  rows.forEach(function (r) { if (r.depth > peak) peak = r.depth; if (!r.isPI && !r.isPO && r.depth < -TOL - 1e-9) above++; });
+  return Math.abs(last.depth) <= TOL + 1e-9 && Math.abs(peak - maxD) <= TOL + 1e-9 && above === 0 && Math.abs(last.dist - bl) < 1e-6;
+}
+function _smartRecoveryStep() {
+  const prevG = G; _AUTO_STEP_BUSY = true;
+  try {
+    const rl = parseFloat(document.getElementById('rodL').value), bl = parseFloat(document.getElementById('boreL').value), maxD = parseFloat(document.getElementById('maxD').value);
+    if (!(rl > 0) || !(bl > 0) || !(maxD > 0)) return 0;
+    if ((document.getElementById('entA').value || '').trim() || (document.getElementById('extA').value || '').trim()) return 0;   // typed angles: never touched
+    const safe = safeStep(rl);
+    CUSTOM_STEP_VALUE = 0; _AUTO_STEP_OVERRIDE = 0;
+    try { _buildCore(); if (_smartPass(G && G.rows, maxD, bl)) return 0; } catch (e) { /* existing chart cannot be built → recovery */ }
+    for (let k = 1; k * 5 <= Math.round(safe * 100) + 1e-9; k++) {
+      const st = k * 5 / 100;
+      CUSTOM_STEP_VALUE = st;
+      try { _buildCore(); if (_smartPass(G && G.rows, maxD, bl)) return st; } catch (e) { /* this step cannot build a plan — try the next */ }
+    }
+    return 0;
+  } finally { CUSTOM_STEP_VALUE = 0; _AUTO_STEP_OVERRIDE = 0; _AUTO_STEP_BUSY = false; G = prevG; }
+}
 function build() {
-  let found = 0;
+  let found = 0, loose = false;
   if (!(CUSTOM_STEP_VALUE > 0) && !_AUTO_STEP_BUSY) {
     const keep = document.getElementById('autoStepUsed');
     if (window._AUTO_STEP_USE_SAVED) {                      // Draft / session restore: rebuild with the SAME step the chart was made with
       window._AUTO_STEP_USE_SAVED = false;
-      found = keep ? (parseFloat(keep.value) || 0) : 0;     // old drafts have no value → 0 → exactly the old chart
-    } else found = _autoGentleStep();
-    _AUTO_STEP_OVERRIDE = found;
+      const raw = keep ? String(keep.value || '').trim() : '';
+      found = parseFloat(raw) || 0;                         // old drafts have no value → 0 → exactly the old chart
+      loose = found > 0 && /r$/i.test(raw);                 // v7_8_6-26: "0.7r" = made by Smart Recovery → same loose path again
+    } else {
+      found = _autoGentleStep();
+      if (!(found > 0)) { const rec = _smartRecoveryStep(); if (rec > 0) { found = rec; loose = true; } }
+    }
+    if (loose) { CUSTOM_STEP_VALUE = found; _AUTO_STEP_OVERRIDE = 0; } else _AUTO_STEP_OVERRIDE = found;
   }
-  try { _buildCore(); } finally { _AUTO_STEP_OVERRIDE = 0; }
-  if (G) G.autoStep = found;
-  const keep2 = document.getElementById('autoStepUsed'); if (keep2) keep2.value = found > 0 ? String(found) : '';
+  try { _buildCore(); } finally { _AUTO_STEP_OVERRIDE = 0; if (loose) CUSTOM_STEP_VALUE = 0; }
+  if (G) { G.autoStep = found; G.autoRecovery = loose; }
+  const keep2 = document.getElementById('autoStepUsed'); if (keep2) keep2.value = found > 0 ? String(found) + (loose ? 'r' : '') : '';
 }
 
 function _buildCore(){
@@ -8516,8 +8554,8 @@ function _buildCore(){
     plan = planAngles(rl, bl, maxD, 0, 0, machH);
     if (!plan) {
       throw new Error(CUSTOM_STEP_VALUE > 0
-        ? 'Cannot fit bore plan even with Custom Step ' + CUSTOM_STEP_VALUE + '%/rod. Try a larger Custom Step, longer Bore Length, or smaller Max Depth.'
-        : 'Auto-fit नहीं हो पाया — कृपया नीचे Custom Step (%/rod) खुद भरें।');
+        ? _m4('Cannot fit bore plan even with Custom Step ' + CUSTOM_STEP_VALUE + '%/rod. Try a larger Custom Step, longer Bore Length, or smaller Max Depth.', 'Custom Step ' + CUSTOM_STEP_VALUE + '%/rod पर भी Bore plan फ़िट नहीं हुआ। बड़ा Custom Step, ज़्यादा Bore Length या कम Max Depth आज़माएँ।')
+        : _m4('Auto-fit failed (Smart Step also could not fit) — please enter a Custom Step (%/rod) below yourself.', 'Auto-fit नहीं हो पाया (Smart Step भी फ़िट नहीं हुआ) — कृपया नीचे Custom Step (%/rod) खुद भरें।'));
     }
   }
 
@@ -9236,7 +9274,7 @@ function _zdcRebuildSafety(d) {
       <div class="srow"><span class="slbl">Exit Pit Depth: ${xd.toFixed(2)}m | Achieved: ${lastDepth.toFixed(2)}m | Δ${exitDiff.toFixed(2)}m | Variation: ${depthVar}m</span><span class="sval ${exitClass}">${exitStatus}</span></div>
       <div class="srow"><span class="slbl">Countable Bore: ${bl}m × ${n} rods @ ${rl}m/rod</span><span class="sval ok">✓ OK</span></div>
       <div class="srow"><span class="slbl">Punch-In (NC) Section: ~${ncDist.toFixed(0)}m · ${ncRods} rods · Peak: ${toDmag(peakAngle)}</span><span class="sval"><span style="color:var(--t2)">NC</span></span></div>
-      <div class="srow"><span class="slbl">True Max Depth (all zones): ${(d.trueMaxDepth||0).toFixed(2)}m | Target: ${(d.trueTargetMx||Math.max(ed,xd)).toFixed(2)}m | Δ${d.trueDeltaStr||'0.00'}m</span><span class="sval ok">✓ LIVE</span></div>
+      ${(d.trueMaxDepth||0) > 0 ? `<div class="srow"><span class="slbl">True Max Depth (all zones): ${(d.trueMaxDepth||0).toFixed(2)}m | Target: ${(d.trueTargetMx||Math.max(ed,xd)).toFixed(2)}m | Δ${d.trueDeltaStr||'0.00'}m</span><span class="sval ok">✓ LIVE</span></div>` : ''}
       ${_mbrPanelRowsHTML()}
       <div class="srow"><span class="slbl">Safety Factor: ${sfDisp} ${d.sf !== null ? '(Min RC: ' + (d.minRC !== null ? d.minRC.toFixed(0) : '∞') + 'm)' : ''}</span><span class="sval ${sfOK2===null?'warn':(sfOK2?'ok':'bad')}">${_mbrLbl(sfOK2)}</span></div>
       <div class="srow"><span class="slbl">Ream Size: ${parseFloat(ream).toFixed(0)}mm vs Pipe OD: ${odMM.toFixed(0)}mm</span><span class="sval ok">✓ OK</span></div>
@@ -10678,8 +10716,8 @@ function _doChartPDF(){
       .concat(rlActive ? ['SURVEY RL (m)','ACTUAL DEPTH FROM RL (m)'] : [])
       .concat(['ACT ANGLE','ACT DEPTH (m)','START TIME','FINISH TIME','DOWN TIME','DRILL TIME','REMARKS']);
     const baseWidths = gpsActive
-      ? (rlActive ? [4,6,6,7,5,7,5,6,6,5,5,5,5,17] : [4,7,7,8,5,8,7,7,4,4,4,4,22]) // ROD,DIST,ANGLE,DEPTH,RC,[GPS],[RL×2],ACT ANGLE,ACT DEPTH,START,FIN,DOWN,DRILL,REMARKS
-      : (rlActive ? [4,7,7,8,5,6,7,7,5,5,5,5,19] : [4,8,9,10,7,9,9,5,5,5,5,19]);
+      ? (rlActive ? [4,5,5,6,5,8,6,7,5,5,5,5,5,5,24] : [4,7,7,8,5,8,7,7,4,4,4,4,22]) // ROD,DIST,ANGLE,DEPTH,RC,[GPS],[RL×2],ACT ANGLE,ACT DEPTH,START,FIN,DOWN,DRILL,REMARKS
+      : (rlActive ? [4,7,7,8,5,6,7,5,5,5,5,5,5,26] : [4,8,9,10,7,9,9,5,5,5,5,19]);
     const colWidths = baseWidths;
     const colWidthCSS = colWidths.map((w,i)=>`th:nth-child(${i+1}),td:nth-child(${i+1}){width:${w}%;}`).join('');
     const logoHtml=getPDFLogoHTML?getPDFLogoHTML():'';
@@ -10746,13 +10784,9 @@ function _doChartPDF(){
 
     const pw = calcPipeWeight(); // read-only — does not affect table/rows/formulas above
     const pwHTML = pw ? `<div class="pws">
-        <div class="pws-t">📊 PIPE WEIGHT &amp; RIG ESTIMATION</div>
         <div class="pws-g">
-          <div><b>Pipe Type:</b> ${pw.pipeType}</div>
           <div><b>Pipe Size:</b> ${pw.odMM.toFixed(1)}mm OD × ${pw.wtMM.toFixed(1)}mm WT</div>
-          <div><b>Unit Weight:</b> ${pw.kgPerM.toFixed(2)} kg/m</div>
           <div><b>Total Pipe Weight:</b> ${pw.totalKg.toFixed(1)} kg / ${pw.totalTon.toFixed(2)} Ton / ${pw.totalLbs.toFixed(1)} lbs</div>
-          <div><b>Estimated Required Rig:</b> ${pw.estRigTon.toFixed(2)} Ton <span style="color:#888">(${pw.rigSafetyFactorPct}% estimation safety factor included)</span></div>
         </div>
       </div>` : '';
     const photoHtml = getPDFPhotoHTML ? (getPDFPhotoHTML() || '') : ''; // static — same content regardless of which page it lands on
@@ -12459,6 +12493,8 @@ const LANG_STRINGS = {
 let CURRENT_LANG = 'en';
 /* v7_8_6-13: picks the message text for the selected language (used by the Mode 3/4 truthful-error toasts) */
 function _m3(en, hi, ar) { return CURRENT_LANG === 'hi' ? hi : (CURRENT_LANG === 'ar' ? ar : en); }
+/* v7_8_6-26: same as _m3, but a missing/empty Arabic (or Hindi) text falls back to English instead of showing nothing */
+function _m4(en, hi, ar) { const v = CURRENT_LANG === 'hi' ? hi : (CURRENT_LANG === 'ar' ? ar : en); return (v === undefined || v === null || v === '') ? en : v; }
 
 function setLang(lang) {
   CURRENT_LANG = lang;
@@ -14433,7 +14469,7 @@ function calcZeroDegree() {
   // entered together was previously silently resolved by giving Angle
   // priority (Space just got ignored) — now show a clear error instead.
   if (userPI > 0 && userNcSp > 0) {
-    if (!_quiet) toast('⚠️ Punch-In Angle और Punch-In→Entry Space दोनों भरे हैं — सिर्फ एक ही भरें (कोई एक हटाएं)।', 'wn');
+    if (!_quiet) toast(_m4('⚠️ Punch-In Angle and Punch-In→Entry Space are both filled — fill only one (clear either box).', '⚠️ Punch-In Angle और Punch-In→Entry Space दोनों भरे हैं — सिर्फ एक ही भरें (कोई एक हटाएं)।'), 'wn');
     return;
   }
   // v7_8_6-97 / FIX (Saiyad Hussain, Mode 4 rule 2): respect the existing
@@ -14871,8 +14907,10 @@ function calcZeroDegree() {
   // early-return pattern as the !ed||!xd||!bl||!rl check above — no
   // countRows, no table, no window._zdcData, no modal.
   if (shapeInvalid) {
-    toast('⚠️ Invalid Profile — Entry ' + ed.toFixed(2) + 'm, Max ' + userMaxDepth.toFixed(2) +
-      'm, Exit ' + xd.toFixed(2) + 'm बनाएगा कर्व। Mode 4 में सीधा (एक दिशा में) profile ही मान्य है — Max Depth ठीक करें।', 'wn');
+    toast(_m4('⚠️ Invalid Profile — Entry ' + ed.toFixed(2) + 'm, Max ' + userMaxDepth.toFixed(2) +
+      'm, Exit ' + xd.toFixed(2) + 'm would make a curve. Mode 4 accepts only a straight (one-direction) profile — correct the Max Depth.',
+      '⚠️ Invalid Profile — Entry ' + ed.toFixed(2) + 'm, Max ' + userMaxDepth.toFixed(2) +
+      'm, Exit ' + xd.toFixed(2) + 'm बनाएगा कर्व। Mode 4 में सीधा (एक दिशा में) profile ही मान्य है — Max Depth ठीक करें।'), 'wn');
     return;
   }
 
@@ -14914,10 +14952,13 @@ function calcZeroDegree() {
       // (same early-return pattern already used for an invalid shape).
       const minBoreNeeded  = Math.ceil(Math.abs(ed - xd) / (mainHardCap / 100));
       const achievableExit = +(ed - (calculatedSlope > 0 ? mainHardCap : -mainHardCap) * bl / 100).toFixed(2);
-      toast('⚠️ Entry (' + ed.toFixed(2) + 'm) → Exit (' + xd.toFixed(2) + 'm) के लिए ज़रूरी Slope ' +
+      toast(_m4('⚠️ Entry (' + ed.toFixed(2) + 'm) → Exit (' + xd.toFixed(2) + 'm) needs a slope of ' +
+        toD(calculatedSlope) + ', which is above the Main Section limit of ±' + mainHardCap.toFixed(2) +
+        '%. Make Bore Length ≥' + minBoreNeeded + 'm, or keep Exit Depth at ' + achievableExit.toFixed(2) + 'm.',
+        '⚠️ Entry (' + ed.toFixed(2) + 'm) → Exit (' + xd.toFixed(2) + 'm) के लिए ज़रूरी Slope ' +
         toD(calculatedSlope) + ' है, जो Main Section की अधिकतम सीमा ±' + mainHardCap.toFixed(2) +
         '% से ज्यादा है। Bore Length ≥' + minBoreNeeded + 'm करें, या Exit Depth को ' +
-        achievableExit.toFixed(2) + 'm रखें।', 'wn');
+        achievableExit.toFixed(2) + 'm रखें।'), 'wn');
       return;
 
     } else if (absSlope > normalTol) {
@@ -14971,7 +15012,7 @@ function calcZeroDegree() {
   const angQuality = absAng === 0 ? 'IDEAL (0%)' :
                      absAng <= tolExc ? `EXCELLENT (≤±${tolExc.toFixed(2)}%)` :
                      absAng <= tolAcc ? `ACCEPTABLE (≤±${tolAcc.toFixed(2)}%)` :
-                     absAng <= mainHardCap ? `WITHIN ±${mainHardCap.toFixed(2)}% LIMIT` : `EXCEEDS LIMIT`;
+                     absAng <= mainHardCap ? `WITHIN ±${mainHardCap.toFixed(2)}% LIMIT` : `EXCEEDS ±${mainHardCap.toFixed(2)}% LIMIT`;
   const angBadgeCls = absAng <= tolExc ? 'zdc-sb-ideal' :
                       absAng <= tolAcc ? 'zdc-sb-ok' :
                       absAng <= mainHardCap ? 'zdc-sb-warn' : 'zdc-sb-bad';
@@ -15014,7 +15055,7 @@ function calcZeroDegree() {
   // Store for export
   window._zdcData = { ed, xd, bl, rl, odMM, ang, n, ncRows, countRows, BR, ream,
     sf, sfOK, minRC, angQuality, normalTol, ncDist, ncRods, maxEntAngle: peakAngle,
-    actualED, peakAngle, depthVar };
+    actualED, peakAngle, depthVar, mainHardCap };
 
   // ── PHASE 4: dynamic column set — 10 cols if RL filled, else original 8 ──
   const _rlZdc = rlGetValues('zdc');
@@ -15598,7 +15639,7 @@ function _zdcDrawProfile(d) {
   // Ground line
   c.strokeStyle = 'rgba(180,200,255,.45)'; c.lineWidth = 1.5; c.setLineDash([5,4]);
   c.beginPath(); c.moveTo(pad.l, pad.t); c.lineTo(pad.l+cw, pad.t); c.stroke(); c.setLineDash([]);
-  c.fillStyle = 'rgba(180,200,255,.5)'; c.font = '9px Share Tech Mono,monospace';
+  c.fillStyle = (window._grPdfDraw || _isLightTheme) ? 'rgba(22,24,29,.65)' : 'rgba(180,200,255,.5)'; c.font = '9px Share Tech Mono,monospace';
   // v7_8_6-18 / C7: the label used to sit on the graph title (same row, left); right-align it so they never overlap.
   c.textAlign = 'right'; c.fillText('GROUND LEVEL  0.00m', pad.l+cw-3, pad.t-4); c.textAlign = 'start';
 
@@ -15821,6 +15862,7 @@ function zdcExportPDF() {
     // FIX (audit follow-up): the rod that actually reaches the Exit Pit
     // depth is tagged with the pit itself, matching the Entry Pit rod.
     const isExitRow = i === d.countRows.length - 1;
+    if (isExitRow) tbl += '</tbody><tbody style="break-inside:avoid;page-break-inside:avoid">';   // v7_8_6-25: last rod + EXIT PIT + footer stay together
     tbl += `<tr style="background:${bg}">
       <td>${rodTxt}</td><td>${distTxt}</td>
       <td style="color:#065f46;font-weight:bold">${aStr}</td>
@@ -15832,6 +15874,11 @@ function zdcExportPDF() {
   });
   tbl += `<tr style="background:#d1fae5"><td colspan="${_cs}" style="text-align:center;font-weight:bold;color:#065f46;">
     🕳️ EXIT PIT — Depth: ${d.xd.toFixed(2)}m | Vertical pullout ↑</td></tr>`;
+  // v7_8_6-25 / F1: the Designed-by + disclaimer lines are now the last row of the same table, kept with the last rod + EXIT PIT row (never alone on a page)
+  tbl += `<tr><td colspan="${_cs}" style="border:none;padding:6px 0 0 0;text-align:left"><div class="ft">
+  <b>Designed by: Saiyad Hussain</b> — HDD Driller &amp; Locator · 14+ Years · Saudi Arabia<br>
+  Engineering Planning Document: Trajectory and pullback estimates are for planning/reference only and require verification by the authorized project engineer before field execution.
+</div></td></tr>`;
   tbl += '</tbody></table>';
 
   const _orient = _chartPdfPickOrient(cols8.length);
@@ -15845,7 +15892,7 @@ h2{color:#065f46;font-size:13px;margin-bottom:5px;}
 table{width:100%;border-collapse:collapse;font-size:8px;}
 th{background:#065f46;color:#fff;padding:4px 3px;text-align:center;border:1px solid #047857;white-space:nowrap;}
 td{padding:3px 3px;text-align:center;border:1px solid #ccc;}
-.ft{margin-top:6px;padding:5px 7px;background:#f0fdf4;border:1px solid #a7f3d0;
+.ft{margin-top:0;padding:5px 7px;background:#f0fdf4;border:1px solid #a7f3d0;
   border-radius:3px;font-size:8px;}
 .pws{margin-top:6px;padding:6px 8px;background:#fff8e1;border:1px solid #e0c060;border-radius:4px;}
 .pws-t{font-size:9px;font-weight:700;color:#7a5c00;letter-spacing:.5px;margin-bottom:4px;}
@@ -15855,28 +15902,12 @@ td{padding:3px 3px;text-align:center;border:1px solid #ccc;}
 <h2>${_isCityMode ? '🏙️ PIT TO PIT CURVE / CITY MODE — BORE CHART' : '🎯 ZERO DEGREE CROSSING — BORE CHART'}</h2>
 <div class="inf">
   • Project: ${proj} | Date: ${dateStr} | Prepared by: Saiyad Hussain<br>
-  • Bore Length (Countable): ${d.bl}m | Rods: ${_rodsLbl(d.n, d.rl, d.bl)} | Pipe OD: ${+(+d.odMM).toFixed(1)}mm<br>
+  • Bore Length (Countable): ${d.bl}m | Rods: ${_rodsLbl(d.n, d.rl, d.bl)} | ${(() => { const _pw = calcPipeWeight(); return _pw ? 'Pipe Size: ' + _pw.odMM.toFixed(1) + 'mm OD × ' + _pw.wtMM.toFixed(1) + 'mm WT' : 'Pipe OD: ' + (+(+d.odMM).toFixed(1)) + 'mm'; })()}<br>
   • Entry Pit Depth: ${d.ed.toFixed(2)}m | Exit Pit Depth: ${d.xd.toFixed(2)}m<br>
-  • ${(() => { const _p = []; if (!_isCityMode) _p.push('Target Angle: ' + toD(d.ang) + ' (' + _angQ(d.angQuality) + ')'); const _h = _mbrHdr().replace(/^ \| /, ''); if (_h) _p.push(_h); _p.push('Ream: ' + d.ream + 'mm'); return _p.join(' | '); })()}<br>
+  • ${(() => { const _p = []; if (!_isCityMode) _p.push('Target Angle: ' + toD(d.ang) + ' (' + _zdcAngQX(d) + ')'); const _h = _mbrHdr().replace(/^ \| /, ''); if (_h) _p.push(_h); _p.push('Ream: ' + d.ream + 'mm'); return _p.join(' | '); })()}<br>
   • Punch-In section: ~${d.ncDist.toFixed(0)}m · ${d.ncRods} rods (NOT COUNTABLE)
 </div>
 ${tbl}
-${(() => { const pw = calcPipeWeight(); return pw ? `<div class="pws">
-    <div class="pws-t">📊 PIPE WEIGHT &amp; RIG ESTIMATION</div>
-    <div class="pws-g">
-      <div><b>Pipe Type:</b> ${pw.pipeType}</div>
-      <div><b>Pipe Size:</b> ${pw.odMM.toFixed(1)}mm OD × ${pw.wtMM.toFixed(1)}mm WT</div>
-      <div><b>Unit Weight:</b> ${pw.kgPerM.toFixed(2)} kg/m</div>
-      <div><b>Total Pipe Weight:</b> ${pw.totalKg.toFixed(1)} kg / ${pw.totalTon.toFixed(2)} Ton / ${pw.totalLbs.toFixed(1)} lbs</div>
-      <div><b>Estimated Required Rig:</b> ${pw.estRigTon.toFixed(2)} Ton <span style="color:#888">(${pw.rigSafetyFactorPct}% estimation safety factor included)</span></div>
-    </div>
-  </div>` : ''; })()}
-<div class="ft">
-  ${_isCityMode ? '' : '🎯 Target: 0% | Best: ±0.5% | Acceptable: ±' + _zdcAccTol(d) + '% | Max: ±2%<br>'}
-  🚫 Red = NOT COUNTABLE (Punch-In→Entry Pit) | ✅ Green = COUNTABLE (Entry→Exit Pit)<br>
-  <b>Designed by: Saiyad Hussain</b> — HDD Driller &amp; Locator · 14+ Years · Saudi Arabia<br>
-  Engineering Planning Document: Trajectory and pullback estimates are for planning/reference only and require verification by the authorized project engineer before field execution.
-</div>
 </body></html>`;
 
   let iframe = document.getElementById('zdcPF');
@@ -15911,8 +15942,8 @@ function zdcExportGraphPDF() {
       const _drawFn = _isCityMode ? _cwDrawProfile : _zdcDrawProfile;
       if (_pe && typeof _drawFn === 'function') {
         _pe.style.width = '1050px';
-        _drawFn(d);
-        graphImg = cvs.toDataURL('image/png');
+        window._grPdfDraw = true;
+        try { _drawFn(d); graphImg = cvs.toDataURL('image/png'); } finally { window._grPdfDraw = false; }
         _pe.style.width = _prevInlineWidth || '';
         _drawFn(d);
       } else {
@@ -15932,7 +15963,7 @@ function zdcExportGraphPDF() {
     ['BORE ID',      (document.getElementById('boreID')||{}).value || '—'],
     ['BORE LENGTH (countable)', d.bl + ' m'],
     ['ENTRY / EXIT PIT DEPTH',  d.ed.toFixed(2) + ' / ' + d.xd.toFixed(2) + ' m'],
-    ...(_isCityMode ? [] : [['TARGET ANGLE', toD(d.ang) + ' (' + _angQ(d.angQuality) + ')']]),
+    ...(_isCityMode ? [] : [['TARGET ANGLE', toD(d.ang) + ' (' + _zdcAngQX(d) + ')']]),
     ['PIPE OD',      (+(+d.odMM).toFixed(1)) + ' mm'],
     ['DATE',         dateStr],
   ];
@@ -15974,7 +16005,7 @@ html,body{height:100%;font-family:Arial,sans-serif;background:#fff;color:#111;}
 <div class="gi">${cells.map(([l,val])=>`<div class="gc"><div class="gcl">${l}</div><div class="gcv">${val}</div></div>`).join('')}</div>
 <div class="gw"><img src="${graphImg}" alt="Bore Profile Graph"></div>
 <div class="gf">
-  <span>${_isCityMode ? '' : 'Target: 0% | Best: ±0.5% | Acceptable: ±' + _zdcAccTol(d) + '% | Max: ±2%'}</span>
+  <span>${_isCityMode ? '' : 'Target: 0% | Best: ±0.5% | Acceptable: ±' + _zdcAccTol(d) + '% | Max: ±' + (+(d.mainHardCap || 3)).toFixed(2) + '%'}</span>
   <span><strong>Saiyad Hussain</strong> — HDD Driller &amp; Locator · 14+ Yrs · Saudi Arabia</span>
 </div>
 <div style="margin-top:3px;padding:3px 7px;background:#fff8e1;border:1px solid #e0c060;border-radius:3px;font-size:6.5px;color:#7a5c00;text-align:center">Engineering Planning Document: Trajectory and pullback estimates are for planning/reference only and require verification by the authorized project engineer before field execution.</div>
@@ -17611,7 +17642,7 @@ function _piExclCheck() {
   const a  = parseFloat(((document.getElementById('entA') || {}).value || '').trim());
   const sp = parseFloat(((document.getElementById('pitNcSpace') || {}).value || '').trim());
   const both = Math.abs(a) > 0.01 && sp > 0;
-  if (both && !_piExclShown) { _piExclShown = true; toast('⚠️ Punch-In Angle और Punch-In→Entry Space दोनों भरे हैं — एक बार में सिर्फ़ एक ही इस्तेमाल हो सकता है। किसी एक बॉक्स को खाली करें।', 'wn'); }
+  if (both && !_piExclShown) { _piExclShown = true; toast(_m4('⚠️ Punch-In Angle and Punch-In→Entry Space are both filled — only one can be used at a time. Clear either box.', '⚠️ Punch-In Angle और Punch-In→Entry Space दोनों भरे हैं — एक बार में सिर्फ़ एक ही इस्तेमाल हो सकता है। किसी एक बॉक्स को खाली करें।'), 'wn'); }
   if (!both) _piExclShown = false;
 }
 function onPitDepthInput() {
@@ -18441,7 +18472,7 @@ function calcCityMode() {
   }
   // v7_8_6-97: Punch-In Angle and Punch-In→Entry Space are mutually exclusive (one at a time)
   if (USE_MANUAL_ENT && userNcSp > 0) {
-    toast('⚠️ Punch-In Angle और Punch-In→Entry Space दोनों भरे हैं — एक बार में सिर्फ़ एक ही इस्तेमाल हो सकता है। किसी एक बॉक्स को खाली करें।', 'wn');
+    toast(_m4('⚠️ Punch-In Angle and Punch-In→Entry Space are both filled — only one can be used at a time. Clear either box.', '⚠️ Punch-In Angle और Punch-In→Entry Space दोनों भरे हैं — एक बार में सिर्फ़ एक ही इस्तेमाल हो सकता है। किसी एक बॉक्स को खाली करें।'), 'wn');
     return;
   }
 
@@ -18949,7 +18980,7 @@ function calcCityMode() {
 
     } catch(e) {
       hideOv();
-      toast('⚠️ City Mode error: ' + e.message, 'wn');
+      toast(_m4('⚠️ City Mode error: ', '⚠️ City Mode त्रुटि: ') + e.message, 'wn');
       console.error('calcCityMode error:', e);
     }
   }, 80);
@@ -19231,7 +19262,7 @@ function _cwDrawProfile(d) {
   // Ground line
   c.strokeStyle = 'rgba(180,200,255,.45)'; c.lineWidth = 1.5; c.setLineDash([5,4]);
   c.beginPath(); c.moveTo(pad.l, pad.t); c.lineTo(pad.l+cw, pad.t); c.stroke(); c.setLineDash([]);
-  c.fillStyle = 'rgba(180,200,255,.5)'; c.font = '9px Share Tech Mono,monospace';
+  c.fillStyle = (window._grPdfDraw || _isLightTheme) ? 'rgba(22,24,29,.65)' : 'rgba(180,200,255,.5)'; c.font = '9px Share Tech Mono,monospace';
   // v7_8_6-18 / C7: right-aligned so it no longer overlaps the graph title.
   c.textAlign = 'right'; c.fillText('GROUND LEVEL  0.00m', pad.l+cw-3, pad.t-4); c.textAlign = 'start';
 
@@ -19252,7 +19283,7 @@ function _cwDrawProfile(d) {
   if (countRows.length > 0) {
     c.strokeStyle = '#00ffc8'; c.lineWidth = 2.5; c.lineJoin = 'round';
     c.beginPath(); c.moveTo(epX, epY);
-    countRows.forEach(r => c.lineTo(sx(ncDist + r.rod * rl), sy(Math.abs(r.depth))));
+    countRows.forEach(r => c.lineTo(sx(ncDist + Math.min(r.rod * rl, bl)), sy(Math.abs(r.depth))));
     c.stroke();
   }
 
@@ -23184,8 +23215,12 @@ function drwRenderSVG(scene, snapshot) {
     const y = _drwCurveYAtX(layout, _drwMapX(layout, _piX), _drwMapX(layout, _poX), x);
     parts.push('<circle cx="' + x.toFixed(2) + '" cy="' + y.toFixed(2) +
       '" r="5" fill="#ffffff" stroke="#1a5fd6" stroke-width="2"/>');
-    parts.push('<text x="' + x.toFixed(2) + '" y="' + (y - 10).toFixed(2) +
-      '" text-anchor="middle" font-family="sans-serif" font-size="10" font-weight="700" fill="#1a3a6a">' +
+    // v7_8_6-24 / P-13: the bold end label no longer sits centred on the marker (it hit GL, the depth scale and the leader);
+    // it stands beside the vertical witness line, above the elbow leader. Only its position changes.
+    const _lblE = (label === _drwStartLbl);
+    const _lblY = layout.groundY - (26 + Math.max(0, _drwCrossMaxRow + 1) * 20) - 14;
+    parts.push('<text x="' + (x + (_lblE ? 5 : -5)).toFixed(2) + '" y="' + _lblY.toFixed(2) +
+      '" text-anchor="' + (_lblE ? 'start' : 'end') + '" font-family="sans-serif" font-size="10" font-weight="700" fill="#1a3a6a">' +
       _drwSvgEsc(label) + '</text>');
     if (gps && typeof gps.lat === 'number' && typeof gps.lon === 'number') {
       parts.push('<text x="' + x.toFixed(2) + '" y="' + (y + 20).toFixed(2) +
@@ -23447,7 +23482,7 @@ function drwRenderSVG(scene, snapshot) {
           val = _drwFmtChainage(scene, p.distance);
         } else if (rd.key === 'depth') {
           const d = _drwPointDepth(p);   // 3B: calculated depth only - never the RL-derived depth
-          if (typeof d === 'number') val = _drwFmtNum(d, 2);
+          if (typeof d === 'number') val = _drwFmtNum(d, 2).replace(/^-/, '\u2212');
         } else if (rd.key === 'gps') {
           // v7_8_6-24 / ITEM 8: N and E shown on two stacked lines inside
           // the SAME single grid row (rowDefs / row count unchanged —
