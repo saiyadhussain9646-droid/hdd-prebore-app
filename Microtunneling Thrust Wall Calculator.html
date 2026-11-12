@@ -42,6 +42,7 @@ body{background:radial-gradient(circle at 20% 0,color-mix(in srgb,var(--ac) 16%,
 .st{font-size:15px;box-shadow:0 0 14px -4px currentColor}
 details summary{cursor:pointer;font-weight:800;color:var(--ac);font-size:14px}
 .gt{margin-top:12px;font-size:13px}.gt div{margin-bottom:11px}.gt b{color:var(--ac)}
+input::placeholder{color:var(--t2);opacity:.55;font-weight:400}
 </style>
 </head>
 <body>
@@ -53,19 +54,19 @@ details summary{cursor:pointer;font-weight:800;color:var(--ac);font-size:14px}
 <div class="card">
 <div class="ctt" data-k="inT"></div>
 <div class="g" id="gi">
-<div class="f"><label data-k="jack"></label><input type="number" id="jk" value="600" step="10" inputmode="decimal"></div>
-<div class="f"><label data-k="w"></label><input type="number" id="W" value="4" step="0.1" inputmode="decimal"></div>
-<div class="f"><label data-k="h"></label><input type="number" id="H" value="3.5" step="0.1" inputmode="decimal"></div>
-<div class="f"><label data-k="z"></label><input type="number" id="Z" value="3" step="0.5" inputmode="decimal"></div>
+<div class="f"><label data-k="jack"></label><input type="number" id="jk" data-p="600" step="10" inputmode="decimal"></div>
+<div class="f"><label data-k="w"></label><input type="number" id="W" data-p="4" step="0.1" inputmode="decimal"></div>
+<div class="f"><label data-k="h"></label><input type="number" id="H" data-p="3.5" step="0.1" inputmode="decimal"></div>
+<div class="f"><label data-k="z"></label><input type="number" id="Z" data-p="3" step="0.5" inputmode="decimal"></div>
 <div class="f"><label data-k="soil"></label><select id="soil" onchange="cust()"><option value="sd" data-k="s1"></option><option value="sm" selected data-k="s2"></option><option value="gr" data-k="s3"></option><option value="cs" data-k="s4"></option><option value="cf" data-k="s5"></option><option value="cu" data-k="s6"></option></select></div>
-<div class="f"><label data-k="gw"></label><input type="number" id="gw" placeholder="—" step="0.5" inputmode="decimal"></div>
-<div class="f"><label data-k="plate"></label><input type="number" id="pl" value="1.5" step="0.1" inputmode="decimal"></div>
+<div class="f"><label data-k="gw"></label><input type="number" id="gw" data-p="2.5" step="0.5" inputmode="decimal"></div>
+<div class="f"><label data-k="plate"></label><input type="number" id="pl" data-p="1.5" step="0.1" inputmode="decimal"></div>
 <div class="f"><label data-k="conc"></label><select id="fck"><option value="30">M30</option><option value="35" selected>M35</option><option value="40">M40</option></select></div>
 </div>
 <div class="g" id="cx" style="display:none;margin-top:12px">
-<div class="f"><label data-k="phi"></label><input type="number" id="cp" value="30" inputmode="decimal"></div>
-<div class="f"><label data-k="cn"></label><input type="number" id="cc" value="0" inputmode="decimal"></div>
-<div class="f w"><label data-k="gam"></label><input type="number" id="cg" value="18" inputmode="decimal"></div>
+<div class="f"><label data-k="phi"></label><input type="number" id="cp" data-p="30" inputmode="decimal"></div>
+<div class="f"><label data-k="cn"></label><input type="number" id="cc" data-p="0" inputmode="decimal"></div>
+<div class="f w"><label data-k="gam"></label><input type="number" id="cg" data-p="18" inputmode="decimal"></div>
 </div>
 <button class="calc" onclick="calc()" data-k="calc"></button>
 </div>
@@ -119,17 +120,18 @@ ar:{t:"📖 دليل سريع: ماذا تُدخل في كل خانة",cp:"📋 
 ["رتبة الخرسانة","اختر خرسانة الجدار: M30 أو M35 أو M40. كلما ارتفعت الرتبة قلّت السماكة المطلوبة."]]}};
 function renderG(l){var g=GD[l],h="";g.i.forEach(function(x,n){h+="<div><b>"+(n+1)+". "+x[0]+"</b><br>"+x[1]+"</div>"});$("gs").textContent=g.t;$("gl").innerHTML=h+"<div><b>✔</b> "+g.e+"</div>";$("gc").textContent=g.cp}
 function copyG(){var g=GD[L],s=g.t;g.i.forEach(function(x,n){s+="\n\n"+(n+1)+". "+x[0]+"\n"+x[1]});s+="\n\n"+g.e;try{navigator.clipboard.writeText(s)}catch(e){}}
+var EG={hi:"जैसे:",en:"e.g.",ar:"مثال:"};
 var S={sd:[36,19.5,0],sm:[30,18,0],gr:[38,20.5,0],cs:[0,19,75],cf:[0,17,25]};
 var L="hi",R=null,G=9.80665;
 function $(i){return document.getElementById(i)}
 function num(i){var v=parseFloat($(i).value);return isNaN(v)?0:v}
 function cust(){$("cx").style.display=$("soil").value==="cu"?"grid":"none"}
 function theme(){var r=document.documentElement,d=r.getAttribute("data-theme");var dark=d?d==="dark":matchMedia("(prefers-color-scheme:dark)").matches;r.setAttribute("data-theme",dark?"light":"dark")}
-function setLang(l){L=l;var r=document.documentElement;r.lang=l;r.dir=l==="ar"?"rtl":"ltr";document.querySelectorAll("[data-k]").forEach(function(e){e.textContent=T[l][e.dataset.k]});$("cb").textContent=T[l].copy;renderG(l);if(R)show()}
+function setLang(l){L=l;var r=document.documentElement;r.lang=l;r.dir=l==="ar"?"rtl":"ltr";document.querySelectorAll("[data-k]").forEach(function(e){e.textContent=T[l][e.dataset.k]});$("cb").textContent=T[l].copy;document.querySelectorAll("[data-p]").forEach(function(e){e.placeholder=EG[l]+" "+e.dataset.p});renderG(l);if(R)show()}
 function calc(){
 var jk=num("jk"),W=num("W"),H=num("H"),Z=num("Z"),pl=num("pl"),fck=num("fck"),s=$("soil").value;
-if(jk<=0||W<=0||H<=0||pl<=0)return;
-var p=s==="cu"?[num("cp"),num("cg"),num("cc")]:S[s];
+if(jk<=0||W<=0||H<=0||pl<=0){R=null;$("rc").style.display="none";return}
+var p=s==="cu"?[num("cp"),num("cg")||18,num("cc")]:S[s];
 var phi=p[0]*Math.PI/180,gam=p[1],c=p[2];
 var Kp=Math.pow(Math.tan(Math.PI/4+phi/2),2),sk=Math.sqrt(Kp);
 var gwv=$("gw").value===""?null:num("gw");
