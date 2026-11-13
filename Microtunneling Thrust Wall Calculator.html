@@ -43,6 +43,8 @@ body{background:radial-gradient(circle at 20% 0,color-mix(in srgb,var(--ac) 16%,
 details summary{cursor:pointer;font-weight:800;color:var(--ac);font-size:14px}
 .gt{margin-top:12px;font-size:13px}.gt div{margin-bottom:11px}.gt b{color:var(--ac)}
 input::placeholder{color:var(--t2);opacity:.55;font-weight:400}
+#rp{display:none}
+@media print{body>.c{display:none!important}#rp{display:block}body{background:#fff!important;padding:0}#rp,#rp *{color:#000!important;background:#fff!important}#rp table{width:100%;border-collapse:collapse;margin-bottom:12px}#rp td{border:1px solid #888;padding:6px 8px;font-size:13px}#rp h3{margin:12px 0 6px;font-size:14px}.ps{border:2px solid #000;padding:8px;font-weight:700;text-align:center;margin:12px 0}.pt{font-size:11px;margin-top:14px}}
 </style>
 </head>
 <body>
@@ -80,11 +82,14 @@ input::placeholder{color:var(--t2);opacity:.55;font-weight:400}
 <div class="rb"><div class="rl" data-k="thk"></div><div class="rv" id="r4"></div><div class="rs" data-k="thkS"></div></div>
 </div>
 <div class="nt" id="asm" style="margin:0 0 10px;display:none"></div>
+<div class="f" style="margin:10px 0"><label data-k="pn"></label><input type="text" id="pn"></div>
+<div class="g" style="margin-bottom:10px"><button class="b" style="padding:12px" onclick="pdf()" data-k="pdf"></button><button class="b" style="padding:12px" onclick="xls()" data-k="xls"></button></div>
 <button class="b" style="width:100%;padding:10px" onclick="copyR()" id="cb"></button>
 <div class="nt" data-k="note"></div>
 </div>
 <details class="card" open><summary id="gs"></summary><div class="gt" id="gl"></div><button class="b" style="width:100%;padding:10px" onclick="copyG()" id="gc"></button></details>
 </div>
+<div id="rp"></div>
 <script>
 var T={
 hi:{title:"माइक्रोटनलिंग बैक वॉल डिज़ाइन",sub:"थ्रस्ट वॉल: मिट्टी की ताकत और मोटाई का अनुमान",inT:"1. जानकारी भरें",jack:"अधिकतम जैक क्षमता (टन)",w:"दीवार की चौड़ाई (मी)",h:"दीवार की ऊँचाई (मी)",z:"दीवार के ऊपर मिट्टी की गहराई (मी)",soil:"मिट्टी का प्रकार",gw:"पानी की गहराई (मी) — न हो तो खाली",plate:"जैक प्लेट की साइड (मी)",conc:"कंक्रीट ग्रेड",phi:"घर्षण कोण φ (°)",cn:"कोहेशन c (kPa)",gam:"मिट्टी का वज़न γ (kN/m³)",calc:"गणना करें",outT:"2. परिणाम",load:"जैक लोड",cap:"मिट्टी की प्रतिरोध क्षमता",fos:"सेफ़्टी फ़ैक्टर",fosT:"लक्ष्य: ≥ 2.0",thk:"न्यूनतम कंक्रीट मोटाई",thkS:"सिर्फ़ पंचिंग शियर के लिए",copy:"📋 रिपोर्ट कॉपी करें",copied:"✓ कॉपी हो गया",note:"यह शुरुआती अनुमान है। बेंडिंग, सरिया और भूजल का अंतिम डिज़ाइन लाइसेंसधारी स्ट्रक्चरल/जियोटेक्निकल इंजीनियर से जाँच कराएँ।",ok:"✓ PASS — मिट्टी की ताकत पर्याप्त है",c1:"! CHECK — सीमा के करीब, दीवार बड़ी करें",c2:"! CHECK — मिट्टी कमज़ोर, दीवार बड़ी करें या मिट्टी सुधारें",s1:"घनी रेत",s2:"सामान्य रेत",s3:"कंकड़-पत्थर",s4:"सख्त चिकनी मिट्टी",s5:"नरम चिकनी मिट्टी",s6:"अपनी वैल्यू डालें",rep:"माइक्रोटनलिंग थ्रस्ट वॉल रिपोर्ट",size:"दीवार"},
@@ -123,6 +128,23 @@ function renderG(l){var g=GD[l],h="";g.i.forEach(function(x,n){h+="<div><b>"+(n+
 function copyG(){var g=GD[L],s=g.t;g.i.forEach(function(x,n){s+="\n\n"+(n+1)+". "+x[0]+"\n"+x[1]});s+="\n\n"+g.e;try{navigator.clipboard.writeText(s)}catch(e){}}
 var AS={hi:["मान लिए गए मान:","अपने-आप"],en:["Assumed values:","auto"],ar:["قيم مفترضة:","تلقائي"]};
 var EG={hi:"जैसे:",en:"e.g.",ar:"مثال:"};
+var NX={hi:{pn:"प्रोजेक्ट / क्लाइंट का नाम (ज़रूरी नहीं)",pdf:"⬇ PDF डाउनलोड",xls:"⬇ Excel डाउनलोड",dt:"तारीख"},en:{pn:"Project / client name (optional)",pdf:"⬇ Download PDF",xls:"⬇ Download Excel",dt:"Date"},ar:{pn:"اسم المشروع / العميل (اختياري)",pdf:"⬇ تنزيل PDF",xls:"⬇ تنزيل Excel",dt:"التاريخ"}};
+for(var k in NX)for(var j in NX[k])T[k][j]=NX[k][j];
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function rep(){var t=T[L],x=R,sl=$("soil").options[x.si].text;function sp(s){return s.slice(s.indexOf(" ")+1)}return{t:t.title,pn:$("pn").value,d:new Date().toLocaleDateString(L==="hi"?"hi-IN":L==="ar"?"ar":"en-GB"),s:[[sp(t.inT),[[t.jack,x.jk],[t.w,x.W],[t.h,x.H],[t.z,x.Z],[t.soil,sl],[t.gw,x.gw===null?"—":x.gw],[t.plate,x.pl],[t.conc,"M"+x.fck]]],[sp(t.outT),[[t.load,x.jk+" t ("+x.F.toFixed(0)+" kN)"],[t.cap,(x.Fp/G).toFixed(0)+" t ("+x.Fp.toFixed(0)+" kN)"],[t.fos,+x.fos.toFixed(2)],[t.thk,x.th+" mm"]]]],st:$("sb").textContent,as:$("asm").textContent,n:t.note}}
+function pdf(){if(!R)return;var d=rep(),h="<h2>"+esc(d.t)+"</h2>"+(d.pn?"<p><b>"+esc(d.pn)+"</b></p>":"")+"<p>"+esc(T[L].dt)+": "+esc(d.d)+"</p>";d.s.forEach(function(s){h+="<h3>"+esc(s[0])+"</h3><table>";s[1].forEach(function(r){h+="<tr><td>"+esc(r[0])+"</td><td><b>"+esc(r[1])+"</b></td></tr>"});h+="</table>"});h+="<p class=ps>"+esc(d.st)+"</p>"+(d.as?"<p>"+esc(d.as)+"</p>":"")+"<p class=pt>"+esc(d.n)+"</p>";$("rp").innerHTML=h;var o=document.title;document.title="Thrust-Wall-Report";window.print();document.title=o}
+function crc(b){var t=crc.t,c,n,k;if(!t){t=crc.t=[];for(n=0;n<256;n++){c=n;for(k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}}c=0xFFFFFFFF;for(n=0;n<b.length;n++)c=t[(c^b[n])&255]^(c>>>8);return(c^0xFFFFFFFF)>>>0}
+function zip(f){var te=new TextEncoder(),out=[],cd=[],off=0,cs=0;function u(n,v){var a=[];for(var i=0;i<n;i++){a.push(v&255);v=Math.floor(v/256)}return a}f.forEach(function(x){var nm=te.encode(x.n),d=te.encode(x.d),c=crc(d),h=[].concat(u(4,0x04034b50),u(2,20),u(2,0x800),u(2,0),u(2,0),u(2,33),u(4,c),u(4,d.length),u(4,d.length),u(2,nm.length),u(2,0));out.push(Uint8Array.from(h),nm,d);cd.push(Uint8Array.from([].concat(u(4,0x02014b50),u(2,20),u(2,20),u(2,0x800),u(2,0),u(2,0),u(2,33),u(4,c),u(4,d.length),u(4,d.length),u(2,nm.length),u(2,0),u(2,0),u(2,0),u(2,0),u(4,0),u(4,off))),nm);off+=h.length+nm.length+d.length});cd.forEach(function(a){cs+=a.length});out=out.concat(cd);out.push(Uint8Array.from([].concat(u(4,0x06054b50),u(2,0),u(2,0),u(2,f.length),u(2,f.length),u(4,cs),u(4,off),u(2,0))));return new Blob(out,{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"})}
+function xls(){if(!R)return;var d=rep(),rows=[];function add(a,b,c){rows.push([a,b,c])}add(d.t,"",1);if(d.pn)add(d.pn,"",1);add(T[L].dt,d.d);d.s.forEach(function(s){add("","");add(s[0],"",1);s[1].forEach(function(r){add(r[0],r[1])})});add("","");add(d.st,"",1);if(d.as)add(d.as,"");add(d.n,"");
+var sd="";rows.forEach(function(r,i){var n=i+1;sd+="<row r='"+n+"'>";for(var j=0;j<2;j++){var v=r[j];if(v==="")continue;var ref=(j?"B":"A")+n,st=r[2]?" s='1'":"";sd+=typeof v==="number"?"<c r='"+ref+"'"+st+"><v>"+v+"</v></c>":"<c r='"+ref+"'"+st+" t='inlineStr'><is><t>"+esc(v)+"</t></is></c>"}sd+="</row>"});
+var H="<?xml version='1.0' encoding='UTF-8' standalone='yes'?>",M="http://schemas.openxmlformats.org/spreadsheetml/2006/main",P="http://schemas.openxmlformats.org/package/2006/relationships",O="http://schemas.openxmlformats.org/officeDocument/2006/relationships",C="application/vnd.openxmlformats-officedocument.spreadsheetml.";
+var f=[{n:"[Content_Types].xml",d:H+"<Types xmlns='http://schemas.openxmlformats.org/package/2006/content-types'><Default Extension='rels' ContentType='application/vnd.openxmlformats-package.relationships+xml'/><Default Extension='xml' ContentType='application/xml'/><Override PartName='/xl/workbook.xml' ContentType='"+C+"sheet.main+xml'/><Override PartName='/xl/worksheets/sheet1.xml' ContentType='"+C+"worksheet+xml'/><Override PartName='/xl/styles.xml' ContentType='"+C+"styles+xml'/></Types>"},
+{n:"_rels/.rels",d:H+"<Relationships xmlns='"+P+"'><Relationship Id='rId1' Type='"+O+"/officeDocument' Target='xl/workbook.xml'/></Relationships>"},
+{n:"xl/workbook.xml",d:H+"<workbook xmlns='"+M+"' xmlns:r='"+O+"'><sheets><sheet name='Report' sheetId='1' r:id='rId1'/></sheets></workbook>"},
+{n:"xl/_rels/workbook.xml.rels",d:H+"<Relationships xmlns='"+P+"'><Relationship Id='rId1' Type='"+O+"/worksheet' Target='worksheets/sheet1.xml'/><Relationship Id='rId2' Type='"+O+"/styles' Target='styles.xml'/></Relationships>"},
+{n:"xl/styles.xml",d:H+"<styleSheet xmlns='"+M+"'><fonts count='2'><font><sz val='11'/><name val='Calibri'/></font><font><b/><sz val='11'/><name val='Calibri'/></font></fonts><fills count='2'><fill><patternFill patternType='none'/></fill><fill><patternFill patternType='gray125'/></fill></fills><borders count='1'><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count='1'><xf numFmtId='0' fontId='0' fillId='0' borderId='0'/></cellStyleXfs><cellXfs count='2'><xf numFmtId='0' fontId='0' fillId='0' borderId='0' xfId='0'/><xf numFmtId='0' fontId='1' fillId='0' borderId='0' xfId='0' applyFont='1'/></cellXfs></styleSheet>"},
+{n:"xl/worksheets/sheet1.xml",d:H+"<worksheet xmlns='"+M+"'><sheetViews><sheetView workbookViewId='0'"+(L==="ar"?" rightToLeft='1'":"")+"/></sheetViews><cols><col min='1' max='1' width='46' customWidth='1'/><col min='2' max='2' width='30' customWidth='1'/></cols><sheetData>"+sd+"</sheetData></worksheet>"}];
+var a=document.createElement("a");a.href=URL.createObjectURL(zip(f));a.download="Thrust-Wall-Report.xlsx";document.body.appendChild(a);a.click();setTimeout(function(){document.body.removeChild(a)},2000)}
 var S={sd:[36,19.5,0],sm:[30,18,0],gr:[38,20.5,0],cs:[0,19,75],cf:[0,17,25]};
 var L="hi",R=null,G=9.80665;
 function $(i){return document.getElementById(i)}
@@ -150,7 +172,7 @@ var F=jk*G;if(aw){W=Math.max(1,Math.ceil(F*4/q)/2);ad.unshift(["w",W,1])}var Fp=
 var tau=0.25*Math.sqrt(fck)*1000,Fu=1.5*F;
 var d=(-pl+Math.sqrt(pl*pl+Fu/tau))/2;
 var th=Math.max(300,Math.ceil((d+0.1)*20)*50);
-R={ad:ad,jk:jk,F:F,Fp:Fp,fos:fos,th:th,W:W,H:H,Kp:Kp};
+R={Z:Z,pl:pl,fck:fck,si:$("soil").selectedIndex,gw:gwv,ad:ad,jk:jk,F:F,Fp:Fp,fos:fos,th:th,W:W,H:H,Kp:Kp};
 $("rc").style.display="block";show()}
 function show(){
 var t=T[L],x=R;
