@@ -82,6 +82,7 @@ input::placeholder{color:var(--t2);opacity:.55;font-weight:400}
 <div class="rb"><div class="rl" data-k="fos"></div><div class="rv" id="r3"></div><div class="rs" data-k="fosT"></div></div>
 <div class="rb"><div class="rl" data-k="thk"></div><div class="rv" id="r4"></div><div class="rs" data-k="thkS"></div></div>
 </div>
+<div class="nt" id="ck" style="margin:0 0 10px;white-space:pre-line"></div>
 <div class="nt" id="asm" style="margin:0 0 10px;display:none"></div>
 <div class="nt" id="wn" style="margin:0 0 10px;display:none"></div>
 <div class="nt" id="bs" style="margin:0 0 10px"></div>
@@ -100,32 +101,32 @@ en:{title:"MICROTUNNELING BACK WALL DESIGN",sub:"Thrust wall soil resistance and
 ar:{title:"تصميم الجدار الخلفي للنفق الدقيق",sub:"تقدير مقاومة التربة وسماكة جدار الدفع",inT:"1. المدخلات",jack:"أقصى قوة دفع للمكابس (طن)",w:"عرض الجدار (م)",h:"ارتفاع الجدار (م)",z:"عمق التغطية حتى أعلى الجدار (م)",soil:"نوع التربة",gw:"عمق المياه الجوفية (م) — اتركه فارغاً إن لم توجد",plate:"ضلع لوح المكبس (م)",conc:"رتبة الخرسانة",phi:"زاوية الاحتكاك φ (°)",cn:"التماسك c (kPa)",gam:"الوزن النوعي γ (kN/m³)",calc:"احسب",outT:"2. النتيجة",load:"حمل الدفع",cap:"مقاومة التربة السلبية",fos:"معامل الأمان",fosT:"الهدف: ≥ 2.0",thk:"أدنى سماكة للخرسانة",thkS:"للقص الثاقب فقط",copy:"📋 نسخ التقرير",copied:"✓ تم النسخ",note:"تقدير أولي. يجب أن يراجع مهندس إنشائي/جيوتقني مرخّص التصميم النهائي (الانحناء والتسليح والمياه الجوفية).",ok:"✓ آمن — مقاومة التربة كافية",c1:"! تحقق — الهامش ضيق، كبّر الجدار",c2:"! تحقق — مقاومة التربة غير كافية لهذا الجدار، كبّر الجدار أو حسّن التربة",s1:"رمل كثيف",s2:"رمل متوسط",s3:"حصى",s4:"طين صلب",s5:"طين ناعم",s6:"قيم مخصصة",rep:"تقرير جدار الدفع للنفق الدقيق",size:"الجدار"}
 };
 var GD={
-hi:{t:"📖 क्विक गाइड: किस बॉक्स में क्या डालें",cp:"📋 गाइड कॉपी करें",e:"सिर्फ़ बॉक्स 1 ज़रूरी है; बाकी खाली रहने पर ऐप अपने-आप सामान्य मान ले लेगा (दीवार की चौड़ाई अपने-आप निकलेगी)। सब भरकर 'गणना करें' दबाएँ। हरा PASS = मिट्टी की ताकत ठीक है। पीला CHECK = दीवार बड़ी करें या मिट्टी सुधारें।",i:[
+hi:{t:"📖 क्विक गाइड: किस बॉक्स में क्या डालें",cp:"📋 गाइड कॉपी करें",e:"सिर्फ़ बॉक्स 1 ज़रूरी है; बाकी खाली रहने पर ऐप अपने-आप सामान्य मान ले लेगा (चौड़ाई और ऊँचाई दोनों खाली हों तो ऐप दीवार के विकल्प दिखाएगा)। सब भरकर 'गणना करें' दबाएँ। हरा PASS = मिट्टी की ताकत ठीक है। पीला CHECK = दीवार बड़ी करें या मिट्टी सुधारें।",i:[
 ["अधिकतम जैक क्षमता (टन)","मशीन के मुख्य जैक की कुल अधिकतम ताकत टन में लिखें। यह मशीन की स्पेसिफ़िकेशन शीट में मिलती है। बगल के बॉक्स से t (टन) या kN चुनें, ऐप खुद बदल लेगा। उदाहरण: 600"],
-["दीवार की चौड़ाई (मी)","लॉन्च शाफ़्ट में बैक वॉल की चौड़ाई मीटर में डालें, यानी दीवार का जितना हिस्सा मिट्टी को दबाएगा। उदाहरण: 4"],
-["दीवार की ऊँचाई (मी)","बैक वॉल का नीचे से ऊपर तक का माप मीटर में डालें। उदाहरण: 3.5"],
+["दीवार की चौड़ाई (मी)","लॉन्च शाफ़्ट में बैक वॉल की चौड़ाई मीटर में डालें, यानी दीवार का जितना हिस्सा मिट्टी को दबाएगा। उदाहरण: 4। शाफ़्ट की चौड़ाई पता हो तो वही डालें। खाली छोड़ेंगे तो ऐप कई चौड़ाई के विकल्प दिखाएगा।"],
+["दीवार की ऊँचाई (मी)","बैक वॉल का नीचे से ऊपर तक का माप मीटर में डालें। उदाहरण: 3.5। खाली छोड़ेंगे तो ऐप चौड़ाई के हिसाब से ज़रूरी ऊँचाई खुद निकालेगा।"],
 ["दीवार के ऊपर मिट्टी की गहराई (मी)","ज़मीन की सतह से बैक वॉल के ऊपरी किनारे तक की गहराई डालें। दीवार सतह तक हो तो 0 डालें। उदाहरण: 3"],
 ["मिट्टी का प्रकार","दीवार के पीछे की मिट्टी सूची से चुनें। सॉइल रिपोर्ट हो तो उसी से मिलाएँ। पता न हो तो ऐप 'सामान्य रेत' मान लेता है; असली प्रोजेक्ट से पहले सॉइल रिपोर्ट ज़रूर लें। 'अपनी वैल्यू' चुनने पर φ, c और γ के तीन नए बॉक्स खुलेंगे।"],
 ["पानी की गहराई (मी)","ज़मीन की सतह से भूजल तक की गहराई डालें। पानी न हो तो बॉक्स खाली छोड़ें। पानी होने पर मिट्टी की ताकत घट जाती है।"],
-["जैक प्लेट की साइड (मी)","जैक की थ्रस्ट प्लेट जिस चौकोर हिस्से से दीवार को दबाती है, उसकी एक साइड डालें। उदाहरण: 1.5। प्लेट बड़ी हो तो कम मोटाई चलती है।"],
+["जैक प्लेट की साइड (मी)","जैक की थ्रस्ट प्लेट जिस चौकोर हिस्से से दीवार को दबाती है, उसकी एक साइड डालें। उदाहरण: 1.5। प्लेट बड़ी हो तो कम मोटाई चलती है। प्लेट आयताकार हो तो चौड़ाई × ऊँचाई का वर्गमूल लें।"],
 ["कंक्रीट ग्रेड","दीवार में जो कंक्रीट डालेंगे वह चुनें: M30, M35 या M40। ग्रेड ऊँचा हो तो ज़रूरी मोटाई कम आती है।"]]},
-en:{t:"📖 Quick guide: what to enter in each box",cp:"📋 Copy guide",e:"Only box 1 is required; empty boxes use standard default values (the wall width is calculated automatically). Fill what you know and press CALCULATE. Green PASS = soil resistance is adequate. Yellow CHECK = enlarge the wall or improve the ground.",i:[
+en:{t:"📖 Quick guide: what to enter in each box",cp:"📋 Copy guide",e:"Only box 1 is required; empty boxes use standard default values (if width and height are both empty, the app shows wall size options). Fill what you know and press CALCULATE. Green PASS = soil resistance is adequate. Yellow CHECK = enlarge the wall or improve the ground.",i:[
 ["Max jacking force (tonne)","Enter the total maximum force of the machine's main jacks in tonnes. Find it on the machine specification sheet. Use the unit box beside it to choose t (tonne) or kN. Example: 600"],
-["Wall width (m)","Enter the width of the back wall in the launch shaft in metres, i.e. the part of the wall that presses on the soil. Example: 4"],
-["Wall height (m)","Enter the height of the back wall from bottom to top in metres. Example: 3.5"],
+["Wall width (m)","Enter the width of the back wall in the launch shaft in metres, i.e. the part of the wall that presses on the soil. Example: 4. If you know the shaft width, enter it. If left empty, the app shows several width options."],
+["Wall height (m)","Enter the height of the back wall from bottom to top in metres. Example: 3.5. If left empty, the app finds the height needed for the width."],
 ["Cover depth to wall top (m)","Enter the depth from ground surface to the top edge of the back wall. If the wall reaches the surface, enter 0. Example: 3"],
 ["Soil type","Choose the soil behind the wall from the list. Match it with the soil report if you have one. If unknown, the app assumes 'Medium sand'; get the soil report before the real project. Choosing 'Custom values' opens three more boxes: φ, c and γ."],
 ["Water table depth (m)","Enter the depth from ground surface to groundwater. If there is no water, leave the box empty. Groundwater reduces the soil resistance."],
-["Jack plate side (m)","Enter one side of the square area where the jack thrust plate presses on the wall. Example: 1.5. A larger plate needs less thickness."],
+["Jack plate side (m)","Enter one side of the square area where the jack thrust plate presses on the wall. Example: 1.5. A larger plate needs less thickness. If the plate is rectangular, use the square root of width × height."],
 ["Concrete grade","Choose the concrete for the wall: M30, M35 or M40. A higher grade gives a smaller required thickness."]]},
-ar:{t:"📖 دليل سريع: ماذا تُدخل في كل خانة",cp:"📋 نسخ الدليل",e:"الخانة 1 فقط إلزامية؛ الخانات الفارغة تُستخدم لها قيم قياسية (ويُحسب عرض الجدار تلقائياً). املأ ما تعرفه ثم اضغط «احسب». الأخضر «آمن» = مقاومة التربة كافية. الأصفر «تحقق» = كبّر الجدار أو حسّن التربة.",i:[
+ar:{t:"📖 دليل سريع: ماذا تُدخل في كل خانة",cp:"📋 نسخ الدليل",e:"الخانة 1 فقط إلزامية؛ الخانات الفارغة تُستخدم لها قيم قياسية (وإذا تُرك العرض والارتفاع فارغين يعرض التطبيق خيارات لحجم الجدار). املأ ما تعرفه ثم اضغط «احسب». الأخضر «آمن» = مقاومة التربة كافية. الأصفر «تحقق» = كبّر الجدار أو حسّن التربة.",i:[
 ["أقصى قوة دفع للمكابس (طن)","اكتب أقصى قوة إجمالية للمكابس الرئيسية للماكينة بالطن، وتجدها في ورقة مواصفات الماكينة. اختر الوحدة (طن أو kN) من الخانة المجاورة. مثال: 600"],
-["عرض الجدار (م)","اكتب عرض الجدار الخلفي في عمود الإطلاق بالمتر، أي الجزء الذي يضغط على التربة. مثال: 4"],
-["ارتفاع الجدار (م)","اكتب ارتفاع الجدار الخلفي من الأسفل إلى الأعلى بالمتر. مثال: 3.5"],
+["عرض الجدار (م)","اكتب عرض الجدار الخلفي في عمود الإطلاق بالمتر، أي الجزء الذي يضغط على التربة. مثال: 4. إذا كنت تعرف عرض العمود فاكتبه، وإذا تركته فارغاً يعرض التطبيق عدة خيارات للعرض."],
+["ارتفاع الجدار (م)","اكتب ارتفاع الجدار الخلفي من الأسفل إلى الأعلى بالمتر. مثال: 3.5. إذا تركته فارغاً يحسب التطبيق الارتفاع المطلوب للعرض."],
 ["عمق التغطية حتى أعلى الجدار (م)","اكتب العمق من سطح الأرض إلى الحافة العلوية للجدار الخلفي. إذا وصل الجدار إلى السطح فاكتب 0. مثال: 3"],
 ["نوع التربة","اختر التربة خلف الجدار من القائمة، وطابقها مع تقرير التربة إن وُجد. إذا لم تعرفها يفترض التطبيق «رمل متوسط»؛ احصل على تقرير التربة قبل المشروع الفعلي. عند اختيار «قيم مخصصة» تظهر ثلاث خانات: φ و c و γ."],
 ["عمق المياه الجوفية (م)","اكتب العمق من سطح الأرض إلى المياه الجوفية. إذا لم توجد مياه فاترك الخانة فارغة. وجود المياه يقلل مقاومة التربة."],
-["ضلع لوح المكبس (م)","اكتب ضلع المربع الذي يضغط به لوح دفع المكبس على الجدار. مثال: 1.5. كلما كبر اللوح قلّت السماكة المطلوبة."],
+["ضلع لوح المكبس (م)","اكتب ضلع المربع الذي يضغط به لوح دفع المكبس على الجدار. مثال: 1.5. كلما كبر اللوح قلّت السماكة المطلوبة. إذا كان اللوح مستطيلاً فخذ الجذر التربيعي لحاصل ضرب العرض × الارتفاع."],
 ["رتبة الخرسانة","اختر خرسانة الجدار: M30 أو M35 أو M40. كلما ارتفعت الرتبة قلّت السماكة المطلوبة."]]}};
 function renderG(l){var g=GD[l],h="";g.i.forEach(function(x,n){h+="<div><b>"+(n+1)+". "+x[0]+"</b><br>"+x[1]+"</div>"});$("gs").textContent=g.t;$("gl").innerHTML=h+"<div><b>✔</b> "+g.e+"</div>";$("gc").textContent=g.cp}
 function copyG(){var g=GD[L],s=g.t;g.i.forEach(function(x,n){s+="\n\n"+(n+1)+". "+x[0]+"\n"+x[1]});s+="\n\n"+g.e;cpy(s,function(){$("gc").textContent="✓";setTimeout(function(){$("gc").textContent=GD[L].cp},1500)})}
@@ -133,13 +134,17 @@ var AS={hi:["मान लिए गए मान:","अपने-आप"],en:["
 var BS={hi:"आधार: रैंकिन पैसिव अर्थ प्रेशर (दीवार की रगड़ और साइड-स्प्रेड नहीं गिना); पंचिंग शियर ACI 318 जैसा सरल हिसाब (लोड फ़ैक्टर 1.6, φ = 0.75, vc = 0.33√f'c); जैक लोड = जैक की अधिकतम क्षमता। सरिया, बेंडिंग और लोड का झुकाव (eccentricity) शामिल नहीं।",en:"Basis: Rankine passive earth pressure (no wall friction, no side spread); simplified ACI 318-style punching shear (load factor 1.6, φ = 0.75, vc = 0.33√f'c); jacking load = maximum jack capacity. Reinforcement, bending and load eccentricity are not included.",ar:"الأساس: ضغط التربة السلبي وفق رانكين (دون احتكاك الجدار أو انتشار جانبي)؛ فحص القص الثاقب مبسّط على نهج ACI 318 (معامل الحمل 1.6، φ = 0.75، vc = 0.33√f'c)؛ حمل الدفع = أقصى سعة للمكابس. لا يشمل التسليح والانحناء وانحراف الحمل."};
 var BSH={hi:"गणना का आधार",en:"Design basis",ar:"أساس الحساب"};
 var WT={hi:"भूजल: नहीं माना।",en:"Groundwater: none assumed.",ar:"المياه الجوفية: غير مفترضة."};
-var WN={hi:["जैक प्लेट के नीचे कंक्रीट पर दबाव ज़्यादा है: प्लेट बड़ी करें या कंक्रीट ग्रेड बढ़ाएँ।","दीवार जैक प्लेट और मोटाई के हिसाब से बहुत छोटी है: दीवार बड़ी करें।","दीवार बहुत चौड़ी आ रही है: ज़्यादा गहरी दीवार या मिट्टी सुधार पर विचार करें।","मिट्टी की गहराई 1 मी से कम है: ऊपर से मिट्टी उठने का ख़तरा है, इसलिए हिसाब भरोसेमंद नहीं।"],en:["Bearing stress under the jack plate is high: use a bigger plate or a higher concrete grade.","The wall is too small for the jack plate and thickness: enlarge the wall.","The wall width is very large: consider a deeper wall or ground improvement.","Cover depth is under 1 m: the soil may heave upward, so the passive resistance is not reliable."],ar:["إجهاد التحميل تحت لوح المكبس مرتفع: استخدم لوحاً أكبر أو رتبة خرسانة أعلى.","الجدار صغير بالنسبة للوح المكبس والسماكة: كبّر الجدار.","عرض الجدار كبير جداً: فكّر في جدار أعمق أو تحسين التربة.","عمق التغطية أقل من 1 م: قد ترتفع التربة للأعلى فلا تُعتمد المقاومة السلبية."]};
+var WN={hi:["जैक प्लेट के नीचे कंक्रीट पर दबाव ज़्यादा है: प्लेट बड़ी करें या कंक्रीट ग्रेड बढ़ाएँ।","दीवार जैक प्लेट और मोटाई के हिसाब से बहुत छोटी है: दीवार बड़ी करें।","दीवार बहुत चौड़ी आ रही है: ज़्यादा गहरी दीवार या मिट्टी सुधार पर विचार करें।","मिट्टी की गहराई 1 मी से कम है: ऊपर से मिट्टी उठने का ख़तरा है, इसलिए हिसाब भरोसेमंद नहीं।","15 मी की दीवार भी इस चौड़ाई पर काफ़ी नहीं है: चौड़ाई बढ़ाएँ या मिट्टी सुधारें।"],en:["Bearing stress under the jack plate is high: use a bigger plate or a higher concrete grade.","The wall is too small for the jack plate and thickness: enlarge the wall.","The wall width is very large: consider a deeper wall or ground improvement.","Cover depth is under 1 m: the soil may heave upward, so the passive resistance is not reliable.","Even a 15 m wall is not enough at this width: increase the width or improve the ground."],ar:["إجهاد التحميل تحت لوح المكبس مرتفع: استخدم لوحاً أكبر أو رتبة خرسانة أعلى.","الجدار صغير بالنسبة للوح المكبس والسماكة: كبّر الجدار.","عرض الجدار كبير جداً: فكّر في جدار أعمق أو تحسين التربة.","عمق التغطية أقل من 1 م: قد ترتفع التربة للأعلى فلا تُعتمد المقاومة السلبية.","حتى جدار بارتفاع 15 م لا يكفي لهذا العرض: زد العرض أو حسّن التربة."]};
+var CK={hi:{h:"जाँच",pu:"पंचिंग शियर (माँग ≤ क्षमता)",br:"कंक्रीट बेयरिंग (दबाव ≤ सीमा)",wt:"अगर पानी सतह तक हो",wtv:"मिट्टी की क्षमता {A} t ({P}% कम), सेफ़्टी फ़ैक्टर {F}",op:"दीवार के विकल्प (सेफ़्टी फ़ैक्टर 2.0 के लिए)",ow:"चौड़ाई",oh:"ऊँचाई",ob:"तली",m:"मी",far:"15 मी से ज़्यादा"},
+en:{h:"Checks",pu:"Punching shear (demand ≤ capacity)",br:"Concrete bearing (stress ≤ limit)",wt:"If the water table is at the surface",wtv:"soil capacity {A} t ({P}% lower), factor of safety {F}",op:"Wall options (for factor of safety 2.0)",ow:"Width",oh:"height",ob:"bottom at",m:"m",far:"more than 15 m"},
+ar:{h:"الفحوصات",pu:"القص الثاقب (الحمل ≤ السعة)",br:"تحمل الخرسانة (الإجهاد ≤ الحد)",wt:"إذا كان منسوب المياه عند السطح",wtv:"مقاومة التربة {A} طن (أقل بنحو {P}%)، معامل الأمان {F}",op:"خيارات الجدار (لمعامل أمان 2.0)",ow:"العرض",oh:"الارتفاع",ob:"القاع عند",m:"م",far:"أكثر من 15 م"}};
+function ckl(x){var c=CK[L],r=[],f=function(n){return Math.round(n).toLocaleString("en-US")};r.push([c.pu,f(x.vu)+" ≤ "+f(x.vc)+" kN "+(x.vu<=x.vc?"✓":"✗")]);r.push([c.br,x.br.toFixed(2)+" ≤ "+x.brL.toFixed(1)+" MPa "+(x.br<=x.brL?"✓":"✗")]);if(x.wet!==null)r.push([c.wt,c.wtv.replace("{A}",f(x.wet/G)).replace("{P}",Math.round((1-x.wet/x.Fp)*100)).replace("{F}",(x.wet/x.F).toFixed(2))]);if(x.opts){r.push([c.op,""]);x.opts.forEach(function(o){r.push([c.ow+" "+o[0]+" "+c.m,o[1]?c.oh+" "+o[1]+" "+c.m+" · "+c.ob+" "+(x.Z+o[1])+" "+c.m:c.far])})}return r}
 function bsx(x){return BS[L]+(x.gw===null?" "+WT[L]:"")}
 var EG={hi:"जैसे:",en:"e.g.",ar:"مثال:"};
 var NX={hi:{pn:"प्रोजेक्ट / क्लाइंट का नाम (ज़रूरी नहीं)",pdf:"⬇ PDF डाउनलोड",xls:"⬇ Excel डाउनलोड",dt:"तारीख"},en:{pn:"Project / client name (optional)",pdf:"⬇ Download PDF",xls:"⬇ Download Excel",dt:"Date"},ar:{pn:"اسم المشروع / العميل (اختياري)",pdf:"⬇ تنزيل PDF",xls:"⬇ تنزيل Excel",dt:"التاريخ"}};
 for(var k in NX)for(var j in NX[k])T[k][j]=NX[k][j];
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
-function rep(){var t=T[L],x=R,sl=$("soil").options[x.si].text;function sp(s){return s.slice(s.indexOf(" ")+1)}return{t:t.title,pn:$("pn").value,d:new Date().toLocaleDateString(L==="hi"?"hi-IN":L==="ar"?"ar":"en-GB"),s:[[sp(t.inT),[[t.jack,x.jk],[t.w,x.W],[t.h,x.H],[t.z,x.Z],[t.soil,sl],[t.gw,x.gw===null?"—":x.gw],[t.plate,x.pl],[t.conc,"M"+x.fck]]],[sp(t.outT),[[t.load,x.jk+" t ("+x.F.toFixed(0)+" kN)"],[t.cap,(x.Fp/G).toFixed(0)+" t ("+x.Fp.toFixed(0)+" kN)"],[t.fos,+x.fos.toFixed(2)],[t.thk,x.th+" mm"]]],[BSH[L],[[t.phi,x.phi],[t.cn,x.c],[t.gam,x.gam],["Kp",+x.Kp.toFixed(2)]]]],st:$("sb").textContent,as:$("asm").textContent,n:t.note,bs:bsx(x),wn:x.wn.map(function(k){return WN[L][k]})}}
+function rep(){var t=T[L],x=R,sl=$("soil").options[x.si].text;function sp(s){return s.slice(s.indexOf(" ")+1)}return{t:t.title,pn:$("pn").value,d:new Date().toLocaleDateString(L==="hi"?"hi-IN":L==="ar"?"ar":"en-GB"),s:[[sp(t.inT),[[t.jack,x.jk],[t.w,x.W],[t.h,x.H],[t.z,x.Z],[t.soil,sl],[t.gw,x.gw===null?"—":x.gw],[t.plate,x.pl],[t.conc,"M"+x.fck]]],[sp(t.outT),[[t.load,x.jk+" t ("+x.F.toFixed(0)+" kN)"],[t.cap,(x.Fp/G).toFixed(0)+" t ("+x.Fp.toFixed(0)+" kN)"],[t.fos,+x.fos.toFixed(2)],[t.thk,x.th+" mm"]]],[CK[L].h,ckl(x)],[BSH[L],[[t.phi,x.phi],[t.cn,x.c],[t.gam,x.gam],["Kp",+x.Kp.toFixed(2)]]]],st:$("sb").textContent,as:$("asm").textContent,n:t.note,bs:bsx(x),wn:x.wn.map(function(k){return WN[L][k]})}}
 function pdf(){if(!R)return;var d=rep(),h="<h2>"+esc(d.t)+"</h2>"+(d.pn?"<p><b>"+esc(d.pn)+"</b></p>":"")+"<p>"+esc(T[L].dt)+": "+esc(d.d)+"</p>";d.s.forEach(function(s){h+="<h3>"+esc(s[0])+"</h3><table>";s[1].forEach(function(r){h+="<tr><td>"+esc(r[0])+"</td><td><b>"+esc(r[1])+"</b></td></tr>"});h+="</table>"});h+="<p class=ps>"+esc(d.st)+"</p>"+(d.as?"<p>"+esc(d.as)+"</p>":"")+d.wn.map(function(w){return"<p>⚠ "+esc(w)+"</p>"}).join("")+"<p class=pt>"+esc(d.bs)+"</p><p class=pt>"+esc(d.n)+"</p>";$("rp").innerHTML=h;var o=document.title;document.title="Thrust-Wall-Report";window.print();document.title=o}
 function crc(b){var t=crc.t,c,n,k;if(!t){t=crc.t=[];for(n=0;n<256;n++){c=n;for(k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}}c=0xFFFFFFFF;for(n=0;n<b.length;n++)c=t[(c^b[n])&255]^(c>>>8);return(c^0xFFFFFFFF)>>>0}
 function zip(f){var te=new TextEncoder(),out=[],cd=[],off=0,cs=0;function u(n,v){var a=[];for(var i=0;i<n;i++){a.push(v&255);v=Math.floor(v/256)}return a}f.forEach(function(x){var nm=te.encode(x.n),d=te.encode(x.d),c=crc(d),h=[].concat(u(4,0x04034b50),u(2,20),u(2,0x800),u(2,0),u(2,0),u(2,33),u(4,c),u(4,d.length),u(4,d.length),u(2,nm.length),u(2,0));out.push(Uint8Array.from(h),nm,d);cd.push(Uint8Array.from([].concat(u(4,0x02014b50),u(2,20),u(2,20),u(2,0x800),u(2,0),u(2,0),u(2,33),u(4,c),u(4,d.length),u(4,d.length),u(2,nm.length),u(2,0),u(2,0),u(2,0),u(2,0),u(4,0),u(4,off))),nm);off+=h.length+nm.length+d.length});cd.forEach(function(a){cs+=a.length});out=out.concat(cd);out.push(Uint8Array.from([].concat(u(4,0x06054b50),u(2,0),u(2,0),u(2,f.length),u(2,f.length),u(4,cs),u(4,off),u(2,0))));return new Blob(out,{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"})}
@@ -163,36 +168,36 @@ function cust(){$("cx").style.display=$("soil").value==="cu"?"grid":"none"}
 function theme(){var r=document.documentElement,d=r.getAttribute("data-theme");var dark=d?d==="dark":matchMedia("(prefers-color-scheme:dark)").matches;r.setAttribute("data-theme",dark?"light":"dark")}
 function setLang(l){L=l;var r=document.documentElement;r.lang=l;r.dir=l==="ar"?"rtl":"ltr";document.querySelectorAll("[data-k]").forEach(function(e){e.textContent=T[l][e.dataset.k]});$("cb").textContent=T[l].copy;document.querySelectorAll("[data-p]").forEach(function(e){e.placeholder=EG[l]+" "+e.dataset.p});renderG(l);if(R)show()}
 function calc(){
-var jk=num("jk")/($("ju").value==="kn"?G:1),W=num("W"),H=num("H"),Z=num("Z"),pl=num("pl"),fck=num("fck"),s=$("soil").value,ad=[],aw=false;
+var jk=num("jk")/($("ju").value==="kn"?G:1),W=num("W"),H=num("H"),Z=num("Z"),pl=num("pl"),fck=num("fck"),s=$("soil").value,ad=[],aw=false,wn=[],opts=null;
 if(jk<=0){R=null;$("rc").style.display="none";return}
-if(H<=0){H=3.5;ad.push(["h",H])}
 if(emp("Z")){Z=3;ad.push(["z",Z])}Z=Math.max(0,Z);
 if(pl<=0){pl=1.5;ad.push(["plate",pl])}
-if(W<=0)aw=true;
 var p=s==="cu"?[Math.min(50,Math.max(0,num("cp"))),Math.min(25,Math.max(10,num("cg")||18)),Math.max(0,num("cc"))]:S[s];
 var phi=p[0]*Math.PI/180,gam=p[1],c=p[2];
 var Kp=Math.pow(Math.tan(Math.PI/4+phi/2),2),sk=Math.sqrt(Kp);
 var gwv=emp("gw")?null:Math.max(0,num("gw"));
-var N=100,dz=H/N,q=0,i,z,sv,u;
-for(i=0;i<N;i++){
-z=Z+(i+.5)*dz;
-if(gwv===null||z<=gwv){sv=gam*z;u=0}else{sv=gam*gwv+(gam-9.81)*(z-gwv);u=9.81*(z-gwv)}
-q+=(Kp*sv+2*c*sk+u)*dz}
-var F=jk*G;if(aw){W=Math.max(1,Math.ceil(F*4/q)/2);ad.unshift(["w",W,1])}var Fp=q*W,fos=Fp/F;
+var F=jk*G;
+function qf(Hh,go){var gx=go===undefined?gwv:go,n=100,dz=Hh/n,t=0,k,z,sv,u;for(k=0;k<n;k++){z=Z+(k+.5)*dz;if(gx===null||z<=gx){sv=gam*z;u=0}else{sv=gam*gx+(gam-9.81)*(z-gx);u=9.81*(z-gx)}t+=(Kp*sv+2*c*sk+u)*dz}return t}
+function hFor(Wd){var lo=0.5,hi=15,m,k;if(qf(hi)*Wd<2*F)return 0;for(k=0;k<40;k++){m=(lo+hi)/2;if(qf(m)*Wd>=2*F)hi=m;else lo=m}return Math.ceil(hi*2)/2}
+if(W<=0&&H<=0){W=4;ad.unshift(["w",W]);opts=[3,4,5,6].map(function(w){return[w,hFor(w)]})}
+if(H<=0){var h0=hFor(W);if(h0){H=h0;ad.push(["h",H,1])}else{H=15;ad.push(["h",H]);wn.push(4)}}
+else if(W<=0){W=Math.max(1,Math.ceil(F*4/qf(H))/2);ad.unshift(["w",W,1]);aw=true}
+var q=qf(H),Fp=q*W,fos=Fp/F,wet=gwv===null?qf(H,0)*W:null;
 var tau=0.75*0.33*Math.sqrt(fck)*1000,Fu=1.6*F;
 var d=(-pl+Math.sqrt(pl*pl+Fu/tau))/2;
-var th=Math.max(300,Math.ceil((d+0.1)*20)*50),wn=[];
+var th=Math.max(300,Math.ceil((d+0.1)*20)*50),dd=th/1000-0.1,Vc=tau*4*(pl+dd)*dd,br=Fu/(pl*pl)/1000,brL=0.5525*fck;
 if(Fu/(pl*pl)/1000>0.5525*fck)wn.push(0);
 if(pl+d>Math.min(W,H))wn.push(1);
-if(aw&&W>12)wn.push(2);
+if(aw&&W>6)wn.push(2);
 if(Z<1)wn.push(3);
-R={wn:wn,phi:p[0],c:c,gam:gam,Z:Z,pl:pl,fck:fck,si:$("soil").selectedIndex,gw:gwv,ad:ad,jk:jk,F:F,Fp:Fp,fos:fos,th:th,W:W,H:H,Kp:Kp};
+R={wet:wet,vu:Fu,vc:Vc,br:br,brL:brL,opts:opts,wn:wn,phi:p[0],c:c,gam:gam,Z:Z,pl:pl,fck:fck,si:$("soil").selectedIndex,gw:gwv,ad:ad,jk:jk,F:F,Fp:Fp,fos:fos,th:th,W:W,H:H,Kp:Kp};
 $("rc").style.display="block";show()}
 function show(){
 var t=T[L],x=R;
 $("r1").textContent=x.jk.toFixed(0)+" t";$("r1b").textContent=x.F.toFixed(0)+" kN";
 $("r2").textContent=(x.Fp/G).toFixed(0)+" t";$("r2b").textContent=x.Fp.toFixed(0)+" kN (Kp "+x.Kp.toFixed(2)+")";
 $("r3").textContent=x.fos.toFixed(2)+" ×";$("r4").textContent=x.th+" mm";
+var k=$("ck");k.textContent=CK[L].h+"\n"+ckl(x).map(function(r){return r[0]+(r[1]?": "+r[1]:"")}).join("\n");
 var a=$("asm");if(x.ad.length){a.style.display="block";a.textContent=AS[L][0]+" "+x.ad.map(function(i){return t[i[0]]+": "+i[1]+(i[2]?" ("+AS[L][1]+")":"")}).join(" · ")}else{a.style.display="none";a.textContent=""}
 $("bs").textContent=bsx(x);var w=$("wn");if(x.wn.length){w.style.display="block";w.textContent="⚠ "+x.wn.map(function(k){return WN[L][k]}).join(" · ")}else{w.style.display="none"}
 var b=$("sb");
