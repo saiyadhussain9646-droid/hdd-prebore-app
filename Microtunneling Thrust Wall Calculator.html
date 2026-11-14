@@ -64,6 +64,19 @@ input::placeholder{color:var(--t2);opacity:.55;font-weight:400}
 .pi.on{border-color:var(--pp-bd);color:var(--pp-bd);font-weight:800}
 .pf{font-size:12px;color:var(--t2);text-align:center;padding:4px 4px 2px}
 .hn{font-size:12px;color:var(--ac);font-weight:700;margin-top:10px}
+
+@page{size:A4;margin:12mm}
+@media print{#rp.sub{font-family:Arial,Helvetica,sans-serif}
+#rp .s1{font-size:16px;font-weight:700;text-align:center;margin:0 0 8px}
+#rp.sub table{width:100%;border-collapse:collapse;margin:0 0 8px;table-layout:fixed}
+#rp.sub td{border:1px solid #000;padding:4px 7px;font-size:11px;vertical-align:top;word-wrap:break-word}
+#rp.sub tr{page-break-inside:avoid}
+#rp.sub .sh td{background:#d9d9d9!important;font-weight:700;font-size:12px}
+#rp.sub td.v{font-weight:700}#rp.sub td.s{text-align:center;font-weight:700}
+#rp.sub .stt{border:2px solid #000;padding:7px;text-align:center;font-weight:700;font-size:13px;margin:0 0 8px}
+#rp.sub .bs p{font-size:10px;margin:3px 0;line-height:1.35}
+#rp.sub .sg td{height:36px;font-size:10px}
+#rp.sub .hdr td{font-size:11px}}
 </style>
 </head>
 <body>
@@ -109,6 +122,8 @@ input::placeholder{color:var(--t2);opacity:.55;font-weight:400}
 <div class="nt" id="sn" style="margin:0 0 10px;display:none"></div>
 <div class="nt" id="bs" style="margin:0 0 10px"></div>
 <div class="f" style="margin:10px 0"><label data-k="pn"></label><input type="text" id="pn"></div>
+<div class="f" style="margin:10px 0"><label data-k="eq"></label><input type="text" id="eq"></div>
+<div class="f" style="margin:10px 0"><label data-k="dn"></label><input type="text" id="dn"></div>
 <div class="g" style="margin-bottom:10px"><button class="b" style="padding:12px" onclick="pdf()" data-k="pdf"></button><button class="b" style="padding:12px" onclick="xls()" data-k="xls"></button></div>
 <button class="b" style="width:100%;padding:10px" onclick="copyR()" id="cb"></button>
 <div class="nt" data-k="note"></div>
@@ -207,24 +222,60 @@ function bsx(x){return BS[L]+(x.gw===null?" "+WT[L]:"")}
 var EG={hi:"जैसे:",en:"e.g.",ar:"مثال:"};
 var NX={hi:{pn:"प्रोजेक्ट / क्लाइंट का नाम (ज़रूरी नहीं)",pdf:"⬇ PDF डाउनलोड",xls:"⬇ Excel डाउनलोड",dt:"तारीख"},en:{pn:"Project / client name (optional)",pdf:"⬇ Download PDF",xls:"⬇ Download Excel",dt:"Date"},ar:{pn:"اسم المشروع / العميل (اختياري)",pdf:"⬇ تنزيل PDF",xls:"⬇ تنزيل Excel",dt:"التاريخ"}};
 for(var k in NX)for(var j in NX[k])T[k][j]=NX[k][j];
-var NY={hi:{dia:"शाफ़्ट व्यास / अधिकतम दीवार चौड़ाई",dw:"दीवार की चौड़ाई (बॉक्स 9 से)"},en:{dia:"Shaft diameter / max wall width",dw:"Wall width (from box 9)"},ar:{dia:"قطر العمود / أقصى عرض للجدار",dw:"عرض الجدار (من الخانة 9)"}};
+var NY={hi:{eq:"उपकरण / ड्राइव का संदर्भ, क्लाइंट रिपोर्ट के लिए (वैकल्पिक)",dn:"दस्तावेज़ नंबर, क्लाइंट रिपोर्ट के लिए (वैकल्पिक)",dia:"शाफ़्ट व्यास / अधिकतम दीवार चौड़ाई",dw:"दीवार की चौड़ाई (बॉक्स 9 से)"},en:{eq:"Equipment / drive reference for client report (optional)",dn:"Document no. for client report (optional)",dia:"Shaft diameter / max wall width",dw:"Wall width (from box 9)"},ar:{eq:"المعدة / مرجع الدرايف لتقرير العميل (اختياري)",dn:"رقم المستند لتقرير العميل (اختياري)",dia:"قطر العمود / أقصى عرض للجدار",dw:"عرض الجدار (من الخانة 9)"}};
 for(var k in NY)for(var j in NY[k])T[k][j]=NY[k][j];
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 function rep(){var t=T[L],x=R,sl=t["s"+(x.si+1)],tn=un("ton"),en=x.ent;function sp(s){return s.slice(s.indexOf(" ")+1)}
 var jr=en.jk+" "+un(x.un.jk)+(x.un.jk==="ton"?"":" ("+x.jk.toFixed(1)+" "+tn+")");
 return{t:t.title,pn:$("pn").value,d:new Date().toLocaleDateString(L==="hi"?"hi-IN":L==="ar"?"ar":"en-GB"),s:[[sp(t.inT),[[t.jack,jr],[t.w,disp(x.W,"W",x)],[t.h,disp(x.H,"H",x)],[t.z,disp(x.Z,"Z",x)],[t.soil,sl],[t.gw,x.gw===null?"—":disp(x.gw,"gw",x)],[t.plate,disp(x.pl,"pl",x)],[t.conc,"M"+x.fck],[t.dia,x.D>0?disp(x.D,"D",x):"—"]]],[sp(t.outT),[[t.load,x.jk.toFixed(0)+" "+tn+" ("+x.F.toFixed(0)+" kN)"],[t.cap,(x.Fp/G).toFixed(0)+" "+tn+" ("+x.Fp.toFixed(0)+" kN)"],[t.fos,+x.fos.toFixed(2)],[t.thk,x.th+" "+un("mm")]]],[CK[L].h,ckl(x)],[BSH[L],[[t.phi,x.phi+" "+un("deg")],[t.cn,x.c+" kPa"],[t.gam,x.gam+" kN/m³"],["Kp",+x.Kp.toFixed(2)]]]],st:$("sb").textContent,as:$("asm").textContent,n:t.note,bs:bsx(x),sn:x.D>0?NS[L]:"",wn:x.wn.map(function(k){return WN[L][k]})}}
-function pdf(){if(!R)return;var d=rep(),h="<h2>"+esc(d.t)+"</h2>"+(d.pn?"<p><b>"+esc(d.pn)+"</b></p>":"")+"<p>"+esc(T[L].dt)+": "+esc(d.d)+"</p>";d.s.forEach(function(s){h+="<h3>"+esc(s[0])+"</h3><table>";s[1].forEach(function(r){h+="<tr><td>"+esc(r[0])+"</td><td><b>"+esc(r[1])+"</b></td></tr>"});h+="</table>"});h+="<p class=ps>"+esc(d.st)+"</p>"+(d.as?"<p>"+esc(d.as)+"</p>":"")+d.wn.map(function(w){return"<p>⚠ "+esc(w)+"</p>"}).join("")+"<p class=pt>"+esc(d.bs)+"</p>"+(d.sn?"<p class=pt>"+esc(d.sn)+"</p>":"")+"<p class=pt>"+esc(d.n)+"</p>";$("rp").innerHTML=h;var o=document.title;document.title="Thrust-Wall-Report";window.print();document.title=o}
+function sub(){var x=R,E=T.en,fu={ft:"ft",in:"in"},Gq=G;
+function mt(v,id){var u=x.un[id];return v.toFixed(2)+" m"+(u==="m"?"":" ("+(+(v/UL[u]).toFixed(2))+" "+fu[u]+")")}
+function f0(n){return Math.round(n).toLocaleString("en-US")}
+function has(k){return x.ad.some(function(i){return i[0]===k})}
+var pOK=x.vu<=x.vc,bOK=x.br<=x.brL,fOK=x.fos>=2,all=pOK&&bOK&&fOK;
+var inp=[["Maximum jacking force",f0(x.F)+" kN ("+(x.F/Gq).toFixed(1)+" Ton)"],
+["Thrust wall width",mt(x.W,"W")+(has("dw")?" (taken from shaft limit)":has("w")?" (assumed)":"")],
+["Thrust wall height",mt(x.H,"H")+(has("h")?" (calculated for FOS ≥ 2.00)":"")],
+["Soil cover depth to wall top",mt(x.Z,"Z")+(has("z")?" (assumed)":"")],
+["Soil / ground condition",(x.si===5?"User-defined soil parameters":E["s"+(x.si+1)])+" (φ = "+x.phi+"°, c = "+x.c+" kPa, γ = "+x.gam+" kN/m³)"],
+["Groundwater table",x.gw===null?"Not considered (no groundwater data entered)":mt(x.gw,"gw")+" below ground level"],
+["Jacking reaction plate (equivalent square)",x.pl.toFixed(2)+" m × "+x.pl.toFixed(2)+" m"+(has("plate")?" (assumed)":"")],
+["Concrete grade","M"+x.fck+" (f′c = "+x.fck+" MPa)"]];
+if(x.D>0)inp.push(["Shaft diameter / max. wall width (upper limit)",mt(x.D,"D")]);
+var res=[["Applied jacking load",f0(x.F)+" kN ("+f0(x.F/Gq)+" Ton)"],["Passive soil resistance",f0(x.Fp)+" kN ("+f0(x.Fp/Gq)+" Ton), Kp = "+x.Kp.toFixed(2)],["Factor of safety (FOS)",x.fos.toFixed(2)+" (required ≥ 2.00)"],["Minimum concrete thickness",x.th+" mm"]];
+var chk=[["Soil resistance (Rankine passive)","FOS "+x.fos.toFixed(2)+" ≥ 2.00",fOK?"PASS":"FAIL"],["Punching shear (ACI 318)",f0(x.vu)+" kN ≤ "+f0(x.vc)+" kN (capacity)",pOK?"PASS":"FAIL"],["Concrete bearing stress",x.br.toFixed(2)+" MPa ≤ "+x.brL.toFixed(2)+" MPa (limit)",bOK?"PASS":"FAIL"]];
+if(x.wet!==null)chk.push(["Worst case: water table at ground surface",f0(x.wet)+" kN ("+f0(x.wet/Gq)+" Ton), FOS = "+(x.wet/x.F).toFixed(2),x.wet/x.F>=2?"PASS":"REVIEW"]);
+var st=all?"ADEQUATE – PASS (FOS "+x.fos.toFixed(2)+" ≥ 2.00)":"NOT ADEQUATE – REVISE DESIGN ("+[fOK?"":"FOS "+x.fos.toFixed(2)+" < 2.00",pOK?"":"punching shear",bOK?"":"concrete bearing"].filter(Boolean).join(", ")+")";
+var opt=null;if(x.opts)opt=x.opts.map(function(o){return["Width "+o[0]+" m",o[1]?"Height "+o[1]+" m, wall bottom at "+(x.Z+o[1]).toFixed(1)+" m depth":"More than 15 m needed",""]});
+var bs=["Passive earth resistance by Rankine theory (no wall friction, no lateral load spread). Jacking load = maximum rated jack force. Required factor of safety ≥ 2.00.","Punching shear to ACI 318 (load factor 1.6, strength reduction factor φ = 0.75, vc = 0.33√f′c). Concrete bearing limit = 0.5525 f′c.",x.gw===null?"No groundwater data entered; the worst case with the water table at ground surface is shown for information.":"Groundwater at the stated depth is included in the passive resistance."];
+var rm=x.wn.map(function(k){return k===5?"The wall width exceeds the shaft diameter / maximum wall width: reduce the width and increase the height, or improve the ground.":WN.en[k].replace(/ Meter/g," m")});if(has("z")||has("plate")||has("w"))rm.push("Values marked (assumed) were not entered; default values were used. Confirm against project data.");if(x.wet!==null&&x.wet/x.F<2)rm.push("If the water table rises to ground surface, FOS falls below 2.00; groundwater control is required.");
+var h=[["Project",$("pn").value.trim()],["Document no.",$("dn").value.trim()],["Equipment / drive",$("eq").value.trim()],["Date",new Date().toLocaleDateString("en-GB")]].filter(function(a){return a[1]});
+return{t:"MICROTUNNELING THRUST / BACK WALL DESIGN CALCULATION",h:h,inp:inp,res:res,chk:chk,opt:opt,st:st,ok:all,bs:bs,rm:rm,note:"Preliminary thrust wall bearing and sizing calculation. Reinforcement design, bending moment checks, load eccentricity and shaft wall construction drawings shall be verified and approved by a licensed structural / geotechnical engineer before execution."}}
+function pdf(){if(!R)return;var d=sub(),h="<div class=s1>"+esc(d.t)+"</div><table class=hdr>";for(var i=0;i<d.h.length;i+=2){h+="<tr><td><b>"+esc(d.h[i][0])+":</b> "+esc(d.h[i][1])+"</td><td>"+(d.h[i+1]?"<b>"+esc(d.h[i+1][0])+":</b> "+esc(d.h[i+1][1]):"")+"</td></tr>"}h+="</table><table>";
+function sec(n,rows){h+="<tr class=sh><td colspan=3>"+esc(n)+"</td></tr>";rows.forEach(function(r){h+="<tr><td style='width:38%'>"+esc(r[0])+"</td>"+(r[2]!==undefined&&r[2]!==""?"<td class=v style='width:46%'>"+esc(r[1])+"</td><td class=s>"+esc(r[2])+"</td>":"<td class=v colspan=2>"+esc(r[1])+"</td>")+"</tr>"})}
+sec("1. DESIGN INPUT PARAMETERS",d.inp);sec("2. CALCULATION RESULTS",d.res);sec("3. STRUCTURAL & GEOTECHNICAL VERIFICATION CHECKS",d.chk);if(d.opt)sec("WALL SIZE OPTIONS (FOS ≥ 2.00)",d.opt.map(function(r){return[r[0],r[1]]}));h+="</table><div class=stt>OVERALL STATUS: "+esc(d.st)+"</div><div class=bs><p><b>4. DESIGN BASIS</b></p>"+d.bs.map(function(b){return"<p>• "+esc(b)+"</p>"}).join("")+(d.rm.length?"<p><b>REMARKS</b></p>"+d.rm.map(function(b){return"<p>• "+esc(b)+"</p>"}).join(""):"")+"<p><b>NOTE:</b> "+esc(d.note)+"</p></div><table class=sg style='margin-top:10px'><tr><td>Prepared by:</td><td>Checked by:</td><td>Approved by:</td></tr></table>";
+var rp=$("rp");rp.className="sub";rp.innerHTML=h;var o=document.title;document.title="Thrust-Wall-Report";window.print();document.title=o;setTimeout(function(){rp.className=""},1500)}
 function crc(b){var t=crc.t,c,n,k;if(!t){t=crc.t=[];for(n=0;n<256;n++){c=n;for(k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}}c=0xFFFFFFFF;for(n=0;n<b.length;n++)c=t[(c^b[n])&255]^(c>>>8);return(c^0xFFFFFFFF)>>>0}
 function zip(f){var te=new TextEncoder(),out=[],cd=[],off=0,cs=0;function u(n,v){var a=[];for(var i=0;i<n;i++){a.push(v&255);v=Math.floor(v/256)}return a}f.forEach(function(x){var nm=te.encode(x.n),d=te.encode(x.d),c=crc(d),h=[].concat(u(4,0x04034b50),u(2,20),u(2,0x800),u(2,0),u(2,0),u(2,33),u(4,c),u(4,d.length),u(4,d.length),u(2,nm.length),u(2,0));out.push(Uint8Array.from(h),nm,d);cd.push(Uint8Array.from([].concat(u(4,0x02014b50),u(2,20),u(2,20),u(2,0x800),u(2,0),u(2,0),u(2,33),u(4,c),u(4,d.length),u(4,d.length),u(2,nm.length),u(2,0),u(2,0),u(2,0),u(2,0),u(4,0),u(4,off))),nm);off+=h.length+nm.length+d.length});cd.forEach(function(a){cs+=a.length});out=out.concat(cd);out.push(Uint8Array.from([].concat(u(4,0x06054b50),u(2,0),u(2,0),u(2,f.length),u(2,f.length),u(4,cs),u(4,off),u(2,0))));return new Blob(out,{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"})}
-function xls(){if(!R)return;var d=rep(),rows=[];function add(a,b,c){rows.push([a,b,c])}add(d.t,"",1);if(d.pn)add(d.pn,"",1);add(T[L].dt,d.d);d.s.forEach(function(s){add("","");add(s[0],"",1);s[1].forEach(function(r){add(r[0],r[1])})});add("","");add(d.st,"",1);if(d.as)add(d.as,"");d.wn.forEach(function(w){add("⚠ "+w,"")});add(d.bs,"");if(d.sn)add(d.sn,"");add(d.n,"");
-var sd="";rows.forEach(function(r,i){var n=i+1;sd+="<row r='"+n+"'>";for(var j=0;j<2;j++){var v=r[j];if(v==="")continue;var ref=(j?"B":"A")+n,st=r[2]?" s='1'":"";sd+=typeof v==="number"?"<c r='"+ref+"'"+st+"><v>"+v+"</v></c>":"<c r='"+ref+"'"+st+" t='inlineStr'><is><t>"+esc(v)+"</t></is></c>"}sd+="</row>"});
+function xls(){if(!R)return;var d=sub(),rows=[];
+function row(c,st,mg,ht){rows.push({c:c,st:st,mg:mg,ht:ht})}
+function ln(t,w){return Math.max(1,Math.ceil(t.length/w))*15}
+row([d.t],[1],true,24);d.h.forEach(function(a){row([a[0],a[1]],[4,3],false)});row([""],[0],false);
+function sec(n,rs){row([n],[2,2,2],true);rs.forEach(function(r){var three=r[2]!==undefined&&r[2]!=="";row(three?[r[0],r[1],r[2]]:[r[0],r[1]],three?[3,4,4]:[3,4],false,Math.max(ln(r[0],44),ln(r[1],three?44:60)))})}
+sec("1. DESIGN INPUT PARAMETERS",d.inp);sec("2. CALCULATION RESULTS",d.res);sec("3. STRUCTURAL & GEOTECHNICAL VERIFICATION CHECKS",d.chk);if(d.opt)sec("WALL SIZE OPTIONS (FOS ≥ 2.00)",d.opt.map(function(r){return[r[0],r[1]]}));
+row([""],[0],false);row(["OVERALL STATUS: "+d.st],[2,2,2],true,22);row([""],[0],false);
+row(["4. DESIGN BASIS"],[2,2,2],true);d.bs.forEach(function(b){row(["• "+b],[5],true,ln(b,105))});
+if(d.rm.length){row(["REMARKS"],[2,2,2],true);d.rm.forEach(function(b){row(["• "+b],[5],true,ln(b,105))})}
+row(["NOTE: "+d.note],[5],true,ln(d.note,105));row([""],[0],false);row(["Prepared by:","Checked by:","Approved by:"],[3,3,3],false,40);
+var sd="",mc="";rows.forEach(function(r,i){var n=i+1;sd+="<row r='"+n+"'"+(r.ht?" ht='"+r.ht+"' customHeight='1'":"")+">";for(var j=0;j<3;j++){var v=r.c[j],stl=r.st[j];if(r.mg&&j>0)stl=r.st[0];if(v===undefined&&!(r.mg&&j>0))continue;if(v===undefined)v="";var ref="ABC".charAt(j)+n;sd+="<c r='"+ref+"' s='"+(stl||0)+"'"+(v===""?"/>":" t='inlineStr'><is><t xml:space='preserve'>"+esc(v)+"</t></is></c>")}sd+="</row>";if(r.mg)mc+="<mergeCell ref='A"+n+":C"+n+"'/>"});
 var H="<?xml version='1.0' encoding='UTF-8' standalone='yes'?>",M="http://schemas.openxmlformats.org/spreadsheetml/2006/main",P="http://schemas.openxmlformats.org/package/2006/relationships",O="http://schemas.openxmlformats.org/officeDocument/2006/relationships",C="application/vnd.openxmlformats-officedocument.spreadsheetml.";
+var bd="<border><left style='thin'/><right style='thin'/><top style='thin'/><bottom style='thin'/><diagonal/></border>";
 var f=[{n:"[Content_Types].xml",d:H+"<Types xmlns='http://schemas.openxmlformats.org/package/2006/content-types'><Default Extension='rels' ContentType='application/vnd.openxmlformats-package.relationships+xml'/><Default Extension='xml' ContentType='application/xml'/><Override PartName='/xl/workbook.xml' ContentType='"+C+"sheet.main+xml'/><Override PartName='/xl/worksheets/sheet1.xml' ContentType='"+C+"worksheet+xml'/><Override PartName='/xl/styles.xml' ContentType='"+C+"styles+xml'/></Types>"},
 {n:"_rels/.rels",d:H+"<Relationships xmlns='"+P+"'><Relationship Id='rId1' Type='"+O+"/officeDocument' Target='xl/workbook.xml'/></Relationships>"},
-{n:"xl/workbook.xml",d:H+"<workbook xmlns='"+M+"' xmlns:r='"+O+"'><sheets><sheet name='Report' sheetId='1' r:id='rId1'/></sheets></workbook>"},
+{n:"xl/workbook.xml",d:H+"<workbook xmlns='"+M+"' xmlns:r='"+O+"'><sheets><sheet name='Thrust Wall Calculation' sheetId='1' r:id='rId1'/></sheets></workbook>"},
 {n:"xl/_rels/workbook.xml.rels",d:H+"<Relationships xmlns='"+P+"'><Relationship Id='rId1' Type='"+O+"/worksheet' Target='worksheets/sheet1.xml'/><Relationship Id='rId2' Type='"+O+"/styles' Target='styles.xml'/></Relationships>"},
-{n:"xl/styles.xml",d:H+"<styleSheet xmlns='"+M+"'><fonts count='2'><font><sz val='11'/><name val='Calibri'/></font><font><b/><sz val='11'/><name val='Calibri'/></font></fonts><fills count='2'><fill><patternFill patternType='none'/></fill><fill><patternFill patternType='gray125'/></fill></fills><borders count='1'><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count='1'><xf numFmtId='0' fontId='0' fillId='0' borderId='0'/></cellStyleXfs><cellXfs count='2'><xf numFmtId='0' fontId='0' fillId='0' borderId='0' xfId='0'/><xf numFmtId='0' fontId='1' fillId='0' borderId='0' xfId='0' applyFont='1'/></cellXfs><cellStyles count='1'><cellStyle name='Normal' xfId='0' builtinId='0'/></cellStyles></styleSheet>"},
-{n:"xl/worksheets/sheet1.xml",d:H+"<worksheet xmlns='"+M+"'><sheetViews><sheetView workbookViewId='0'"+(L==="ar"?" rightToLeft='1'":"")+"/></sheetViews><cols><col min='1' max='1' width='46' customWidth='1'/><col min='2' max='2' width='30' customWidth='1'/></cols><sheetData>"+sd+"</sheetData></worksheet>"}];
+{n:"xl/styles.xml",d:H+"<styleSheet xmlns='"+M+"'><fonts count='3'><font><sz val='11'/><name val='Calibri'/></font><font><b/><sz val='11'/><name val='Calibri'/></font><font><b/><sz val='14'/><name val='Calibri'/></font></fonts><fills count='3'><fill><patternFill patternType='none'/></fill><fill><patternFill patternType='gray125'/></fill><fill><patternFill patternType='solid'><fgColor rgb='FFD9D9D9'/><bgColor indexed='64'/></patternFill></fill></fills><borders count='2'><border><left/><right/><top/><bottom/><diagonal/></border>"+bd+"</borders><cellStyleXfs count='1'><xf numFmtId='0' fontId='0' fillId='0' borderId='0'/></cellStyleXfs><cellXfs count='6'><xf numFmtId='0' fontId='0' fillId='0' borderId='0' xfId='0'/><xf numFmtId='0' fontId='2' fillId='0' borderId='0' xfId='0' applyFont='1'><alignment horizontal='center' vertical='center'/></xf><xf numFmtId='0' fontId='1' fillId='2' borderId='1' xfId='0' applyFont='1' applyFill='1' applyBorder='1'><alignment vertical='center'/></xf><xf numFmtId='0' fontId='0' fillId='0' borderId='1' xfId='0' applyBorder='1'><alignment vertical='top' wrapText='1'/></xf><xf numFmtId='0' fontId='1' fillId='0' borderId='1' xfId='0' applyFont='1' applyBorder='1'><alignment vertical='top' wrapText='1'/></xf><xf numFmtId='0' fontId='0' fillId='0' borderId='0' xfId='0'><alignment vertical='top' wrapText='1'/></xf></cellXfs><cellStyles count='1'><cellStyle name='Normal' xfId='0' builtinId='0'/></cellStyles></styleSheet>"},
+{n:"xl/worksheets/sheet1.xml",d:H+"<worksheet xmlns='"+M+"'><sheetPr><pageSetUpPr fitToPage='1'/></sheetPr><sheetViews><sheetView workbookViewId='0' showGridLines='0'/></sheetViews><cols><col min='1' max='1' width='44' customWidth='1'/><col min='2' max='2' width='46' customWidth='1'/><col min='3' max='3' width='14' customWidth='1'/></cols><sheetData>"+sd+"</sheetData><mergeCells count='"+(mc.split("<mergeCell ").length-1)+"'>"+mc+"</mergeCells><pageMargins left='0.5' right='0.5' top='0.6' bottom='0.6' header='0.3' footer='0.3'/><pageSetup paperSize='9' orientation='portrait' fitToWidth='1' fitToHeight='1'/></worksheet>"}];
 var a=document.createElement("a");a.href=URL.createObjectURL(zip(f));a.download="Thrust-Wall-Report.xlsx";document.body.appendChild(a);a.click();setTimeout(function(){document.body.removeChild(a)},2000)}
 var S={sd:[36,19.5,0],sm:[30,18,0],gr:[38,20.5,0],cs:[0,19,75],cf:[0,17,25]};
 var L="hi",R=null,G=9.80665;
