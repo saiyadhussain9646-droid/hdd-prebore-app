@@ -71,13 +71,13 @@ input::placeholder{color:var(--t2);opacity:.55;font-weight:400}
 #rp.sub table{width:100%;border-collapse:collapse;margin:0 0 8px;table-layout:fixed}
 #rp.sub td{border:1px solid #000;padding:4px 7px;font-size:11px;vertical-align:top;word-wrap:break-word}
 #rp.sub tr{page-break-inside:avoid}
-#rp.sub .sh td{background:#d9d9d9!important;font-weight:700;font-size:12px}
+#rp.sub .sh td{background:#d9d9d9!important;font-weight:700;font-size:12px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 #rp.sub td.v{font-weight:700}#rp.sub td.s{text-align:center;font-weight:700}
 #rp.sub .stt{border:2px solid #000;padding:7px;text-align:center;font-weight:700;font-size:13px;margin:0 0 8px}
 #rp.sub .bs p{font-size:10px;margin:3px 0;line-height:1.35}
 #rp.sub .sg td{height:80px;width:33.33%;font-size:10px}
 #rp.sub .hdr td{font-size:11px}
-#rp.sub{display:flex;flex-direction:column;min-height:250mm}#rp.sub .sg{margin-top:auto;margin-bottom:0}
+#rp.sub{display:flex;flex-direction:column;min-height:264mm}#rp.sub .sg{margin-top:auto;margin-bottom:0}
 #rp.sub.rm td{padding:5px 8px;font-size:11.5px}#rp.sub.rm .hdr td{font-size:11.5px}#rp.sub.rm .bs p{font-size:10.5px;margin:3px 0}#rp.sub.rm .s1{font-size:18px;margin-bottom:12px}#rp.sub.rm .stt{padding:9px;font-size:14px}}
 </style>
 </head>
@@ -253,7 +253,7 @@ var bs=["Passive earth resistance by Rankine theory (no wall friction, no latera
 var rm=x.wn.map(function(k){return k===5?"The wall width exceeds the shaft diameter / maximum wall width: reduce the width and increase the height, or improve the ground.":WN.en[k].replace(/ Meter/g," m")});if(has("z")||has("plate")||has("w"))rm.push("Values marked (assumed) were not entered; default values were used. Confirm against project data.");if(x.wet!==null&&x.wet/x.F<2)rm.push("If the water table rises to ground surface, FOS falls below 2.00; groundwater control is required.");
 var h=[["Project",$("pn").value.trim()],["Document no.",$("dn").value.trim()],["Equipment / drive",$("eq").value.trim()],["Date",new Date().toLocaleDateString("en-GB")]].filter(function(a){return a[1]});
 return{t:"MICROTUNNELING THRUST / BACK WALL DESIGN CALCULATION",h:h,inp:inp,res:res,chk:chk,opt:opt,st:st,ok:all,bs:bs,rm:rm,note:"Preliminary thrust wall bearing and sizing calculation. Reinforcement design, bending moment checks, load eccentricity and shaft wall construction drawings shall be verified and approved by a licensed structural / geotechnical engineer before execution."}}
-function pdf(){if(!R)return;var d=sub(),h="<div class=s1>"+esc(d.t)+"</div><table class=hdr>";for(var i=0;i<d.h.length;i+=2){var q=d.h[i+1];h+="<tr><td"+(q?"":" colspan=2")+"><b>"+esc(d.h[i][0])+":</b> "+esc(d.h[i][1])+"</td>"+(q?"<td><b>"+esc(q[0])+":</b> "+esc(q[1])+"</td>":"")+"</tr>"}h+="</table><table>";
+function pdf(){if(!R)return;var d=sub(),h="<div class=s1>"+esc(d.t)+"</div><table class=hdr>";for(var i=0;i<d.h.length;i+=2){var q=d.h[i+1];h+="<tr><td"+(q?"":" colspan=2")+"><b>"+esc(d.h[i][0])+":</b> "+esc(d.h[i][1])+"</td>"+(q?"<td><b>"+esc(q[0])+":</b> "+esc(q[1])+"</td>":"")+"</tr>"}h+="</table><table><colgroup><col style='width:48%'><col style='width:40%'><col style='width:12%'></colgroup>";
 function sec(n,rows){h+="<tr class=sh><td colspan=3>"+esc(n)+"</td></tr>";rows.forEach(function(r){h+="<tr><td style='width:44%'>"+esc(r[0])+"</td>"+(r[2]!==undefined&&r[2]!==""?"<td class=v style='width:40%'>"+esc(r[1])+"</td><td class=s>"+esc(r[2])+"</td>":"<td class=v colspan=2>"+esc(r[1])+"</td>")+"</tr>"})}
 sec("1. DESIGN INPUT PARAMETERS",d.inp);sec("2. CALCULATION RESULTS",d.res);sec("3. STRUCTURAL & GEOTECHNICAL VERIFICATION CHECKS",d.chk);if(d.opt)sec("WALL SIZE OPTIONS (FOS ≥ 2.00)",d.opt.map(function(r){return[r[0],r[1]]}));h+="</table><div class=stt>OVERALL STATUS: "+esc(d.st)+"</div><div class=bs><p><b>4. DESIGN BASIS</b></p>"+d.bs.map(function(b){return"<p>• "+esc(b)+"</p>"}).join("")+(d.rm.length?"<p><b>REMARKS</b></p>"+d.rm.map(function(b){return"<p>• "+esc(b)+"</p>"}).join(""):"")+"<p><b>NOTE:</b> "+esc(d.note)+"</p></div><table class=sg><tr><td><b>Prepared by:</b><br><br>Name:<br>Signature / Date:</td><td><b>Checked by:</b><br><br>Name:<br>Signature / Date:</td><td><b>Approved by:</b><br><br>Name:<br>Signature / Date:</td></tr></table>";
 var rp=$("rp");rp.className="sub"+(d.inp.length+d.res.length+d.chk.length+(d.opt?d.opt.length:0)+d.bs.length+d.rm.length<=24?" rm":"");rp.innerHTML=h;var o=document.title;document.title="Thrust-Wall-Report";window.print();document.title=o;setTimeout(function(){rp.className=""},1500)}
