@@ -79,6 +79,8 @@ input::placeholder{color:var(--t2);opacity:.55;font-weight:400}
 #rp.sub .hdr td{font-size:11px}
 #rp.sub{display:flex;flex-direction:column;min-height:264mm}#rp.sub .sg{margin-top:auto;margin-bottom:0}
 #rp.sub.rm td{padding:5px 8px;font-size:11.5px}#rp.sub.rm .hdr td{font-size:11.5px}#rp.sub.rm .bs p{font-size:10.5px;margin:3px 0}#rp.sub.rm .s1{font-size:18px;margin-bottom:12px}#rp.sub.rm .stt{padding:9px;font-size:14px}
+#rp.sub .stn{font-weight:400;font-size:10px;margin-top:3px}
+#rp.sub.md td{padding:3px 6px;font-size:10.5px}#rp.sub.md .sh td{font-size:11px}#rp.sub.md .bs p{font-size:9.5px;margin:2.5px 0}#rp.sub.md .stt{padding:5px;font-size:12.5px;margin-bottom:6px}#rp.sub.md .sg td{height:68px}#rp.sub.md .s1{font-size:15px;margin-bottom:6px}#rp.sub.md table{margin-bottom:6px}
 #rp.sub.tt td{padding:2px 6px;font-size:10px}#rp.sub.tt .sh td{font-size:10.5px}#rp.sub.tt .bs p{font-size:9px;margin:2px 0}#rp.sub.tt .stt{padding:4px;font-size:12px;margin-bottom:5px}#rp.sub.tt .sg td{height:60px}#rp.sub.tt .s1{font-size:14px;margin-bottom:5px}#rp.sub.tt table{margin-bottom:5px}}
 </style>
 </head>
@@ -214,7 +216,8 @@ lf=Math.max(8,Math.min(lf,innerWidth-w-8));p.style.width=w+"px";p.style.left=lf+
 var ph=p.offsetHeight,sb=innerHeight-r.bottom-14,sa=r.top-14;
 if(ph>sb&&sa>sb){p.style.maxHeight=Math.min(ph,sa)+"px";p.style.top=Math.max(8,r.top-6-Math.min(ph,sa))+"px"}else{p.style.maxHeight=Math.min(ph,sb)+"px";p.style.top=(r.bottom+6)+"px"}}
 document.addEventListener("change",function(e){if(hasCalc&&e.target.closest&&e.target.closest("#gi,#cx"))calc()});
-function pick(id,v){if(id==="soil"||id==="fck"){$(id).value=v;if(id==="soil")cust()}else U[id]=v;closePop();ui();if(hasCalc)calc();var b=document.querySelector('.ub[data-id="'+id+'"]');if(b)b.focus()}
+var ST={soil:0,fck:0};
+function pick(id,v){if(id==="soil"||id==="fck")ST[id]=1;if(id==="soil"||id==="fck"){$(id).value=v;if(id==="soil")cust()}else U[id]=v;closePop();ui();if(hasCalc)calc();var b=document.querySelector('.ub[data-id="'+id+'"]');if(b)b.focus()}
 function ui(){document.querySelectorAll(".ub[data-id]").forEach(function(b){b.innerHTML='<span class="ul"></span>'+CH;b.firstChild.textContent=curl(b.dataset.id);b.setAttribute("aria-expanded","false")});
 document.querySelectorAll("[data-un]").forEach(function(e){e.textContent=un(e.dataset.un)});
 document.querySelectorAll("[data-p]").forEach(function(e){var v=+e.dataset.p;if(e.id==="jk")v=v*FF.ton/FF[U.jk];else if(U[e.id])v=v/UL[U[e.id]];e.placeholder=EG[L]+" "+(+v.toPrecision(3))});
@@ -259,10 +262,10 @@ var inp=[["Maximum jacking force",f0(x.F)+" kN ("+(x.F/Gq).toFixed(1)+" Ton)"],
 ["Thrust wall width",mt(x.W,"W")+(has("dw")?" (taken from shaft limit)":has("w")?" (assumed)":"")],
 ["Thrust wall height",mt(x.H,"H")+(has("h")?" (calculated for FOS ≥ 2.00)":"")],
 ["Soil cover depth to wall top",mt(x.Z,"Z")+(has("z")?" (assumed)":"")],
-["Soil / ground condition",(x.si===5?"User-defined soil parameters":E["s"+(x.si+1)])+" (φ = "+x.phi+"°, c = "+x.c+" kPa, γ = "+x.gam+" kN/m³)"],
+["Soil / ground condition",(x.si===5?"User-defined soil parameters":E["s"+(x.si+1)])+" (φ = "+x.phi+"°, c = "+x.c+" kPa, γ = "+x.gam+" kN/m³)"+(x.ds?" (default)":"")],
 ["Groundwater table",x.gw===null?"Not considered (no groundwater data entered)":mt(x.gw,"gw")+" below ground level"],
 ["Jacking reaction plate (equivalent square)",x.pl.toFixed(2)+" m × "+x.pl.toFixed(2)+" m"+(has("plate")?" (assumed)":"")],
-["Concrete grade","M"+x.fck+" (f′c = "+x.fck+" MPa)"]];
+["Concrete grade","M"+x.fck+" (f′c = "+x.fck+" MPa)"+(x.dc?" (default)":"")]];
 if(x.tp>0)inp.push(["Provided wall thickness",tmm+" mm"]);
 if(x.D>0)inp.push(["Maximum wall-width limit (shaft constraint)",mt(x.D,"D")]);
 var res=[["Applied jacking load",f0(x.F)+" kN ("+f0(x.F/Gq)+" Ton)"],["Passive soil resistance",f0(x.Fp)+" kN ("+f0(x.Fp/Gq)+" Ton), Kp = "+x.Kp.toFixed(2)],["Factor of safety (FOS)",x.fos.toFixed(2)+" (required ≥ 2.00)"],["Minimum concrete thickness",x.th+" mm"]];
@@ -274,13 +277,13 @@ var cau=x.wn.some(function(k){return k===1||k===3||k===6});
 var st=all?(cau?"PASS WITH REMARKS – STRUCTURAL ENGINEER REVIEW REQUIRED":"ADEQUATE – PASS (FOR CHECKS PERFORMED)"):"NOT ADEQUATE – REVISE DESIGN ("+[fOK?"":"FOS "+x.fos.toFixed(2)+" < 2.00",pOK?"":"punching shear",bOK?"":"concrete bearing",thOK?"":"provided thickness"].filter(Boolean).join(", ")+")";
 var opt=null;if(x.opts)opt=x.opts.map(function(o){return["Width "+o[0]+" m",o[1]?"Height "+o[1]+" m, wall bottom at "+(x.Z+o[1]).toFixed(1)+" m depth":"More than 15 m needed",""]});
 var bs=["Passive earth resistance by Rankine theory (no wall friction, no lateral load spread).","Jacking load = maximum rated jack force; required factor of safety ≥ 2.00.","Punching shear to ACI 318 (load factor 1.6, strength reduction factor φ = 0.75, vc = 0.33√f′c). Concrete bearing limit = 0.5525 f′c.",x.gw===null?"No groundwater data entered; the worst case with the water table at ground surface is shown for information.":"Groundwater at the stated depth is included in the passive resistance."];
-var rm=x.wn.map(function(k){return k===5?"The wall width exceeds the shaft diameter / maximum wall width: reduce the width and increase the height, or improve the ground.":WN.en[k].replace(/ Meter/g," m")});if(has("z")||has("plate")||has("w"))rm.push("Values marked (assumed) were not entered; default values were used. Confirm against project data.");if(x.wet!==null&&x.wet/x.F<2)rm.push("If the water table rises to ground surface, FOS falls below 2.00; groundwater control is required.");
+var rm=x.wn.map(function(k){return k===5?"The wall width exceeds the shaft diameter / maximum wall width: reduce the width and increase the height, or improve the ground.":WN.en[k].replace(/ Meter/g," m")});var asmd=has("z")||has("plate")||has("w")||x.ds||x.dc;if(asmd)rm.push("Values marked (assumed) or (default) were not entered; default values were used. Confirm against project data.");if(x.wet!==null&&x.wet/x.F<2)rm.push("If the water table rises to ground surface, FOS falls below 2.00; groundwater control is required.");
 var h=[["Project",$("pn").value.trim()],["Document no.",$("dn").value.trim()],["Equipment / drive",$("eq").value.trim()],["Drawing ref.",$("dr").value.trim()],["Geotechnical ref.",$("gr").value.trim()],["Date",new Date().toLocaleDateString("en-GB")]].filter(function(a){return a[1]});
-return{t:"MICROTUNNELING THRUST / BACK WALL DESIGN CALCULATION",h:h,inp:inp,res:res,chk:chk,opt:opt,st:st,ok:all,bs:bs,rm:rm,note:"Preliminary thrust wall bearing and sizing calculation. Reinforcement design, bending moment checks, load eccentricity and shaft wall construction drawings shall be verified and approved by a licensed structural / geotechnical engineer before execution."}}
+return{stn:asmd?"Result is valid for the values listed above; items marked (assumed) or (default) are to be confirmed against project data.":"",t:"MICROTUNNELING THRUST / BACK WALL DESIGN CALCULATION",h:h,inp:inp,res:res,chk:chk,opt:opt,st:st,ok:all,bs:bs,rm:rm,note:"Preliminary thrust wall bearing and sizing calculation. Reinforcement design, bending moment checks, load eccentricity and shaft wall construction drawings shall be verified and approved by a licensed structural / geotechnical engineer before execution."}}
 function pdf(){calc();if(!R)return;var d=sub(),h="<div class=s1>"+esc(d.t)+"</div><table class=hdr>";for(var i=0;i<d.h.length;i+=2){var q=d.h[i+1];h+="<tr><td"+(q?"":" colspan=2")+"><b>"+esc(d.h[i][0])+":</b> "+esc(d.h[i][1])+"</td>"+(q?"<td><b>"+esc(q[0])+":</b> "+esc(q[1])+"</td>":"")+"</tr>"}h+="</table><table><colgroup><col style='width:48%'><col style='width:40%'><col style='width:12%'></colgroup>";
 function sec(n,rows){h+="<tr class=sh><td colspan=3>"+esc(n)+"</td></tr>";rows.forEach(function(r){h+="<tr><td style='width:44%'>"+esc(r[0])+"</td>"+(r[2]!==undefined&&r[2]!==""?"<td class=v style='width:40%'>"+esc(r[1])+"</td><td class=s>"+esc(r[2])+"</td>":"<td class=v colspan=2>"+esc(r[1])+"</td>")+"</tr>"})}
-sec("1. DESIGN INPUT PARAMETERS",d.inp);sec("2. CALCULATION RESULTS",d.res);sec("3. STRUCTURAL & GEOTECHNICAL VERIFICATION CHECKS",d.chk);if(d.opt)sec("WALL SIZE OPTIONS (FOS ≥ 2.00)",d.opt.map(function(r){return[r[0],r[1]]}));h+="</table><div class=stt>OVERALL STATUS: "+esc(d.st)+"</div><div class=bs><p><b>4. DESIGN BASIS</b></p>"+d.bs.map(function(b){return"<p>• "+esc(b)+"</p>"}).join("")+(d.rm.length?"<p><b>REMARKS</b></p>"+d.rm.map(function(b){return"<p>• "+esc(b)+"</p>"}).join(""):"")+"<p><b>NOTE:</b> "+esc(d.note)+"</p></div><table class=sg><tr><td><b>Prepared by:</b><br><br>Name:<br>Signature / Date:</td><td><b>Checked by:</b><br><br>Name:<br>Signature / Date:</td><td><b>Approved by:</b><br><br>Name:<br>Signature / Date:</td></tr></table>";
-var rp=$("rp");rp.className="sub"+(d.inp.length+d.res.length+d.chk.length+(d.opt?d.opt.length:0)+d.bs.length+d.rm.length<=21?" rm":(d.inp.length+d.res.length+d.chk.length+(d.opt?d.opt.length:0)+d.bs.length+d.rm.length>=26?" tt":""));rp.innerHTML=h;var o=document.title;document.title="Thrust-Wall-Report";window.print();document.title=o;setTimeout(function(){rp.className=""},1500)}
+sec("1. DESIGN INPUT PARAMETERS",d.inp);sec("2. CALCULATION RESULTS",d.res);sec("3. STRUCTURAL & GEOTECHNICAL VERIFICATION CHECKS",d.chk);if(d.opt)sec("WALL SIZE OPTIONS (FOS ≥ 2.00)",d.opt.map(function(r){return[r[0],r[1]]}));h+="</table><div class=stt>OVERALL STATUS: "+esc(d.st)+(d.stn?"<div class=stn>"+esc(d.stn)+"</div>":"")+"</div><div class=bs><p><b>4. DESIGN BASIS</b></p>"+d.bs.map(function(b){return"<p>• "+esc(b)+"</p>"}).join("")+(d.rm.length?"<p><b>REMARKS</b></p>"+d.rm.map(function(b){return"<p>• "+esc(b)+"</p>"}).join(""):"")+"<p><b>NOTE:</b> "+esc(d.note)+"</p></div><table class=sg><tr><td><b>Prepared by:</b><br><br>Name:<br>Signature / Date:</td><td><b>Checked by:</b><br><br>Name:<br>Signature / Date:</td><td><b>Approved by:</b><br><br>Name:<br>Signature / Date:</td></tr></table>";
+var rp=$("rp");var sc=d.inp.length+d.res.length+d.chk.length+(d.opt?d.opt.length:0)+d.bs.length+d.rm.length+Math.ceil(d.h.length/2);rp.className="sub"+(sc<=21?" rm":sc<=25?"":sc<=29?" md":" tt");rp.innerHTML=h;var o=document.title;document.title="Thrust-Wall-Report";window.print();document.title=o;setTimeout(function(){rp.className=""},1500)}
 function crc(b){var t=crc.t,c,n,k;if(!t){t=crc.t=[];for(n=0;n<256;n++){c=n;for(k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}}c=0xFFFFFFFF;for(n=0;n<b.length;n++)c=t[(c^b[n])&255]^(c>>>8);return(c^0xFFFFFFFF)>>>0}
 function zip(f){var te=new TextEncoder(),out=[],cd=[],off=0,cs=0;function u(n,v){var a=[];for(var i=0;i<n;i++){a.push(v&255);v=Math.floor(v/256)}return a}f.forEach(function(x){var nm=te.encode(x.n),d=te.encode(x.d),c=crc(d),h=[].concat(u(4,0x04034b50),u(2,20),u(2,0x800),u(2,0),u(2,0),u(2,33),u(4,c),u(4,d.length),u(4,d.length),u(2,nm.length),u(2,0));out.push(Uint8Array.from(h),nm,d);cd.push(Uint8Array.from([].concat(u(4,0x02014b50),u(2,20),u(2,20),u(2,0x800),u(2,0),u(2,0),u(2,33),u(4,c),u(4,d.length),u(4,d.length),u(2,nm.length),u(2,0),u(2,0),u(2,0),u(2,0),u(4,0),u(4,off))),nm);off+=h.length+nm.length+d.length});cd.forEach(function(a){cs+=a.length});out=out.concat(cd);out.push(Uint8Array.from([].concat(u(4,0x06054b50),u(2,0),u(2,0),u(2,f.length),u(2,f.length),u(4,cs),u(4,off),u(2,0))));return new Blob(out,{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"})}
 function xls(){calc();if(!R)return;var d=sub(),rows=[];
@@ -289,7 +292,7 @@ function ln(t,w){return Math.max(1,Math.ceil(t.length/w))*15}
 row([d.t],[1],true,24);d.h.forEach(function(a){row([a[0],a[1]],[4,3],false)});row([""],[0],false);
 function sec(n,rs){row([n],[2,2,2],true);rs.forEach(function(r){var three=r[2]!==undefined&&r[2]!=="";row(three?[r[0],r[1],r[2]]:[r[0],r[1]],three?[3,4,4]:[3,4],false,Math.max(ln(r[0],44),ln(r[1],three?44:60)))})}
 sec("1. DESIGN INPUT PARAMETERS",d.inp);sec("2. CALCULATION RESULTS",d.res);sec("3. STRUCTURAL & GEOTECHNICAL VERIFICATION CHECKS",d.chk);if(d.opt)sec("WALL SIZE OPTIONS (FOS ≥ 2.00)",d.opt.map(function(r){return[r[0],r[1]]}));
-row([""],[0],false);row(["OVERALL STATUS: "+d.st],[2,2,2],true,22);row([""],[0],false);
+row([""],[0],false);row(["OVERALL STATUS: "+d.st],[2,2,2],true,22);if(d.stn)row([d.stn],[5],true,ln(d.stn,105));row([""],[0],false);
 row(["4. DESIGN BASIS"],[2,2,2],true);d.bs.forEach(function(b){row(["• "+b],[5],true,ln(b,105))});
 if(d.rm.length){row(["REMARKS"],[2,2,2],true);d.rm.forEach(function(b){row(["• "+b],[5],true,ln(b,105))})}
 row(["NOTE: "+d.note],[5],true,ln(d.note,105));row([""],[0],false);["Prepared by:  (Name / Signature / Date)","Checked by:  (Name / Signature / Date)","Approved by:  (Name / Signature / Date)"].forEach(function(t){row([t],[3,3,3],true,48)});
@@ -344,7 +347,7 @@ if(Z<1)wn.push(3);
 if(D>0&&W>D+1e-6)wn.push(5);
 if(F>20000)wn.push(9);if([len("W"),len("H"),len("Z"),len("pl"),len("D"),len("gw")].some(function(v){return v>20}))wn.push(10);
 var tp=len("TH"),Vcp=null;if(tp>0){var ddp=Math.max(0.05,tp-0.1),aW=Math.min(pl+ddp,W),aH=Math.min(pl+ddp,H);Vcp=tau*2*(aW+aH)*ddp;if(pl+ddp>Math.min(W,H))wn.push(6);if(Math.round(tp*1000)<th)wn.push(7)}
-R={wet:wet,vu:Fu,vc:Vc,br:br,brL:brL,opts:opts,wn:wn,phi:p[0],c:c,gam:gam,Z:Z,pl:pl,fck:fck,si:SK.indexOf($("soil").value),D:D,un:Object.assign({},U),ent:ent,gw:gwv,ad:ad,jk:jk,F:F,Fp:Fp,fos:fos,th:th,W:W,H:H,Kp:Kp,tp:tp,Vcp:Vcp};
+R={wet:wet,vu:Fu,vc:Vc,br:br,brL:brL,opts:opts,wn:wn,phi:p[0],c:c,gam:gam,Z:Z,pl:pl,fck:fck,si:SK.indexOf($("soil").value),D:D,un:Object.assign({},U),ent:ent,gw:gwv,ad:ad,jk:jk,F:F,Fp:Fp,fos:fos,th:th,W:W,H:H,Kp:Kp,tp:tp,Vcp:Vcp,ds:!ST.soil,dc:!ST.fck};
 $("rc").style.display="block";show()}
 var ERM={hi:"इन बॉक्स में संख्या ठीक नहीं है: {L}। सिर्फ़ संख्या डालें (जैसे 3.5)।",en:"Invalid number in: {L}. Enter numbers only (for example 3.5).",ar:"رقم غير صالح في: {L}. أدخل أرقاماً فقط (مثل 3.5)."};
 var EK={jk:"jack",pl:"plate",W:"w",H:"h",TH:"thp",D:"dia",Z:"z",gw:"gw",cp:"phi",cc:"cn",cg:"gam"};
@@ -355,7 +358,8 @@ $("r1").textContent=x.jk.toFixed(0)+" "+un("ton");$("r1b").textContent=x.F.toFix
 $("r2").textContent=(x.Fp/G).toFixed(0)+" "+un("ton");$("r2b").textContent=x.Fp.toFixed(0)+" kN (Kp "+x.Kp.toFixed(2)+")";
 $("r3").textContent=x.fos.toFixed(2)+" ×";$("r4").textContent=x.th+" "+un("mm");
 var k=$("ck");k.textContent=CK[L].h+"\n"+ckl(x).map(function(r){return r[0]+(r[1]?": "+r[1]:"")}).join("\n");
-var a=$("asm");if(x.ad.length){a.style.display="block";a.textContent=AS[L][0]+" "+x.ad.map(function(i){return t[i[0]]+": "+(AM[i[0]]?disp(i[1],AM[i[0]],x):i[1])+(i[2]?" ("+AS[L][1]+")":"")}).join(" · ")}else{a.style.display="none";a.textContent=""}
+var DF={hi:"डिफ़ॉल्ट",en:"default",ar:"افتراضي"},adx=x.ad.concat(x.ds?[["soil",T[L]["s"+(x.si+1)]+" ("+DF[L]+")"]]:[],x.dc?[["conc","M"+x.fck+" ("+DF[L]+")"]]:[]);
+var a=$("asm");if(adx.length){a.style.display="block";a.textContent=AS[L][0]+" "+adx.map(function(i){return t[i[0]]+": "+(AM[i[0]]?disp(i[1],AM[i[0]],x):i[1])+(i[2]?" ("+AS[L][1]+")":"")}).join(" · ")}else{a.style.display="none";a.textContent=""}
 $("bs").textContent=bsx(x);var w=$("wn");if(x.wn.length){w.style.display="block";w.textContent="⚠ "+x.wn.map(function(k){return WN[L][k]}).join(" · ")}else{w.style.display="none"}
 var sn=$("sn");if(x.D>0){sn.style.display="block";sn.textContent=NS[L]}else sn.style.display="none";
 var b=$("sb");
