@@ -375,6 +375,23 @@ var done=function(){$("cb").textContent=t.copied;setTimeout(function(){$("cb").t
 cpy(s,done)}
 document.querySelectorAll(".f").forEach(function(f){var l=f.querySelector("label"),i=f.querySelector("input:not([type=hidden]),select,button");if(l&&i)l.htmlFor=i.id});
 setLang("hi");calc();
+/* Build 54 — EMBED MODE. Used only when this page is shown inside HDD Pre-Bore Designer Pro (opened as ...html?embed=1).
+   Opened on its own (no ?embed=1, or not inside a frame) NOTHING below runs and the page behaves exactly as before.
+   In embed mode: the page's own top bar (title, language box, theme button) is hidden, and the language and theme are
+   taken from the app (message type "hdd-sync") through this page's own setLang() and data-theme. No calculation is touched. */
+(function(){
+try{
+if(!/(?:\?|&)embed=1(?:&|$)/.test(location.search)||window.parent===window)return;
+var st=document.createElement("style");st.textContent=".hd{display:none!important}";document.head.appendChild(st);
+window.addEventListener("message",function(e){
+if(e.origin!==location.origin||e.source!==window.parent)return;
+var d=e.data;if(!d||d.type!=="hdd-sync")return;
+if(d.theme==="dark"||d.theme==="light")document.documentElement.setAttribute("data-theme",d.theme);
+if(d.lang&&T[d.lang]&&d.lang!==L){setLang(d.lang);var s=$("lang");if(s)s.value=d.lang}
+});
+window.parent.postMessage({type:"mt-ready"},location.origin);
+}catch(err){}
+})();
 </script>
 </body>
 </html>
