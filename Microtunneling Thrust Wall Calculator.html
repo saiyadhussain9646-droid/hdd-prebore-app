@@ -82,15 +82,34 @@ input::placeholder{color:var(--t2);opacity:.55;font-weight:400}
 #rp.sub .stn{font-weight:400;font-size:10px;margin-top:3px}
 #rp.sub.md td{padding:3px 6px;font-size:10.5px}#rp.sub.md .sh td{font-size:11px}#rp.sub.md .bs p{font-size:9.5px;margin:2.5px 0}#rp.sub.md .stt{padding:5px;font-size:12.5px;margin-bottom:6px}#rp.sub.md .sg td{height:68px}#rp.sub.md .s1{font-size:15px;margin-bottom:6px}#rp.sub.md table{margin-bottom:6px}
 #rp.sub.tt td{padding:2px 6px;font-size:10px}#rp.sub.tt .sh td{font-size:10.5px}#rp.sub.tt .bs p{font-size:9px;margin:2px 0}#rp.sub.tt .stt{padding:4px;font-size:12px;margin-bottom:5px}#rp.sub.tt .sg td{height:60px}#rp.sub.tt .s1{font-size:14px;margin-bottom:5px}#rp.sub.tt table{margin-bottom:5px}}
+
+/* Build 55 — standalone header (title removed; subtitle sits inside the input card), 3 themes, lock button. Hidden in embed mode (.hd) */
+.hd{display:block;margin-bottom:12px;padding-bottom:0;border-bottom:0}
+.tb{display:flex;justify-content:flex-end;margin-bottom:8px;direction:ltr}
+.ct2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ct2 select{width:100%;min-width:0;min-height:44px;padding:8px 30px 8px 12px;font-size:14px;font-weight:700}
+#lkb{min-height:36px;padding:6px 12px;font-size:12px}
+#lkb.on{border-color:var(--ac);color:var(--ac)}
+#lkb.warn{background:#d71f2f!important;border-color:#ff5a68!important;color:#fff!important;animation:lkp .5s ease 0s 5}
+@keyframes lkp{0%,100%{box-shadow:0 0 0 0 rgba(255,70,70,.85)}50%{box-shadow:0 0 0 9px rgba(255,70,70,0)}}
+.card>.sb{font-size:12px;color:var(--t2);margin:0 0 10px;line-height:1.4}
+html.lk,html.lk body{overflow:hidden!important}
+html.lk .c{position:fixed;left:0;right:0;top:0;bottom:0;max-width:600px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top,0px)) 14px 14px;overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;background:var(--bg);z-index:40}
+html.lk .hd{position:sticky;top:0;z-index:3;background:var(--bg);padding-bottom:8px}
+.lkt{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);max-width:92%;padding:10px 14px;border-radius:10px;background:#d71f2f;color:#fff;font-size:13px;font-weight:700;text-align:center;z-index:80;display:none}
+:root[data-theme="claude"]{color-scheme:light;--bg:#faf9f5;--panel:#fffdf8;--bg3:#efede4;--bd:#e5e1d6;--ac:#b8532f;--ok:#4a7a35;--wn:#9a5b0b;--tx:#29261b;--t2:#5e5a4c;--pp-bg:#fffdf8;--pp-it:#f7f5ee;--pp-bd:#b8532f;--pp-ib:#ddd7c7;--pp-tx:#29261b}
+:root[data-theme="hc"]{color-scheme:dark;--bg:#000;--panel:#000;--bg3:#000;--bd:#fff;--ac:#fff;--ok:#0f0;--wn:#ff0;--tx:#fff;--t2:#fff;--pp-bg:#000;--pp-it:#000;--pp-bd:#fff;--pp-ib:#fff;--pp-tx:#fff}
+:root[data-theme="hc"] body{background:#000}
 </style>
 </head>
 <body>
 <div class="c">
 <div class="hd">
-<div><h1 data-k="title"></h1><p data-k="sub"></p></div>
-<div class="ct"><select id="lang" class="b" onchange="setLang(this.value)"><option value="hi">हिन्दी</option><option value="en">English</option><option value="ar">العربية</option></select><button class="b" onclick="theme()">☀/🌙</button></div>
+<div class="tb"><button type="button" class="b" id="lkb" onclick="lkT()"></button></div>
+<div class="ct2"><select id="lang" class="b" onchange="setLang(this.value)" aria-label="Language"><option value="hi">हिन्दी</option><option value="en">English</option><option value="ar">العربية</option></select><select id="thm" class="b" onchange="thS(this.value)" aria-label="Theme"><option value="light"></option><option value="dark"></option><option value="claude"></option></select></div>
 </div>
 <div class="card">
+<p class="sb" data-k="sub"></p>
 <div class="ctt" data-k="inT"></div>
 <div class="g" id="gi">
 <div class="f"><label data-k="jack"></label><div class="ib"><input type="text" id="jk" data-p="600" inputmode="decimal" autocomplete="off"><button type="button" class="ub" data-id="jk" aria-haspopup="listbox" aria-expanded="false" onclick="openPop('jk')"></button></div></div>
@@ -391,6 +410,73 @@ if(d.lang&&T[d.lang]&&d.lang!==L){setLang(d.lang);var s=$("lang");if(s)s.value=d
 });
 window.parent.postMessage({type:"mt-ready"},location.origin);
 }catch(err){}
+})();
+</script>
+<script>
+/* Build 55 — header controls (theme select, lock button), embed additions. No calculation / formula code is touched. */
+(function(){
+"use strict";
+var EMB=/(?:\?|&)embed=1(?:&|$)/.test(location.search)&&window.parent!==window;
+var LK={hi:["🔓 स्क्रीन लॉक करें","🔒 स्क्रीन लॉक है","स्क्रीन लॉक है। बाहर स्क्रॉल करने के लिए 🔒 दबाकर खोलें।"],en:["🔓 Lock Screen","🔒 Screen Locked","Screen is locked. Tap 🔒 to unlock and scroll outside."],ar:["🔓 قفل الشاشة","🔒 الشاشة مقفلة","الشاشة مقفلة. اضغط 🔒 لفتح القفل والتمرير خارج الصفحة."]};
+var TH={hi:["☀ लाइट","🌙 डार्क","✦ क्लॉड"],en:["☀ Light","🌙 Dark","✦ Claude"],ar:["☀ فاتح","🌙 داكن","✦ كلود"]};
+var locked=false,hits=0,lastHit=0,tY=0,counted=false,warnT=null,lastW=0;
+function root(){return document.documentElement}
+function sc(){return document.querySelector(".c")}
+function lab(){
+ var b=$("lkb");if(b){b.textContent=LK[L][locked?1:0];b.classList.toggle("on",locked)}
+ var t=$("thm");if(t){for(var i=0;i<3;i++)t.options[i].textContent=TH[L][i]}
+}
+function curTh(){var d=root().getAttribute("data-theme");if(d==="light"||d==="dark"||d==="claude")return d;return matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light"}
+window.thS=function(v){root().setAttribute("data-theme",v)};
+function toast(m){var t=$("lkt");if(!t){t=document.createElement("div");t.id="lkt";t.className="lkt";document.body.appendChild(t)}t.textContent=m;t.style.display="block";clearTimeout(t._h);t._h=setTimeout(function(){t.style.display="none"},3500)}
+function warn(){var b=$("lkb");if(b){b.classList.remove("warn");void b.offsetWidth;b.classList.add("warn");clearTimeout(warnT);warnT=setTimeout(function(){b.classList.remove("warn")},3500)}toast(LK[L][2])}
+function hit(){var n=Date.now();hits=(n-lastHit<5000)?hits+1:1;lastHit=n;if(hits>=2){hits=0;warn()}}
+function onTS(e){if(e.touches&&e.touches[0]){tY=e.touches[0].clientY;counted=false}}
+function onTM(e){
+ if(counted||!e.touches||!e.touches[0])return;var w=sc();if(!w)return;var dy=e.touches[0].clientY-tY;if(Math.abs(dy)<12)return;
+ var top=w.scrollTop<=0,bot=w.scrollTop+w.clientHeight>=w.scrollHeight-1;
+ if((dy>0&&top)||(dy<0&&bot)){counted=true;hit()}
+}
+function onWh(e){
+ var w=sc();if(!w||Math.abs(e.deltaY)<Math.abs(e.deltaX))return;var n=Date.now();
+ var top=w.scrollTop<=0,bot=w.scrollTop+w.clientHeight>=w.scrollHeight-1;
+ if(((e.deltaY<0&&top)||(e.deltaY>0&&bot))&&n-lastW>250){lastW=n;hit()}
+}
+function lock(){
+ var w=sc();if(locked||!w)return;locked=true;hits=0;counted=false;
+ root().classList.add("lk");w.scrollTop=0;
+ w.addEventListener("touchstart",onTS,{passive:true});w.addEventListener("touchmove",onTM,{passive:true});w.addEventListener("wheel",onWh,{passive:true});lab();
+}
+function unlock(){
+ if(!locked)return;locked=false;hits=0;var w=sc();root().classList.remove("lk");
+ if(w){w.removeEventListener("touchstart",onTS);w.removeEventListener("touchmove",onTM);w.removeEventListener("wheel",onWh)}
+ clearTimeout(warnT);var b=$("lkb");if(b)b.classList.remove("warn");lab();
+}
+window.lkT=function(){if(locked)unlock();else lock()};
+
+/* keep the labels right when the language changes (setLang itself is not edited — it is wrapped) */
+var _sl=window.setLang;
+window.setLang=function(l){var r=_sl.apply(this,arguments);try{lab()}catch(e){}return r};
+var th=$("thm");if(th)th.value=curTh();
+lab();
+
+if(EMB){
+ /* inside the app: theme (light/dark/claude/hc) and guide flag come from the app; edge scrolls are reported to the app's own Lock button */
+ window.addEventListener("message",function(e){
+  if(e.origin!==location.origin||e.source!==window.parent)return;
+  var d=e.data;if(!d||d.type!=="hdd-sync")return;
+  if(d.theme==="light"||d.theme==="dark"||d.theme==="claude"||d.theme==="hc")root().setAttribute("data-theme",d.theme);
+  if(d.guide===true){var st=$("gHide");if(!st){st=document.createElement("style");st.id="gHide";st.textContent="details.card{display:none!important}";document.head.appendChild(st)}}
+ });
+ var y0=0,sent=false;
+ function se(){return document.scrollingElement||document.documentElement}
+ document.addEventListener("touchstart",function(e){if(e.touches&&e.touches[0]){y0=e.touches[0].clientY;sent=false}},{passive:true});
+ document.addEventListener("touchmove",function(e){
+  if(sent||!e.touches||!e.touches[0])return;var dy=e.touches[0].clientY-y0;if(Math.abs(dy)<12)return;
+  var s=se(),top=s.scrollTop<=0,bot=s.scrollTop+s.clientHeight>=s.scrollHeight-1;
+  if((dy>0&&top)||(dy<0&&bot)){sent=true;try{window.parent.postMessage({type:"mt-edge"},location.origin)}catch(x){}}
+ },{passive:true});
+}
 })();
 </script>
 </body>
