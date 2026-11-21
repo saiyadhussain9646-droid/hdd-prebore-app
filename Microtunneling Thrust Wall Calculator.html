@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Exo+2:wght@400;600&display=swap">
 <script>try{if(/(?:\?|&)embed=1(?:&|$)/.test(location.search)&&window.parent!==window)document.documentElement.className+=" emb"}catch(e){}</script>
 <title>Microtunneling Thrust Wall Calculator</title>
 <style>
@@ -86,8 +87,6 @@ input::placeholder{color:var(--t2);opacity:.55;font-weight:400}
 
 /* Build 55 — standalone header (title removed; subtitle sits inside the input card), 3 themes, lock button. Hidden in embed mode (.hd) */
 .hd{display:block;margin-bottom:12px;padding-bottom:0;border-bottom:0}
-.ct2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.ct2 select{width:100%;min-width:0;min-height:44px;padding:8px 30px 8px 12px;font-size:14px;font-weight:700}
 /* Build 55 — SCREEN FIT: same rule set as the app's hddScreenFit (phone / tablet / laptop decided by the screen width the browser reports; notch safe-area on all sides). No calculation code is touched. */
 :root{--edge:12px;--card-pad:16px;--app-max:none;--gapL:max(var(--edge),env(safe-area-inset-left,0px));--gapR:max(var(--edge),env(safe-area-inset-right,0px))}
 @media (max-width:600px){:root{--edge:0px;--card-pad:12px}}
@@ -96,15 +95,21 @@ input::placeholder{color:var(--t2);opacity:.55;font-weight:400}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{padding:12px var(--gapR) 12px var(--gapL)}
 .c{max-width:var(--app-max)}
-.hd{padding-left:var(--card-pad);padding-right:var(--card-pad)}
 .card{padding-left:var(--card-pad);padding-right:var(--card-pad)}
 @media (max-width:600px){.card{border-left-width:0;border-right-width:0;border-radius:0}}
-.mt1{display:block;width:100%;margin:0 0 10px;font-size:16px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--ac);white-space:nowrap;overflow:hidden;direction:ltr;text-align:left;line-height:1.3}
-.card>.sb{display:block;font-size:12px;font-weight:700;letter-spacing:.25px;text-transform:uppercase;color:var(--t2);margin:0 0 10px;line-height:1.4;white-space:nowrap;overflow:hidden}
+.hb{background:linear-gradient(135deg,#0f1a35,#1a2a50);border:1px solid rgba(0,212,255,.25);box-shadow:0 0 20px rgba(0,212,255,.18);padding:12px var(--card-pad) 10px}
+.mt1{display:block;width:100%;margin:0;font-family:'Rajdhani','Exo 2',system-ui,sans-serif;font-size:26px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;text-shadow:0 0 24px rgba(0,212,255,.5),0 0 8px rgba(0,212,255,.3);white-space:nowrap;overflow:hidden;direction:ltr;text-align:center;line-height:1.15}
+.card>.sb{display:block;font-family:'Exo 2',system-ui,sans-serif;font-size:12px;font-weight:400;letter-spacing:.06em;text-transform:uppercase;color:var(--t2);margin:0 0 10px;line-height:1.4;white-space:nowrap;overflow:hidden}
+.th{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px}
+.th .ctt{margin:0;flex:0 0 auto;white-space:nowrap}
+.th .ct2{flex:1 1 auto;min-width:0;max-width:280px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.th .ct2 select{width:100%;min-width:0;height:34px;min-height:34px;padding:2px 22px 2px 8px;font-size:12.5px;font-weight:700}
 /* inside the app: the app card already gives the side gap, so the calculator fills its frame exactly like the other pages */
 html.emb{padding:0!important;background:transparent!important;color-scheme:normal!important}
 html.emb body{padding:0!important;background:transparent!important}
 html.emb .c{max-width:none}
+html.emb .th .ct2{display:none}
+html.emb .card>.sb{font-family:'Rajdhani','Exo 2',system-ui,sans-serif;font-weight:700;color:var(--ac)}
 html.emb .card{border-left-width:1px;border-right-width:1px;border-radius:14px}
 :root[data-theme="claude"]{color-scheme:light;--bg:#faf9f5;--panel:#fffdf8;--bg3:#efede4;--bd:#e5e1d6;--ac:#b8532f;--ok:#4a7a35;--wn:#9a5b0b;--tx:#29261b;--t2:#5e5a4c;--pp-bg:#fffdf8;--pp-it:#f7f5ee;--pp-bd:#b8532f;--pp-ib:#ddd7c7;--pp-tx:#29261b}
 :root[data-theme="hc"]{color-scheme:dark;--bg:#000;--panel:#000;--bg3:#000;--bd:#fff;--ac:#fff;--ok:#0f0;--wn:#ff0;--tx:#fff;--t2:#fff;--pp-bg:#000;--pp-it:#000;--pp-bd:#fff;--pp-ib:#fff;--pp-tx:#fff}
@@ -114,12 +119,11 @@ html.emb .card{border-left-width:1px;border-right-width:1px;border-radius:14px}
 <body>
 <div class="c">
 <div class="hd">
-<h1 class="mt1" id="mt1">MICROTUNNELING THRUST WALL CALCULATOR</h1>
-<div class="ct2"><select id="lang" class="b" onchange="setLang(this.value)" aria-label="Language"><option value="hi">हिन्दी</option><option value="en">English</option><option value="ar">العربية</option></select><select id="thm" class="b" onchange="thS(this.value)" aria-label="Theme"><option value="light"></option><option value="dark"></option><option value="claude"></option></select></div>
+<div class="hb"><h1 class="mt1" id="mt1">MICROTUNNELING THRUST WALL CALCULATOR</h1></div>
 </div>
 <div class="card">
 <p class="sb" data-k="sub"></p>
-<div class="ctt" data-k="inT"></div>
+<div class="th"><div class="ctt" data-k="inT"></div><div class="ct2"><select id="lang" class="b" onchange="setLang(this.value)" aria-label="Language"><option value="hi">हिन्दी</option><option value="en">English</option><option value="ar">العربية</option></select><select id="thm" class="b" onchange="thS(this.value)" aria-label="Theme"><option value="light"></option><option value="dark"></option><option value="claude"></option></select></div></div>
 <div class="g" id="gi">
 <div class="f"><label data-k="jack"></label><div class="ib"><input type="text" id="jk" data-p="600" inputmode="decimal" autocomplete="off"><button type="button" class="ub" data-id="jk" aria-haspopup="listbox" aria-expanded="false" onclick="openPop('jk')"></button></div></div>
 <div class="f"><label data-k="plate"></label><div class="ib"><input type="text" id="pl" data-p="1.5" inputmode="decimal" autocomplete="off"><button type="button" class="ub" data-id="pl" aria-haspopup="listbox" aria-expanded="false" onclick="openPop('pl')"></button></div></div>
@@ -438,7 +442,7 @@ function fit(el,max,min){
  while(el.scrollWidth>el.clientWidth+1&&s>min){s-=.5;el.style.fontSize=s+"px"}
  if(el.scrollWidth>el.clientWidth+1){el.style.whiteSpace="normal";el.style.overflow="visible"}
 }
-function fitAll(){fit($("mt1"),16,9);var q=document.querySelectorAll(".card>.sb");for(var i=0;i<q.length;i++)fit(q[i],12,8.5)}
+function fitAll(){fit($("mt1"),26,11);var q=document.querySelectorAll(".card>.sb");for(var i=0;i<q.length;i++)fit(q[i],EMB?14:12,9)}
 /* setLang itself is not edited — it is wrapped */
 var _sl=window.setLang;
 window.setLang=function(l){var r=_sl.apply(this,arguments);try{lab();fitAll()}catch(e){}return r};
