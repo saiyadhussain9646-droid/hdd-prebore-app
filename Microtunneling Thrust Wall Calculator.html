@@ -2,7 +2,9 @@
 <html lang="hi" dir="ltr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Exo+2:wght@400;600&display=swap">
+<script>try{if(/(?:\?|&)embed=1(?:&|$)/.test(location.search)&&window.parent!==window)document.documentElement.className+=" emb"}catch(e){}</script>
 <title>Microtunneling Thrust Wall Calculator</title>
 <style>
 :root{--bg:#f4f6f9;--panel:#fff;--bg3:#eef1f5;--bd:#d6dce6;--ac:#2563eb;--ok:#15803d;--wn:#b45309;--tx:#16181d;--t2:#4b5563;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -84,20 +86,45 @@ input::placeholder{color:var(--t2);opacity:.55;font-weight:400}
 #rp.sub.md td{padding:3px 6px;font-size:10.5px}#rp.sub.md .sh td{font-size:11px}#rp.sub.md .bs p{font-size:9.5px;margin:2.5px 0}#rp.sub.md .stt{padding:5px;font-size:12.5px;margin-bottom:6px}#rp.sub.md .sg td{height:68px}#rp.sub.md .s1{font-size:15px;margin-bottom:6px}#rp.sub.md table{margin-bottom:6px}
 #rp.sub.tt td{padding:2px 6px;font-size:10px}#rp.sub.tt .sh td{font-size:10.5px}#rp.sub.tt .bs p{font-size:9px;margin:2px 0}#rp.sub.tt .stt{padding:4px;font-size:12px;margin-bottom:5px}#rp.sub.tt .sg td{height:60px}#rp.sub.tt .s1{font-size:14px;margin-bottom:5px}#rp.sub.tt table{margin-bottom:5px}}
 
-.bn{margin:-14px -14px 10px;padding:14px 14px 13px;background:linear-gradient(135deg,#0a1226,#10244a);color:#fff;font-weight:800;text-transform:uppercase;letter-spacing:.11em;font-size:clamp(11px,3.3vw,15px);white-space:nowrap;border-bottom:3px solid #2563eb;text-align:start;overflow:hidden}
-.sb{font-size:13px;color:var(--t2);margin:0 0 12px}
-.bar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 12px}
-.bar .ctt{margin:0;white-space:nowrap}
-.bar .ct{display:flex;gap:8px;flex:1 1 auto;justify-content:flex-end}
-select.sl{width:auto;flex:1 1 0;max-width:132px;min-width:0;height:44px;padding:0 8px;font-size:14px;font-weight:600;background:var(--panel);border:1px solid var(--bd);border-radius:12px}
+/* Build 55 — standalone header (title removed; subtitle sits inside the input card), 3 themes, lock button. Hidden in embed mode (.hd) */
+.hd{display:block;margin-bottom:12px;padding-bottom:0;border-bottom:0}
+/* Build 55 — SCREEN FIT: same rule set as the app's hddScreenFit (phone / tablet / laptop decided by the screen width the browser reports; notch safe-area on all sides). No calculation code is touched. */
+:root{--edge:12px;--card-pad:16px;--app-max:none;--gapL:max(var(--edge),env(safe-area-inset-left,0px));--gapR:max(var(--edge),env(safe-area-inset-right,0px))}
+@media (max-width:600px){:root{--edge:0px;--card-pad:12px}}
+@media (min-width:601px) and (max-width:1023px){:root{--edge:14px;--card-pad:16px;--app-max:720px}}
+@media (min-width:1024px){:root{--edge:24px;--card-pad:18px;--app-max:720px}}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{padding:12px var(--gapR) 12px var(--gapL)}
+.c{max-width:var(--app-max)}
+.card{padding-left:var(--card-pad);padding-right:var(--card-pad)}
+@media (max-width:600px){.card{border-left-width:0;border-right-width:0;border-radius:0}}
+.hb{background:linear-gradient(135deg,#0f1a35,#1a2a50);border:1px solid rgba(0,212,255,.25);box-shadow:0 0 20px rgba(0,212,255,.18);padding:12px var(--card-pad) 10px}
+.mt1{display:block;width:100%;margin:0;font-family:'Rajdhani','Exo 2',system-ui,sans-serif;font-size:26px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;text-shadow:0 0 24px rgba(0,212,255,.5),0 0 8px rgba(0,212,255,.3);white-space:nowrap;overflow:hidden;direction:ltr;text-align:center;line-height:1.15}
+.card>.sb{display:block;font-family:'Exo 2',system-ui,sans-serif;font-size:12px;font-weight:400;letter-spacing:.06em;text-transform:uppercase;color:var(--t2);margin:0 0 10px;line-height:1.4;white-space:nowrap;overflow:hidden}
+.th{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 12px}
+.th .ctt{margin:0;flex:0 0 auto;white-space:nowrap}
+.th .ct2{flex:1 1 auto;min-width:0;max-width:280px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.th .ct2 select{width:100%;min-width:0;height:34px;min-height:34px;padding:2px 22px 2px 8px;font-size:12.5px;font-weight:700}
+/* inside the app: the app card already gives the side gap, so the calculator fills its frame exactly like the other pages */
+html.emb{padding:0!important;background:transparent!important;color-scheme:normal!important}
+html.emb body{padding:0!important;background:transparent!important}
+html.emb .c{max-width:none}
+html.emb .th .ct2{display:none}
+html.emb .card>.sb{font-family:'Rajdhani','Exo 2',system-ui,sans-serif;font-weight:700;color:var(--ac)}
+html.emb .card{border-left-width:1px;border-right-width:1px;border-radius:14px}
+:root[data-theme="claude"]{color-scheme:light;--bg:#faf9f5;--panel:#fffdf8;--bg3:#efede4;--bd:#e5e1d6;--ac:#b8532f;--ok:#4a7a35;--wn:#9a5b0b;--tx:#29261b;--t2:#5e5a4c;--pp-bg:#fffdf8;--pp-it:#f7f5ee;--pp-bd:#b8532f;--pp-ib:#ddd7c7;--pp-tx:#29261b}
+:root[data-theme="hc"]{color-scheme:dark;--bg:#000;--panel:#000;--bg3:#000;--bd:#fff;--ac:#fff;--ok:#0f0;--wn:#ff0;--tx:#fff;--t2:#fff;--pp-bg:#000;--pp-it:#000;--pp-bd:#fff;--pp-ib:#fff;--pp-tx:#fff}
+:root[data-theme="hc"] body{background:#000}
 </style>
 </head>
 <body>
 <div class="c">
-<div class="bn">MICROTUNNELING THRUST WALL CALCULATOR</div>
-<p class="sb" data-k="sub"></p>
-<div class="bar"><div class="ctt" data-k="inT"></div><div class="ct"><select id="lang" class="b sl" onchange="setLang(this.value)" aria-label="Language"><option value="hi">हिन्दी</option><option value="en">English</option><option value="ar">العربية</option></select><select id="thm" class="b sl" onchange="setTheme(this.value)" aria-label="Theme"><option value="light"></option><option value="dark"></option></select></div></div>
+<div class="hd">
+<div class="hb"><h1 class="mt1" id="mt1">MICROTUNNELING THRUST WALL CALCULATOR</h1></div>
+</div>
 <div class="card">
+<p class="sb" data-k="sub"></p>
+<div class="th"><div class="ctt" data-k="inT"></div><div class="ct2"><select id="lang" class="b" onchange="setLang(this.value)" aria-label="Language"><option value="hi">हिन्दी</option><option value="en">English</option><option value="ar">العربية</option></select><select id="thm" class="b" onchange="thS(this.value)" aria-label="Theme"><option value="light"></option><option value="dark"></option><option value="claude"></option></select></div></div>
 <div class="rq" id="rq"></div>
 <div class="g" id="gi">
 <div class="f"><label data-k="jack" class="req"></label><div class="ib"><input type="text" id="jk" data-p="600" inputmode="decimal" autocomplete="off"><button type="button" class="ub" data-id="jk" aria-haspopup="listbox" aria-expanded="false" onclick="openPop('jk')"></button></div></div>
@@ -149,9 +176,9 @@ select.sl{width:auto;flex:1 1 0;max-width:132px;min-width:0;height:44px;padding:
 <div id="rp"></div>
 <script>
 var T={
-hi:{title:"माइक्रोटनलिंग बैक वॉल डिज़ाइन",sub:"थ्रस्ट वॉल: मिट्टी की ताकत और मोटाई का अनुमान",inT:"1. जानकारी भरें",jack:"अधिकतम जैक क्षमता",w:"दीवार की चौड़ाई",h:"दीवार की ऊँचाई",z:"दीवार के ऊपर मिट्टी की गहराई",soil:"मिट्टी का प्रकार",gw:"पानी की गहराई",plate:"जैक प्लेट की साइड",conc:"कंक्रीट ग्रेड",phi:"घर्षण कोण φ",cn:"कोहेशन c",gam:"मिट्टी का वज़न γ",calc:"गणना करें",outT:"2. परिणाम",load:"जैक लोड",cap:"मिट्टी की प्रतिरोध क्षमता",fos:"सेफ़्टी फ़ैक्टर",fosT:"लक्ष्य: ≥ 2.0",thk:"न्यूनतम कंक्रीट मोटाई",thkS:"सिर्फ़ पंचिंग शियर के लिए",copy:"📋 रिपोर्ट कॉपी करें",copied:"✓ कॉपी हो गया",note:"यह शुरुआती अनुमान है। बेंडिंग, सरिया और भूजल का अंतिम डिज़ाइन लाइसेंसधारी स्ट्रक्चरल/जियोटेक्निकल इंजीनियर से जाँच कराएँ।",ok:"✓ PASS — मिट्टी की ताकत पर्याप्त है",c1:"! CHECK — सीमा के करीब, दीवार बड़ी करें",c2:"! CHECK — इस दीवार के लिए मिट्टी की ताकत कम है, दीवार बड़ी करें या मिट्टी सुधारें",s1:"घनी रेत",s2:"सामान्य रेत",s3:"कंकड़-पत्थर",s4:"सख्त चिकनी मिट्टी",s5:"नरम चिकनी मिट्टी",s6:"अपनी वैल्यू डालें",rep:"माइक्रोटनलिंग थ्रस्ट वॉल रिपोर्ट",size:"दीवार"},
-en:{title:"MICROTUNNELING BACK WALL DESIGN",sub:"Thrust wall soil resistance and thickness estimate",inT:"1. Input",jack:"Max jacking force",w:"Wall width",h:"Wall height",z:"Cover depth to wall top",soil:"Soil type",gw:"Water table depth",plate:"Jack plate side",conc:"Concrete grade",phi:"Friction angle φ",cn:"Cohesion c",gam:"Unit weight γ",calc:"CALCULATE",outT:"2. Result",load:"Jacking load",cap:"Passive soil capacity",fos:"Factor of safety",fosT:"Target: ≥ 2.0",thk:"Min. concrete thickness",thkS:"Punching shear only",copy:"📋 Copy report",copied:"✓ Copied",note:"Preliminary estimate. Bending, reinforcement and groundwater must be verified by a licensed structural/geotechnical engineer.",ok:"✓ PASS — soil resistance is adequate",c1:"! CHECK — marginal, enlarge the wall",c2:"! CHECK — soil resistance too low for this wall, enlarge wall or improve ground",s1:"Dense sand",s2:"Medium sand",s3:"Gravel",s4:"Stiff clay",s5:"Soft clay",s6:"Custom values",rep:"MICROTUNNELING THRUST WALL REPORT",size:"Wall"},
-ar:{title:"تصميم الجدار الخلفي للنفق الدقيق",sub:"تقدير مقاومة التربة وسماكة جدار الدفع",inT:"1. المدخلات",jack:"أقصى قوة دفع للمكابس",w:"عرض الجدار",h:"ارتفاع الجدار",z:"عمق التغطية حتى أعلى الجدار",soil:"نوع التربة",gw:"عمق المياه الجوفية",plate:"ضلع لوح المكبس",conc:"رتبة الخرسانة",phi:"زاوية الاحتكاك φ",cn:"التماسك c",gam:"الوزن النوعي γ",calc:"احسب",outT:"2. النتيجة",load:"حمل الدفع",cap:"مقاومة التربة السلبية",fos:"معامل الأمان",fosT:"الهدف: ≥ 2.0",thk:"أدنى سماكة للخرسانة",thkS:"للقص الثاقب فقط",copy:"📋 نسخ التقرير",copied:"✓ تم النسخ",note:"تقدير أولي. يجب أن يراجع مهندس إنشائي/جيوتقني مرخّص التصميم النهائي (الانحناء والتسليح والمياه الجوفية).",ok:"✓ آمن — مقاومة التربة كافية",c1:"! تحقق — الهامش ضيق، كبّر الجدار",c2:"! تحقق — مقاومة التربة غير كافية لهذا الجدار، كبّر الجدار أو حسّن التربة",s1:"رمل كثيف",s2:"رمل متوسط",s3:"حصى",s4:"طين صلب",s5:"طين ناعم",s6:"قيم مخصصة",rep:"تقرير جدار الدفع للنفق الدقيق",size:"الجدار"}
+hi:{title:"माइक्रोटनलिंग बैक वॉल डिज़ाइन",sub:"थ्रस्ट वॉल: मिट्टी की ताकत और मोटाई का अनुमान",inT:"1. जानकारी भरें",jack:"अधिकतम जैक क्षमता",w:"दीवार की चौड़ाई",h:"दीवार की ऊँचाई",z:"दीवार के ऊपर मिट्टी की गहराई",soil:"मिट्टी का प्रकार",gw:"पानी की गहराई",plate:"जैक प्लेट की साइड",conc:"कंक्रीट ग्रेड",phi:"घर्षण कोण φ",cn:"कोहेशन c",gam:"मिट्टी का वज़न γ",calc:"गणना करें",outT:"2. परिणाम",load:"जैक लोड",cap:"मिट्टी की प्रतिरोध क्षमता",fos:"सेफ़्टी फ़ैक्टर",fosT:"लक्ष्य: ≥ 2.0",thk:"न्यूनतम कंक्रीट मोटाई",thkS:"सिर्फ़ पंचिंग शियर के लिए",copy:"📋 रिपोर्ट कॉपी करें",copied:"✓ कॉपी हो गया",note:"यह शुरुआती अनुमान है। बेंडिंग, सरिया और भूजल का अंतिम डिज़ाइन लाइसेंसधारी स्ट्रक्चरल/जियोटेक्निकल इंजीनियर से जाँच कराएँ।",ok:"✓ PASS — मिट्टी की ताकत पर्याप्त है",c1:"✗ NOT ADEQUATE — सीमा के करीब (FOS 2.0 से कम), दीवार बड़ी करें",c2:"✗ NOT ADEQUATE — इस दीवार के लिए मिट्टी की ताकत कम है, दीवार बड़ी करें या मिट्टी सुधारें",s1:"घनी रेत",s2:"सामान्य रेत",s3:"कंकड़-पत्थर",s4:"सख्त चिकनी मिट्टी",s5:"नरम चिकनी मिट्टी",s6:"अपनी वैल्यू डालें",rep:"माइक्रोटनलिंग थ्रस्ट वॉल रिपोर्ट",size:"दीवार"},
+en:{title:"MICROTUNNELING BACK WALL DESIGN",sub:"Thrust wall soil resistance and thickness estimate",inT:"1. Input",jack:"Max jacking force",w:"Wall width",h:"Wall height",z:"Cover depth to wall top",soil:"Soil type",gw:"Water table depth",plate:"Jack plate side",conc:"Concrete grade",phi:"Friction angle φ",cn:"Cohesion c",gam:"Unit weight γ",calc:"CALCULATE",outT:"2. Result",load:"Jacking load",cap:"Passive soil capacity",fos:"Factor of safety",fosT:"Target: ≥ 2.0",thk:"Min. concrete thickness",thkS:"Punching shear only",copy:"📋 Copy report",copied:"✓ Copied",note:"Preliminary estimate. Bending, reinforcement and groundwater must be verified by a licensed structural/geotechnical engineer.",ok:"✓ PASS — soil resistance is adequate",c1:"✗ NOT ADEQUATE — marginal (FOS below 2.0), enlarge the wall",c2:"✗ NOT ADEQUATE — soil resistance too low for this wall, enlarge wall or improve ground",s1:"Dense sand",s2:"Medium sand",s3:"Gravel",s4:"Stiff clay",s5:"Soft clay",s6:"Custom values",rep:"MICROTUNNELING THRUST WALL REPORT",size:"Wall"},
+ar:{title:"تصميم الجدار الخلفي للنفق الدقيق",sub:"تقدير مقاومة التربة وسماكة جدار الدفع",inT:"1. المدخلات",jack:"أقصى قوة دفع للمكابس",w:"عرض الجدار",h:"ارتفاع الجدار",z:"عمق التغطية حتى أعلى الجدار",soil:"نوع التربة",gw:"عمق المياه الجوفية",plate:"ضلع لوح المكبس",conc:"رتبة الخرسانة",phi:"زاوية الاحتكاك φ",cn:"التماسك c",gam:"الوزن النوعي γ",calc:"احسب",outT:"2. النتيجة",load:"حمل الدفع",cap:"مقاومة التربة السلبية",fos:"معامل الأمان",fosT:"الهدف: ≥ 2.0",thk:"أدنى سماكة للخرسانة",thkS:"للقص الثاقب فقط",copy:"📋 نسخ التقرير",copied:"✓ تم النسخ",note:"تقدير أولي. يجب أن يراجع مهندس إنشائي/جيوتقني مرخّص التصميم النهائي (الانحناء والتسليح والمياه الجوفية).",ok:"✓ آمن — مقاومة التربة كافية",c1:"✗ غير كافٍ — الهامش ضيق (معامل الأمان أقل من 2.0)، كبّر الجدار",c2:"✗ غير كافٍ — مقاومة التربة غير كافية لهذا الجدار، كبّر الجدار أو حسّن التربة",s1:"رمل كثيف",s2:"رمل متوسط",s3:"حصى",s4:"طين صلب",s5:"طين ناعم",s6:"قيم مخصصة",rep:"تقرير جدار الدفع للنفق الدقيق",size:"الجدار"}
 };
 var GL={hi:["यह क्या है","कहाँ से मिलेगा","उदाहरण","खाली छोड़ें तो ऐप क्या लेगा","खाली छोड़ने का फ़ायदा","खाली छोड़ने का नुकसान","भरने का फ़ायदा","भरने का नुकसान"],en:["What it is","Where to get it","Example","If left empty, the app uses","Leaving it empty: advantage","Leaving it empty: disadvantage","Typing it: advantage","Typing it: disadvantage"],ar:["ما هي","من أين تحصل عليها","مثال","إذا تُركت فارغة يستخدم التطبيق","ترك الخانة فارغة: الميزة","ترك الخانة فارغة: العيب","كتابة القيمة: الميزة","كتابة القيمة: العيب"]};
 var GD={
@@ -240,7 +267,9 @@ var WY={hi:["पंचिंग वाला हिस्सा दीवार 
 for(var wl2 in WY)WN[wl2]=WN[wl2].concat(WY[wl2]);
 var WY2={hi:["कस्टम मिट्टी की वैल्यू अनुमत सीमा में बदली गईं (φ 0 से 50 डिग्री, γ 10 से 25 kN/m³; γ खाली हो तो 18)।","जैक क्षमता बहुत ज़्यादा है (20,000 kN से अधिक): इकाई (टन, kN, किप) जाँच लें।","कोई लंबाई असामान्य रूप से ज़्यादा है (20 मीटर से अधिक): इकाई (मीटर, फ़ुट, इंच) जाँच लें।"],en:["Custom soil values were limited to the allowed range (φ 0 to 50 Degree, γ 10 to 25 kN/m³; empty γ = 18).","The jacking force is very large (over 20,000 kN): check the unit (Ton, kN, kip).","A length is unusually large (over 20 Meter): check the unit (Meter, Feet, Inch)."],ar:["عُدِّلت قيم التربة المخصصة إلى النطاق المسموح (φ من 0 إلى 50 درجة، γ من 10 إلى 25 kN/m³؛ وγ الفارغة = 18).","قوة الدفع كبيرة جداً (أكثر من 20,000 kN): تحقق من الوحدة (طن، kN، كيب).","أحد الأطوال كبير بشكل غير عادي (أكثر من 20 متر): تحقق من الوحدة (متر، قدم، بوصة)."]};
 for(var wl3 in WY2)WN[wl3]=WN[wl3].concat(WY2[wl3]);
-var NW={hi:{c3:"! CHECK — मिट्टी की ताकत ठीक है, पर कोई स्ट्रक्चरल जाँच फ़ेल है (जाँच की लाइनें देखें)",c4:"! CHECK — मिट्टी की ताकत ठीक है, पर नीचे की चेतावनियाँ देखें (दीवार का आकार या मिट्टी की गहराई)"},en:{c3:"! CHECK — soil resistance is adequate but a structural check fails (see Checks)",c4:"! CHECK — soil resistance is adequate, but see the warnings below (wall size or cover depth)"},ar:{c3:"! تحقق — مقاومة التربة كافية لكن أحد الفحوص الإنشائية يفشل (انظر الفحوصات)",c4:"! تحقق — مقاومة التربة كافية، لكن راجع التحذيرات أدناه (حجم الجدار أو عمق التغطية)"}};
+var WY3={hi:["पंचिंग का घेरा दीवार के किनारों तक पहुँच रहा है: पंचिंग जाँच अनुमानित है, स्ट्रक्चरल इंजीनियर किनारों की डिटेलिंग जाँचे।"],en:["The punching zone reaches the wall edges: the punching check is approximate; the structural engineer must verify the edge detailing."],ar:["منطقة القص الثاقب تصل إلى حواف الجدار: الفحص تقريبي ويجب على المهندس الإنشائي التحقق من تفاصيل الحواف."]};
+for(var wl4 in WY3)WN[wl4]=WN[wl4].concat(WY3[wl4]);
+var NW={hi:{c3:"✗ NOT ADEQUATE — मिट्टी की ताकत ठीक है, पर कोई स्ट्रक्चरल जाँच फ़ेल है (जाँच की लाइनें देखें)",c4:"✓ PASS WITH REMARKS — स्ट्रक्चरल इंजीनियर की समीक्षा ज़रूरी (नीचे की चेतावनियाँ देखें)"},en:{c3:"✗ NOT ADEQUATE — soil resistance is adequate but a structural check fails (see Checks)",c4:"✓ PASS WITH REMARKS — structural engineer review required (see warnings below)"},ar:{c3:"✗ غير كافٍ — مقاومة التربة كافية لكن أحد الفحوص الإنشائية يفشل (انظر الفحوصات)",c4:"✓ ناجح مع ملاحظات — يلزم مراجعة المهندس الإنشائي (انظر التحذيرات أدناه)"}};
 for(var k in NW)for(var j in NW[k])T[k][j]=NW[k][j];
 var AM={w:"W",dw:"W",h:"H",z:"Z",plate:"pl"};
 var CKP={hi:"दी गई मोटाई ≥ न्यूनतम",en:"Provided thickness ≥ minimum",ar:"السماكة المقدمة ≥ الحد الأدنى"};
@@ -255,10 +284,8 @@ var NX={hi:{pn:"प्रोजेक्ट / क्लाइंट का न�
 for(var k in NX)for(var j in NX[k])T[k][j]=NX[k][j];
 var NY={hi:{eq:"उपकरण / ड्राइव का संदर्भ, क्लाइंट रिपोर्ट के लिए (वैकल्पिक)",dn:"दस्तावेज़ नंबर, क्लाइंट रिपोर्ट के लिए (वैकल्पिक)",dia:"शाफ़्ट व्यास / अधिकतम दीवार चौड़ाई",dw:"दीवार की चौड़ाई (बॉक्स 6 से)"},en:{eq:"Equipment / drive reference for client report (optional)",dn:"Document no. for client report (optional)",dia:"Shaft diameter / max wall width",dw:"Wall width (from box 6)"},ar:{eq:"المعدة / مرجع الدرايف لتقرير العميل (اختياري)",dn:"رقم المستند لتقرير العميل (اختياري)",dia:"قطر العمود / أقصى عرض للجدار",dw:"عرض الجدار (من الخانة 6)"}};
 for(var k in NY)for(var j in NY[k])T[k][j]=NY[k][j];
-var NV={hi:{tl:"लाइट",td:"डार्क"},en:{tl:"Light",td:"Dark"},ar:{tl:"فاتح",td:"داكن"}};
 var NZ={hi:{thp:"दी गई दीवार की मोटाई",dr:"ड्रॉइंग संदर्भ, क्लाइंट रिपोर्ट के लिए (वैकल्पिक)",gr:"सॉइल रिपोर्ट संदर्भ, क्लाइंट रिपोर्ट के लिए (वैकल्पिक)"},en:{thp:"Provided wall thickness",dr:"Drawing reference for client report (optional)",gr:"Geotechnical report reference for client report (optional)"},ar:{thp:"سماكة الجدار المقدمة",dr:"مرجع الرسم لتقرير العميل (اختياري)",gr:"مرجع تقرير التربة لتقرير العميل (اختياري)"}};
 for(var k in NZ)for(var j in NZ[k])T[k][j]=NZ[k][j];
-for(var k in NV)for(var j in NV[k])T[k][j]=NV[k][j];
 function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 function rep(){var t=T[L],x=R,sl=t["s"+(x.si+1)],tn=un("ton"),en=x.ent;function sp(s){return s.slice(s.indexOf(" ")+1)}
 var jr=en.jk+" "+un(x.un.jk)+(x.un.jk==="ton"?"":" ("+x.jk.toFixed(1)+" "+tn+")");
@@ -283,11 +310,12 @@ if(x.tp>0)res.push(["Provided concrete thickness",tmm+" mm"+(thOK?" (not less th
 var chk=[["Soil resistance (Rankine passive)","FOS "+x.fos.toFixed(2)+" ≥ 2.00",fOK?"PASS":"FAIL"],["Punching shear, ACI 318 (at "+tmm+" mm)",f0(x.vu)+" kN ≤ "+f0(cap)+" kN (capacity), utilization "+Math.round(x.vu/cap*100)+"%",pOK?"PASS":"FAIL"],["Concrete bearing stress",x.br.toFixed(2)+" MPa ≤ "+x.brL.toFixed(2)+" MPa (limit)",bOK?"PASS":"FAIL"]];
 if(x.tp>0)chk.splice(2,0,["Provided thickness vs minimum",tmm+" mm ≥ "+x.th+" mm",thOK?"PASS":"FAIL"]);
 if(x.wet!==null)chk.push(["Worst case: water table at ground surface",f0(x.wet)+" kN ("+f0(x.wet/Gq)+" Ton), FOS = "+(x.wet/x.F).toFixed(2),x.wet/x.F>=2?"PASS":"REVIEW"]);
-var cau=x.wn.some(function(k){return k===1||k===3||k===6});
+var cau=x.wn.some(function(k){return k===1||k===3||k===6||k===11});
 var st=all?(cau?"PASS WITH REMARKS – STRUCTURAL ENGINEER REVIEW REQUIRED":"ADEQUATE – PASS (FOR CHECKS PERFORMED)"):"NOT ADEQUATE – REVISE DESIGN ("+[fOK?"":"FOS "+x.fos.toFixed(2)+" < 2.00",pOK?"":"punching shear",bOK?"":"concrete bearing",thOK?"":"provided thickness"].filter(Boolean).join(", ")+")";
 var opt=null;if(x.opts)opt=x.opts.map(function(o){return["Width "+o[0]+" m",o[1]?"Height "+o[1]+" m, wall bottom at "+(x.Z+o[1]).toFixed(1)+" m depth":"More than 15 m needed",""]});
 var bs=["Passive earth resistance by Rankine theory (no wall friction, no lateral load spread).","Jacking load = maximum rated jack force; required factor of safety ≥ 2.00.","Punching shear to ACI 318 (load factor 1.6, strength reduction factor φ = 0.75, vc = 0.33√f′c). Concrete bearing limit = 0.5525 f′c.",x.gw===null?"No groundwater data entered; the worst case with the water table at ground surface is shown for information.":"Groundwater at the stated depth is included in the passive resistance."];
-var rm=x.wn.map(function(k){return k===5?"The wall width exceeds the shaft diameter / maximum wall width: reduce the width and increase the height, or improve the ground.":WN.en[k].replace(/ Meter/g," m")});var asmd=has("z")||has("plate")||has("w")||x.ds||x.dc;if(asmd)rm.push("Values marked (assumed) or (default) were not entered; default values were used. Confirm against project data.");if(x.wet!==null&&x.wet/x.F<2)rm.push("If the water table rises to ground surface, FOS falls below 2.00; groundwater control is required.");
+var rm=x.wn.map(function(k){return k===5?"The wall width exceeds the shaft diameter / maximum wall width: reduce the width and increase the height, or improve the ground.":WN.en[k].replace(/ Meter/g," m")});var asmd=has("z")||has("plate")||has("w")||x.ds||x.dc;
+if(x.si===5)rm.push("Custom soil / rock parameters (φ, c, γ) were entered by the user; their source must be stated and confirmed by the geotechnical engineer.");if(asmd)rm.push("Values marked (assumed) or (default) were not entered; default values were used. Confirm against project data.");if(x.wet!==null&&x.wet/x.F<2)rm.push("If the water table rises to ground surface, FOS falls below 2.00; groundwater control is required.");
 var h=[["Project",$("pn").value.trim()],["Document no.",$("dn").value.trim()],["Equipment / drive",$("eq").value.trim()],["Drawing ref.",$("dr").value.trim()],["Geotechnical ref.",$("gr").value.trim()],["Date",new Date().toLocaleDateString("en-GB")]].filter(function(a){return a[1]});
 return{stn:asmd?"Result is valid for the values listed above; items marked (assumed) or (default) are to be confirmed against project data.":"",t:"MICROTUNNELING THRUST / BACK WALL DESIGN CALCULATION",h:h,inp:inp,res:res,chk:chk,opt:opt,st:st,ok:all,bs:bs,rm:rm,note:"Preliminary thrust wall bearing and sizing calculation. Reinforcement design, bending moment checks, load eccentricity and shaft wall construction drawings shall be verified and approved by a licensed structural / geotechnical engineer before execution."}}
 function pdf(){calc();if(!R)return;var d=sub(),h="<div class=s1>"+esc(d.t)+"</div><table class=hdr>";for(var i=0;i<d.h.length;i+=2){var q=d.h[i+1];h+="<tr><td"+(q?"":" colspan=2")+"><b>"+esc(d.h[i][0])+":</b> "+esc(d.h[i][1])+"</td>"+(q?"<td><b>"+esc(q[0])+":</b> "+esc(q[1])+"</td>":"")+"</tr>"}h+="</table><table><colgroup><col style='width:48%'><col style='width:40%'><col style='width:12%'></colgroup>";
@@ -326,9 +354,8 @@ if(!/^(\d+\.?\d*|\.\d+)$/.test(s)){if(BAD.indexOf(i)<0)BAD.push(i);return 0}retu
 function emp(i){return $(i).value.trim()===""}
 function cpy(s,ok){function fb(){var t=document.createElement("textarea");t.value=s;t.style.position="fixed";t.style.opacity="0";document.body.appendChild(t);t.select();try{if(document.execCommand("copy"))ok()}catch(e){}document.body.removeChild(t)}try{navigator.clipboard.writeText(s).then(ok,fb)}catch(e){fb()}}
 function cust(){$("cx").style.display=$("soil").value==="cu"?"grid":"none"}
-function setTheme(v){document.documentElement.setAttribute("data-theme",v)}
 function theme(){var r=document.documentElement,d=r.getAttribute("data-theme");var dark=d?d==="dark":matchMedia("(prefers-color-scheme:dark)").matches;r.setAttribute("data-theme",dark?"light":"dark")}
-function setLang(l){L=l;var r=document.documentElement;r.lang=l;r.dir=l==="ar"?"rtl":"ltr";document.querySelectorAll("[data-k]").forEach(function(e){e.textContent=T[l][e.dataset.k]});$("cb").textContent=T[l].copy;document.querySelectorAll("[data-p]").forEach(function(e){e.placeholder=EG[l]+" "+e.dataset.p});renderG(l);closePop();ui();var tm=$("thm"),dk=(document.documentElement.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light"))==="dark";tm.options[0].textContent="☀ "+T[l].tl;tm.options[1].textContent="🌙 "+T[l].td;tm.value=dk?"dark":"light";$("lang").value=l;if(R)show()}
+function setLang(l){L=l;var r=document.documentElement;r.lang=l;r.dir=l==="ar"?"rtl":"ltr";document.querySelectorAll("[data-k]").forEach(function(e){e.textContent=T[l][e.dataset.k]});$("cb").textContent=T[l].copy;document.querySelectorAll("[data-p]").forEach(function(e){e.placeholder=EG[l]+" "+e.dataset.p});renderG(l);closePop();ui();if(R)show()}
 function calc(){
 BAD=[];hasCalc=true;var Fk=num("jk")*FF[U.jk],jk=Fk/G,W=len("W"),H=len("H"),Z=len("Z"),pl=len("pl"),D=len("D"),fck=num("fck"),s=$("soil").value,ad=[],aw=false,wn=[],opts=null,ent={};["jk","W","H","Z","gw","pl","D","TH"].forEach(function(i){ent[i]=emp(i)?null:num(i)});
 if(s==="cu"){num("cp");num("cc");num("cg")}
@@ -352,7 +379,7 @@ var tau=0.75*0.33*Math.sqrt(fck)*1000,Fu=1.6*F;
 var d=(-pl+Math.sqrt(pl*pl+Fu/tau))/2;
 var th=Math.max(300,Math.ceil((d+0.1)*20)*50),dd=th/1000-0.1,Vc=tau*4*(pl+dd)*dd,br=Fu/(pl*pl)/1000,brL=0.5525*fck;
 if(Fu/(pl*pl)/1000>0.5525*fck)wn.push(0);
-if(pl+d>Math.min(W,H))wn.push(1);
+if(pl>Math.min(W,H))wn.push(1);else if(!(len("TH")>0)&&pl+d>Math.min(W,H))wn.push(11);
 if(aw&&W>6)wn.push(2);
 if(Z<1)wn.push(3);
 if(D>0&&W>D+1e-6)wn.push(5);
@@ -375,7 +402,7 @@ $("bs").textContent=bsx(x);var w=$("wn");if(x.wn.length){w.style.display="block"
 var sn=$("sn");if(x.D>0){sn.style.display="block";sn.textContent=NS[L]}else sn.style.display="none";
 var b=$("sb");
 var okS=x.fos>=2&&x.vu<=(x.Vcp||x.vc)&&x.br<=x.brL&&!(x.tp>0&&Math.round(x.tp*1000)<x.th);
-var cau=x.wn.some(function(k){return k===1||k===3||k===6});
+var cau=x.wn.some(function(k){return k===1||k===3||k===6||k===11});
 if(okS&&!cau){b.className="st p";b.textContent=t.ok}
 else if(x.fos>=2){b.className="st k";b.textContent=okS?t.c4:t.c3}
 else{b.className="st k";b.textContent=x.fos>=1.5?t.c1:t.c2}}
@@ -386,6 +413,68 @@ var done=function(){$("cb").textContent=t.copied;setTimeout(function(){$("cb").t
 cpy(s,done)}
 document.querySelectorAll(".f").forEach(function(f){var l=f.querySelector("label"),i=f.querySelector("input:not([type=hidden]),select,button");if(l&&i)l.htmlFor=i.id});
 setLang("hi");calc();
+/* Build 54 — EMBED MODE. Used only when this page is shown inside HDD Pre-Bore Designer Pro (opened as ...html?embed=1).
+   Opened on its own (no ?embed=1, or not inside a frame) NOTHING below runs and the page behaves exactly as before.
+   In embed mode: the page's own top bar (title, language box, theme button) is hidden, and the language and theme are
+   taken from the app (message type "hdd-sync") through this page's own setLang() and data-theme. No calculation is touched. */
+(function(){
+try{
+if(!/(?:\?|&)embed=1(?:&|$)/.test(location.search)||window.parent===window)return;
+var st=document.createElement("style");st.textContent=".hd{display:none!important}";document.head.appendChild(st);
+window.addEventListener("message",function(e){
+if(e.origin!==location.origin||e.source!==window.parent)return;
+var d=e.data;if(!d||d.type!=="hdd-sync")return;
+if(d.theme==="dark"||d.theme==="light")document.documentElement.setAttribute("data-theme",d.theme);
+if(d.lang&&T[d.lang]&&d.lang!==L){setLang(d.lang);var s=$("lang");if(s)s.value=d.lang}
+});
+window.parent.postMessage({type:"mt-ready"},location.origin);
+}catch(err){}
+})();
+</script>
+<script>
+/* Build 55 — header controls (theme select), one-line fit of the title/subtitle, embed additions. No calculation / formula code is touched. */
+(function(){
+"use strict";
+var EMB=/(?:\?|&)embed=1(?:&|$)/.test(location.search)&&window.parent!==window;
+var TH={hi:["☀ लाइट","🌙 डार्क","✦ क्लॉड"],en:["☀ Light","🌙 Dark","✦ Claude"],ar:["☀ فاتح","🌙 داكن","✦ كلود"]};
+function root(){return document.documentElement}
+function lab(){var t=$("thm");if(t){for(var i=0;i<3;i++)t.options[i].textContent=TH[L][i]}}
+function curTh(){var d=root().getAttribute("data-theme");if(d==="light"||d==="dark"||d==="claude")return d;return matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light"}
+window.thS=function(v){root().setAttribute("data-theme",v)};
+/* keep the title / subtitle on ONE line: shrink the letters until they fit the width; wrap only if even the smallest size cannot fit */
+function fit(el,max,min){
+ if(!el||!el.getClientRects().length)return;
+ el.style.whiteSpace="nowrap";var s=max;el.style.fontSize=s+"px";
+ while(el.scrollWidth>el.clientWidth+1&&s>min){s-=.5;el.style.fontSize=s+"px"}
+ if(el.scrollWidth>el.clientWidth+1){el.style.whiteSpace="normal";el.style.overflow="visible"}
+}
+function fitAll(){fit($("mt1"),26,11);var q=document.querySelectorAll(".card>.sb");for(var i=0;i<q.length;i++)fit(q[i],EMB?14:12,9)}
+/* setLang itself is not edited — it is wrapped */
+var _sl=window.setLang;
+window.setLang=function(l){var r=_sl.apply(this,arguments);try{lab();fitAll()}catch(e){}return r};
+var th=$("thm");if(th)th.value=curTh();
+lab();fitAll();
+window.addEventListener("resize",fitAll);window.addEventListener("orientationchange",function(){setTimeout(fitAll,150)});
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fitAll);
+
+if(EMB){
+ /* inside the app: theme (light/dark/claude/hc) and guide flag come from the app; edge scrolls are reported to the app's own Lock button */
+ window.addEventListener("message",function(e){
+  if(e.origin!==location.origin||e.source!==window.parent)return;
+  var d=e.data;if(!d||d.type!=="hdd-sync")return;
+  if(d.theme==="light"||d.theme==="dark"||d.theme==="claude"||d.theme==="hc")root().setAttribute("data-theme",d.theme);
+  if(d.guide===true){var st=$("gHide");if(!st){st=document.createElement("style");st.id="gHide";st.textContent="details.card{display:none!important}";document.head.appendChild(st)}}
+ });
+ var y0=0,sent=false;
+ function se(){return document.scrollingElement||document.documentElement}
+ document.addEventListener("touchstart",function(e){if(e.touches&&e.touches[0]){y0=e.touches[0].clientY;sent=false}},{passive:true});
+ document.addEventListener("touchmove",function(e){
+  if(sent||!e.touches||!e.touches[0])return;var dy=e.touches[0].clientY-y0;if(Math.abs(dy)<12)return;
+  var s=se(),top=s.scrollTop<=0,bot=s.scrollTop+s.clientHeight>=s.scrollHeight-1;
+  if((dy>0&&top)||(dy<0&&bot)){sent=true;try{window.parent.postMessage({type:"mt-edge"},location.origin)}catch(x){}}
+ },{passive:true});
+}
+})();
 </script>
 </body>
 </html>
