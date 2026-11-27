@@ -28,7 +28,7 @@
 // RELEASE STEP: after uploading a new live page, set its entry in version.json to that page's APP_BUILD_VERSION.
 // Build 53: the light check reloads ONLY when version.json names a NEWER build (the number after "build") than the one
 // running. An older or equal entry is ignored, so forgetting to update version.json can never make the app reload on every open.
-const APP_BUILD_VERSION = 'v7.8.6-91-2026-11-21-build56';   // v7_8_6-46: changed on purpose (old: v7.8.6-90-2026-11-16-build45) - a phone holding an older cached copy reloads once to get this build
+const APP_BUILD_VERSION = 'v7.8.6-91-2026-11-26-build69';   // v7_8_6-46: changed on purpose (old: v7.8.6-90-2026-11-16-build45) - a phone holding an older cached copy reloads once to get this build
 (function(){
   try {
     if (location.search.indexOf('_v=') !== -1) return; // just did a fresh cache-busted load — nothing more to do
@@ -2025,11 +2025,14 @@ body.hfl-locked #hflSheetWrap .hfl-backrow{position:sticky;top:0;z-index:3;backg
 .hfl-hfield input:focus{outline:none;border-color:var(--accent);}
 .hfl-info{display:inline-block;cursor:pointer;color:var(--t2);font-size:10px;margin-left:2px;}
 .hfl-info:hover{color:var(--accent);}
-.hfl-tip{display:none;position:absolute;z-index:50;background:#0c2340;color:var(--text);
+.hfl-tip{display:none;position:absolute;z-index:50;background:#0c2340;color:#e8f0ff;
   border:1px solid var(--accent);border-radius:8px;padding:7px 10px;font-size:10px;
   font-weight:400;text-align:left;line-height:1.4;white-space:normal;max-width:190px;
   box-shadow:0 4px 16px rgba(0,0,0,.5);margin-top:4px;}
 .hfl-tip.show{display:block;}
+/* v7_8_6-63 (U1 re-fix): body.light-theme *{color:...!important} (and the Claude-theme twin) forced the pop-up text dark on its dark-blue box.
+   Same pop-up class for all 5 Logbook sheets (ready + customized). Colour only - no size, place or behaviour. */
+body.light-theme .hfl-tip,body.light-theme .hfl-tip *,body.claude-theme .hfl-tip,body.claude-theme .hfl-tip,body.claude-theme .hfl-tip *,body.light-theme.claude-theme .hfl-tip,body.light-theme.claude-theme .hfl-tip *{color:#e8f0ff!important;}
 #hflCard th{position:relative;}
 .hfl-steer-cell{padding:3px!important;}
 /* ParaTrack STEERING PATTERN must match the paper Pilot Sheet exactly:
@@ -2665,7 +2668,7 @@ html body .form-card,html body .mode-card,html body .cw-card{padding-left:var(--
     </button>
   </div>
   <div class="smenu-version">HDD PRE-BORE DESIGNER PRO · v7_8_6-92 Built by Saiyad Hussain</div>
-  <div id="smenuTestBuildTag" style="padding:0 20px 4px;font-size:9px;color:rgba(255,255,255,.22)">Build: v7_8_6-56</div>
+  <div id="smenuTestBuildTag" style="padding:0 20px 4px;font-size:9px;color:rgba(255,255,255,.22)">Build: v7_8_6-69</div>
   <input type="hidden" id="autoStepUsed" value="">
   <div id="hddSyncStatus" onclick="try{HddSync.syncNow(true)}catch(e){}" style="padding:0 20px 12px;font-size:9px;color:rgba(255,255,255,.4);cursor:pointer"></div>
   <div class="hddProf-foot" id="hddProfFoot">
@@ -8804,6 +8807,9 @@ function _hdrTyped(pairs) {
     .map(function (p) { return p[0] + ': ' + String(p[1]).trim(); })
     .join(' | ');
 }
+// v7_8_6-59 (M5): Machine Model shown only when the user typed it (no "HDD" default); same wording in all four modes
+function _hdrMachine() { const m = String(v('macMod') || '').trim(); return m ? ' | Machine: ' + m : ''; }
+function _machXlRows() { const m = String(v('macMod') || '').trim(); return m ? [['Machine', m]] : []; }
 
 // RC = seg / tan(delta_angle)
 // Same angle = straight = RC null = show ∞
@@ -8841,13 +8847,16 @@ function getRC(idx){
 function updateFinalStatus() {
   const fs = document.getElementById('finalStatus');
   if (!fs) return;
+  fs.style.display = '';   // v7_8_6-58 (U2): shown again for the green / yellow states
   const sc = document.getElementById('safetyContent');
   if (!sc) { fs.className='fs-safe'; fs.textContent='✅ DESIGN SAFE'; return; }
   const bads = sc.querySelectorAll('.sval.bad');
   const warns = sc.querySelectorAll('.sval.warn');
   if (bads && bads.length > 0) {
+    // v7_8_6-58 (U2): the red 'ERROR FOUND' box is hidden (never replaced by a green 'safe' text)
     fs.className = 'fs-error';
-    fs.textContent = '❌ ERROR FOUND — Check safety rows above';
+    fs.textContent = '';
+    fs.style.display = 'none';
   } else if (warns && warns.length > 0) {
     fs.className = 'fs-warn';
     fs.textContent = '⚠ REVIEW REQUIRED — Some values need attention';
@@ -9406,7 +9415,7 @@ function _zdcRebuildSafety(d) {
       <div class="srow"><span class="slbl">Mode: 🎯 Pit To Pit Zero Degree Crossing</span><span class="sval ok">✓ ACTIVE</span></div>
       <div class="srow"><span class="slbl">Target Angle: ${toD(ang)} (${_angQ(angQuality)})</span><span class="sval ${angStatus[1]}">${angStatus[0]}</span></div>
       <div class="srow"><span class="slbl">Entry Pit Depth: ${ed.toFixed(2)}m | Achieved: ${actualED.toFixed(2)}m | Δ${entryDiff.toFixed(2)}m</span><span class="sval ${entryClass}">${entryStatus}</span></div>
-      <div class="srow"><span class="slbl">Exit Pit Depth: ${xd.toFixed(2)}m | Achieved: ${lastDepth.toFixed(2)}m | Δ${exitDiff.toFixed(2)}m | Variation: ${depthVar}m</span><span class="sval ${exitClass}">${exitStatus}</span></div>
+      <div class="srow"><span class="slbl">Exit Pit Depth: ${xd.toFixed(2)}m | Achieved: ${lastDepth.toFixed(2)}m | Δ${exitDiff.toFixed(2)}m</span><span class="sval ${exitClass}">${exitStatus}</span></div>
       <div class="srow"><span class="slbl">Countable Bore: ${bl}m × ${n} rods @ ${rl}m/rod</span><span class="sval ok">✓ OK</span></div>
       <div class="srow"><span class="slbl">Punch-In (NC) Section: ~${ncDist.toFixed(0)}m · ${ncRods} rods · Peak: ${toDmag(peakAngle)}</span><span class="sval"><span style="color:var(--t2)">NC</span></span></div>
       ${(d.trueMaxDepth||0) > 0 ? `<div class="srow"><span class="slbl">True Max Depth (all zones): ${(d.trueMaxDepth||0).toFixed(2)}m | Target: ${(d.trueTargetMx||Math.max(ed,xd)).toFixed(2)}m | Δ${d.trueDeltaStr||'0.00'}m</span><span class="sval ok">✓ LIVE</span></div>` : ''}
@@ -9892,20 +9901,20 @@ function getInfoLines(){
     return ['TRIAL BORE DRAFT — PRE-BORE CHART',
       _hdrTyped([['Project', v('projN')], ['Client', v('projC')], ['Location', v('projL')]]),
       _hdrTyped([['Date', _hdrDate()], ['Prepared by', v('prepB')], ['Bore ID', v('boreID')]]),
-      `Rod=${rl}m | Bore=${bl}m | Rods: ${currentN}`,
+      `Rod=${rl}m | Bore=${bl}m | Rods: ${currentN}${_hdrMachine()}`,
       `Manually-entered angles | Max Depth (from entries): ${maxD.toFixed(2)}m`,
       rlGetInfoLine('std'),
-      (function () { const _od = (typeof getODmm === 'function') ? getODmm() : 0, _h = _mbrHdr(); return _od > 0 ? ('Pipe: ' + (v('pipT') || '—') + ' OD=' + _hdrOD(_od) + _h) : _h.replace(/^ \| /, ''); })(),
+      (function () { const _od = (typeof getODmm === 'function') ? getODmm() : 0, _h = _mbrHdr(); const _pw = calcPipeWeight(); if (_pw && _od > 0) return 'Pipe Size: ' + _hdrOD(_pw.odMM) + ' OD × ' + _hdrWT(_pw.wtMM) + ' WT' + _h; return _od > 0 ? ('Pipe: ' + (v('pipT') || '—') + ' OD=' + _hdrOD(_od) + _h) : _h.replace(/^ \| /, ''); })(),
       `Entry Angle: ${toD(entAngle)} | Exit Angle: ${toD(extAngle)} | Boom Height: ${machH}m`,
       _n1PunchLine()].filter(x=>x);
   }
   if(!G)return[];
-  return['HDD PRE-BORE CHART',
+  return['STANDARD HDD — PRE-BORE CHART',   // v7_8_6-59 (M3): was 'HDD PRE-BORE CHART' (printed twice)
     _hdrTyped([['Project', v('projN')], ['Client', v('projC')], ['Location', v('projL')]]),
     _hdrTyped([['Date', _hdrDate()], ['Prepared by', v('prepB')], ['Bore ID', v('boreID')]]),
-    `Machine: ${v('macMod')||'HDD'} | Rod=${G.rl}m | Bore=${G.bl}m | MaxD=${G.maxD}m`,
+    `Rod=${G.rl}m | Bore=${G.bl}m | MaxD=${G.maxD}m${_hdrMachine()}`,
     rlGetInfoLine('std'),
-    (G.odMM > 0 ? `Pipe: ${G.pipT} OD=${_hdrOD(G.odMM)}${_mbrHdr()} | Ream=${G.ream.toFixed(0)}mm` : _mbrHdr().replace(/^ \| /, '')),
+    (function () { const _pw = calcPipeWeight(); if (_pw && G.odMM > 0) return 'Pipe Size: ' + _hdrOD(_pw.odMM) + ' OD × ' + _hdrWT(_pw.wtMM) + ' WT' + _mbrHdr() + ' | Ream: ' + G.ream.toFixed(0) + 'mm'; return G.odMM > 0 ? `Pipe: ${G.pipT} OD=${_hdrOD(G.odMM)}${_mbrHdr()} | Ream=${G.ream.toFixed(0)}mm` : _mbrHdr().replace(/^ \| /, ''); })(),
     `Entry: ${toD(-G.plan.entPct)} | Exit: ${toD(G.plan.extPct)} | Step: ±${toDmag(G.ss)}/rod | Boom Height: ${G.machH}m`,
     _n1PunchLine()].filter(x=>x);
 }
@@ -9989,6 +9998,7 @@ function _excelChartCore_SHEETJS_BACKUP(){
       sfData = d ? [
         [(CURRENT_MODE===3?'CITY MODE':'ZERO DEGREE CROSSING')+' — SUMMARY',''],
         ['Bore Length (Countable)', d.bl+'m'],
+        ..._machXlRows(),
         ['Total Countable Rods', d.n+' rods × '+d.rl+'m'],
         ['Entry Pit Depth', d.ed.toFixed(2)+'m'],
         ['Exit Pit Depth', d.xd.toFixed(2)+'m'],
@@ -10082,6 +10092,7 @@ async function _excelChartCore(){
       const d = (CURRENT_MODE === 3) ? window._cwData : window._zdcData;
       sfData = d ? [
         ['Bore Length (Countable)', d.bl+'m'],
+        ..._machXlRows(),
         ['Total Countable Rods', d.n+' rods × '+d.rl+'m'],
         ['Entry Pit Depth', d.ed.toFixed(2)+'m'],
         ['Exit Pit Depth', d.xd.toFixed(2)+'m'],
@@ -10171,7 +10182,7 @@ async function _excelChartCore(){
       r++;
       const pwRows = [
         ['Pipe Type', pw.pipeType],
-        ['Pipe Size', pw.odMM.toFixed(1)+'mm OD × '+pw.wtMM.toFixed(1)+'mm WT'],
+        ['Pipe Size', _hdrOD(pw.odMM)+' OD × '+_hdrWT(pw.wtMM)+' WT'],
         ['Unit Weight', pw.kgPerM.toFixed(2)+' kg/m'],
         ['Total Pipe Weight', pw.totalKg.toFixed(1)+' kg / '+pw.totalTon.toFixed(2)+' Ton / '+pw.totalLbs.toFixed(1)+' lbs'],
         ['Estimated Required Rig', pw.estRigTon.toFixed(2)+' Ton ('+pw.rigSafetyFactorPct+'% safety factor)'],
@@ -10923,7 +10934,7 @@ function _doChartPDF(){
     const pw = calcPipeWeight(); // read-only — does not affect table/rows/formulas above
     const pwHTML = pw ? `<div class="pws">
         <div class="pws-g">
-          <div><b>Pipe Size:</b> ${pw.odMM.toFixed(1)}mm OD × ${pw.wtMM.toFixed(1)}mm WT</div>
+          <div><b>Pipe Size:</b> ${_hdrOD(pw.odMM)} OD × ${_hdrWT(pw.wtMM)} WT</div>
           <div><b>Total Pipe Weight:</b> ${pw.totalKg.toFixed(1)} kg / ${pw.totalTon.toFixed(2)} Ton / ${pw.totalLbs.toFixed(1)} lbs</div>
         </div>
       </div>` : '';
@@ -11010,11 +11021,17 @@ ${colWidthCSS}
     // Reserve room for the pipe-weight/photo block on the TRUE last page —
     // if it doesn't fit, move trailing rows onto a fresh final page instead
     // of letting the browser overflow it onto an uncontrolled extra sheet.
+    // v7_8_6-60 (M1): the off-screen measurement under-estimates the real printed height. Measured on the user's two real PDFs
+    // (A4 landscape): page 1 had only ~3-12 pt free while the Designed-by/disclaimer block needs ~27 pt, yet the estimate said it fits,
+    // so that block printed alone on a 2nd sheet while the header said "Page 1/1". A safety reserve (96 px = 25.4 mm) is added on the
+    // LAST page only: if it is that close to full, the last row moves to the next page together with the footer block and the
+    // page count ("Page 1/2") is honest. Page 1/continuation capacities, rows, columns and all values are untouched.
+    const _LAST_PAGE_SAFETY_PX=96;
     for(;;){
       const lastGrp=_pageGroups[_pageGroups.length-1];
       const cap=_pageGroups.length===1?_capFirstPx:_capContPx;
       const used=lastGrp.reduce((s,i)=>s+_rowHeightsPx[i],0);
-      if(used+_mExtraLastPx<=cap || lastGrp.length<=1) break;
+      if(used+_mExtraLastPx+_LAST_PAGE_SAFETY_PX<=cap || lastGrp.length<=1) break;
       _pageGroups.push([lastGrp.pop()]);
     }
     const pages=_pageGroups.length;
@@ -12331,6 +12348,13 @@ function loadProject(id) {
       if (G && G.rows && G.rows.length) {
         renderAll();
         document.getElementById('results').style.display = 'block';
+        // v7_8_6-69: a Mode 2 chart opened from Save Project gets the same bar title and the same Smart Edit state (OFF) as a freshly generated Mode 2 chart
+        // (renderAll() writes neither, so the previous mode's title / Smart Edit state stayed). Label text + Smart Edit flag only - nothing saved or calculated.
+        try {
+          var _t69 = document.querySelector('#results .exp-bar .exp-title');
+          if (_t69) _t69.textContent = 'PUNCH-IN TO PUNCH-OUT STANDARD MODE CHART';
+          SMART_EDIT_ON = false; applySmartEditState();
+        } catch (e69) {}
       }
     } else if (targetMode === 3 && typeof calcCityMode === 'function') {
       _cwFromGenerate = true; calcCityMode();
@@ -15897,7 +15921,7 @@ function _zdcRenderInline(d) {
       <div class="srow"><span class="slbl">Mode: 🎯 Pit To Pit Zero Degree Crossing</span><span class="sval ok">✓ ACTIVE</span></div>
       <div class="srow"><span class="slbl">Target Angle: ${toD(ang)} (${_angQ(angQuality)})</span><span class="sval ${angStatus[1]}">${angStatus[0]}</span></div>
       <div class="srow"><span class="slbl">Entry Pit Depth: ${ed.toFixed(2)}m | Achieved: ${actualED.toFixed(2)}m | Δ${entryDiff2.toFixed(2)}m</span><span class="sval ${entryOK2?'ok':'ww'}">${entryOK2?'✓ OK':'⚠ WARNING'}</span></div>
-      <div class="srow"><span class="slbl">Exit Pit Depth: ${xd.toFixed(2)}m | Achieved: ${lastD2.toFixed(2)}m | Δ${exitDiff2.toFixed(2)}m | Variation: ${depthVar}m</span><span class="sval ${exitOK2?'ok':'ww'}">${exitOK2?'✓ OK':'⚠ WARNING'}</span></div>
+      <div class="srow"><span class="slbl">Exit Pit Depth: ${xd.toFixed(2)}m | Achieved: ${lastD2.toFixed(2)}m | Δ${exitDiff2.toFixed(2)}m</span><span class="sval ${exitOK2?'ok':'ww'}">${exitOK2?'✓ OK':'⚠ WARNING'}</span></div>
       <div class="srow"><span class="slbl">Countable Bore: ${bl}m × ${n} rods @ ${rl}m/rod</span><span class="sval ok">✓ OK</span></div>
       <div class="srow"><span class="slbl">Punch-In (NC) Section: ~${ncDist.toFixed(0)}m · ${ncRods} rods · Peak: ${toDmag(peakAngle)}</span><span class="sval"><span style="color:var(--t2)">NC</span></span></div>
       ${_mbrPanelRowsHTML()}
@@ -16226,7 +16250,7 @@ ${(() => { const _l = [
     _hdrTyped([['Project', v('projN')], ['Client', v('projC')], ['Location', v('projL')]]),
     _hdrTyped([['Date', _hdrDate()], ['Prepared by', v('prepB')], ['Bore ID', v('boreID')]])
   ].filter(function (x) { return x; }); return _l.map(function (t) { return '  • ' + esc(t) + '<br>'; }).join('\n'); })()}
-  • Bore Length (Countable): ${d.bl}m | Rods: ${_rodsLbl(d.n, d.rl, d.bl)}<br>
+  • Bore Length (Countable): ${d.bl}m | Rods: ${_rodsLbl(d.n, d.rl, d.bl)}${esc(_hdrMachine())}<br>
   • ${(() => { const _pw = calcPipeWeight(); const _p = []; if (_pw) _p.push('Pipe Size: ' + _hdrOD(_pw.odMM) + ' OD × ' + _hdrWT(_pw.wtMM) + ' WT'); else if (+d.odMM > 0) _p.push('Pipe OD: ' + _hdrOD(d.odMM)); const _h = _mbrHdr().replace(/^ \| /, ''); if (_h) _p.push(_h); _p.push('Ream: ' + d.ream + 'mm'); return _p.join(' | '); })()}<br>
   • ${(() => { const _p = []; if (!_isCityMode) _p.push('Target Angle: ' + toD(d.ang) + ' (' + _zdcAngQX(d) + ')'); _p.push('Entry Pit Depth: ' + d.ed.toFixed(2) + 'm'); _p.push('Exit Pit Depth: ' + d.xd.toFixed(2) + 'm'); return _p.join(' | '); })()}<br>
   • Punch-In section: ~${d.ncDist.toFixed(0)}m · ${d.ncRods} rods (NOT COUNTABLE)
@@ -16404,6 +16428,7 @@ function _zdcExcelCore() {
   const sum = [
     ['ZERO DEGREE CROSSING — SUMMARY',''],
     ['Bore Length (Countable)', d.bl+'m'],
+    ..._machXlRows(),
     ['Total Countable Rods', d.n+' rods × '+d.rl+'m'],
     ['Punch-In Section (NOT COUNTABLE)', '~'+d.ncDist.toFixed(0)+'m · '+d.ncRods+' rods'],
     ['Entry Pit Depth', d.ed.toFixed(2)+'m'],
@@ -17994,8 +18019,10 @@ function setMode(mode) {
   if (mode !== 4 && mode !== 1) {
     const expBar = document.querySelector('.exp-bar');
     if (expBar && expBar.querySelector('[onclick="zdcExportExcel()"]')) {
+      // v7_8_6-57 (B2): title follows the mode being entered (was hard-coded "TRIAL BORE DRAFT MODE" for modes 2 and 3)
+      const _expBarTitle = (mode === 3) ? 'PIT TO PIT CURVE / CITY MODE CHART' : 'PUNCH-IN TO PUNCH-OUT STANDARD MODE CHART';
       expBar.innerHTML = `
-        <span class="exp-title">TRIAL BORE DRAFT MODE</span>
+        <span class="exp-title">${_expBarTitle}</span>
         <div class="exp-btns">
           <button class="btn-smart" id="smartEditBtn" onclick="toggleSmartEdit()">✏️ Smart Edit: <span id="seState">OFF</span></button>
           ${(typeof _timeToggleButtonHTML==='function')?_timeToggleButtonHTML():''}
@@ -18356,6 +18383,7 @@ function _timeCaretEnd(el) {
 function onTimeManualFocus(el) {
   const t = (el.textContent || '').trim();
   if (/^\d{2}:\d{2}$/.test(t)) { el.textContent = t + ':'; _timeCaretEnd(el); }      // seconds slot opens again
+  el.__tmPrev = el.textContent;   // v7_8_6-61: remembered so a later Backspace is recognised even if the keyboard does not say "delete"
 }
 // v7_8_6-4: erasing a time must really erase it. A LIVE-logged value is shown inside the manual box (▶ mark); when the user
 // empties that box, the live data behind it is reset too — otherwise it re-appeared the moment the cursor left.
@@ -18373,8 +18401,13 @@ function onTimeManualEdit(el, key, which) {
   const _ev = (typeof window !== 'undefined') ? window.event : null;
   const _evType = _ev ? _ev.type : '';
   if (_evType === 'input') {
-    const f = _timeFmtTyped(el.textContent, /^delete/.test(_ev.inputType || ''));
+    // v7_8_6-61 (G3/U6): a keyboard that does not report Backspace as inputType "delete*" made the box re-add the ":" every time, so it could not be
+    // erased with Backspace. Shorter text than before = deleting, whatever inputType says.
+    const _t0 = el.textContent || '';
+    const _del = /^delete/.test(_ev.inputType || '') || (typeof el.__tmPrev === 'string' && el.__tmPrev.length - _t0.length === 1);   // v7_8_6-62: exactly one character gone = Backspace (paste / typing over a selection is not a delete)
+    const f = _timeFmtTyped(_t0, _del);
     if (f !== el.textContent) { el.textContent = f; _timeCaretEnd(el); }
+    el.__tmPrev = el.textContent;
   } else if (_evType === 'blur') {
     if (!(el.getAttribute && el.getAttribute('data-livefill') === '1')) {
       const f = _timeFinalizeTyped(el.textContent);
@@ -19472,7 +19505,7 @@ function _cwRenderInline(d) {
   const piRow = `<tr class="r-pi" style="opacity:.55;font-style:italic;">
     <td>0</td><td>${_row0DistTxt}</td>
     <td id="ca-cw-0" data-rod="0" style="color:#ff8899;font-weight:bold" contenteditable="true" oninput="onCwAngEdit(this)" onblur="onCwAngEdit(this)">${toD(-peakAngle)}</td>
-    <td>${_row0DepthTxt}</td><td>—</td>${piGpsCellCw}${piRlCells}<td>—</td><td>—</td>
+    <td>${_row0DepthTxt}</td><td>Straight</td>${piGpsCellCw}${piRlCells}<td>—</td><td>—</td>
     ${_timeCellHTML('cw-0')}
     <td id="rm-cw-0" style="color:var(--warn);font-weight:bold;font-size:9px;white-space:pre-wrap">${_row0Remark}</td>
   </tr>`;
@@ -19611,7 +19644,7 @@ function _cwRenderInline(d) {
     saf.innerHTML = `
       <div class="srow"><span class="slbl">Mode: 🏙️ Pit To Pit Curve / City Mode</span><span class="sval ok">✓ ACTIVE</span></div>
       <div class="srow"><span class="slbl">Entry Pit Depth: ${ed.toFixed(2)}m | Achieved: ${actualED.toFixed(2)}m | Δ${entryDiff.toFixed(2)}m</span><span class="sval ${entryOK?'ok':'ww'}">${entryOK?'✓ OK':'⚠ WARNING'}</span></div>
-      <div class="srow"><span class="slbl">Exit Pit Depth: ${xd.toFixed(2)}m | Achieved: ${lastD.toFixed(2)}m | Δ${exitDiff.toFixed(2)}m | Var: ${depthVar}m</span><span class="sval ${exitOK?'ok':'ww'}">${exitOK?'✓ OK':'⚠ WARNING'}</span></div>
+      <div class="srow"><span class="slbl">Exit Pit Depth: ${xd.toFixed(2)}m | Achieved: ${lastD.toFixed(2)}m | Δ${exitDiff.toFixed(2)}m</span><span class="sval ${exitOK?'ok':'ww'}">${exitOK?'✓ OK':'⚠ WARNING'}</span></div>
       <div class="srow"><span class="slbl">Countable Bore: ${bl}m × ${n} rods @ ${rl}m/rod</span><span class="sval ok">✓ OK</span></div>
       <div class="srow"><span class="slbl">NC Section: ~${ncDist.toFixed(0)}m · ${ncRods} rods · Peak: ${toDmag(peakAngle)}</span><span class="sval"><span style="color:var(--t2)">NC</span></span></div>
       <div class="srow"><span class="slbl">True Max Depth (all zones): ${(d.trueMaxDepth||0).toFixed(2)}m | Target: ${(d.trueTargetMx||Math.max(ed,xd)).toFixed(2)}m | Δ${d.trueDeltaStr||'0.00'}m</span><span class="sval ${d.trueMaxOK?'ok':'ww'}">${d.trueMaxOK?'✓ OK':'⚠ WARNING'}</span></div>
@@ -19951,7 +19984,7 @@ function _cwPatchSafetyCards(d) {
     saf.innerHTML = `
       <div class="srow"><span class="slbl">Mode: 🏙️ Pit To Pit Curve / City Mode</span><span class="sval ok">✓ ACTIVE</span></div>
       <div class="srow"><span class="slbl">Entry Pit Depth: ${ed.toFixed(2)}m | Achieved: ${actualED.toFixed(2)}m | Δ${entryDiff.toFixed(2)}m</span><span class="sval ${entryOK ? 'ok' : 'ww'}">${entryOK ? '✓ OK' : '⚠ WARNING'}</span></div>
-      <div class="srow"><span class="slbl">Exit Pit Depth: ${xd.toFixed(2)}m | Achieved: ${lastD.toFixed(2)}m | Δ${exitDiff.toFixed(2)}m | Variation: ${depthVar}m</span><span class="sval ${exitOK ? 'ok' : 'ww'}">${exitOK ? '✓ OK' : '⚠ WARNING'}</span></div>
+      <div class="srow"><span class="slbl">Exit Pit Depth: ${xd.toFixed(2)}m | Achieved: ${lastD.toFixed(2)}m | Δ${exitDiff.toFixed(2)}m</span><span class="sval ${exitOK ? 'ok' : 'ww'}">${exitOK ? '✓ OK' : '⚠ WARNING'}</span></div>
       <div class="srow"><span class="slbl">Countable Bore: ${bl}m × ${Math.ceil(bl/rl)} rods @ ${rl}m/rod</span><span class="sval ok">✓ OK</span></div>
       <div class="srow"><span class="slbl">Punch-In (NC) Section: ~${ncDist.toFixed(0)}m · ${ncRods} rods · Peak: ${toDmag(peakAngle)}</span><span class="sval"><span style="color:var(--t2)">NC</span></span></div>
       ${_mbrPanelRowsHTML()}
@@ -27005,7 +27038,7 @@ function hflCuRowHTML(tool, i, cfg) {
       case 'clock': tds += tagTd(hflClockCellHTML(tool, i, c), cid); break;
       default: { const val = (rv[c.id] || '').toString().replace(/</g, '&lt;');
         const idAttr = (c.id === 'comments') ? ' id="hfl-rm-' + tool + '-' + i + '"' : '';
-        tds += '<td data-cid="' + cid + '"' + idAttr + ' contenteditable="true" data-ph="—" oninput="hflRowEdit(\'' + tool + '\',' + i + ',\'' + c.id + '\',this)" onblur="hflRowEdit(\'' + tool + '\',' + i + ',\'' + c.id + '\',this)">' + val + '</td>'; }
+        tds += '<td data-cid="' + cid + '"' + idAttr + ' contenteditable="true"' + ((c.eid === 'pitch' || c.id === 'pitch') ? ' inputmode="decimal"' : '') + ' data-ph="—" oninput="hflRowEdit(\'' + tool + '\',' + i + ',\'' + c.id + '\',this)" onblur="hflRowEdit(\'' + tool + '\',' + i + ',\'' + c.id + '\',this)">' + val + '</td>'; }
     }
   });
   return '<tr>' + tds + '</tr>';
@@ -27571,7 +27604,11 @@ document.addEventListener('input', function(ev){
   const raw = el.textContent;
   if (/[a-z]/i.test(raw)) return;
   const d = raw.replace(/\D/g, '').slice(0, 6);
-  const deleting = ev.inputType && ev.inputType.indexOf('delete') === 0;
+  // v7_8_6-61/62 (G3/U6): exactly one character gone also counts as deleting (some keyboards do not report inputType "delete*").
+  // v7_8_6-62: while deleting, the text is left exactly as the user's Backspace made it. Re-formatting it turned "07:03:5" into "0703:5" (first ":" lost);
+  // the time validator above rejects that text and puts it back, so every further Backspace was undone and the box could only be cleared with Select All + Cut.
+  const deleting = (ev.inputType && ev.inputType.indexOf('delete') === 0) || (typeof el.__tmPrev === 'string' && el.__tmPrev.length - raw.length === 1);
+  if (deleting) { el.__tmPrev = raw; return; }
   let out = d.slice(0, 2);
   if (d.length >= 2 && !deleting) out += ':';
   if (d.length > 2) out += d.slice(2, 4);
@@ -27581,6 +27618,7 @@ document.addEventListener('input', function(ev){
     const r = document.createRange(); r.selectNodeContents(el); r.collapse(false);
     const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
   }
+  el.__tmPrev = el.textContent;
 });
 document.addEventListener('keydown', function(e){
   // DigiTrak only: ENTER finishes the entry (same as moving to another field).
@@ -27759,7 +27797,7 @@ function hflRowHTML(tool, i, cfg) {
     if (tool === 'digitrak' && c.id === 'clock') { tds += hflClockCellHTML(tool, i, c); return; }
     const val = (rv[c.id] || '').toString().replace(/</g,'&lt;');
     const idAttr = (c.id === 'comments') ? ` id="hfl-rm-${tool}-${i}"` : '';
-    tds += `<td${idAttr}${c.wide?' style="min-width:120px;text-align:left"':''} contenteditable="true" data-ph="—"
+    tds += `<td${idAttr}${c.wide?' style="min-width:120px;text-align:left"':''} contenteditable="true"${(tool === 'digitrak' && c.id === 'pitch') ? ' inputmode="decimal"' : ''} data-ph="—"
       oninput="hflRowEdit('${tool}',${i},'${c.id}',this)" onblur="hflRowEdit('${tool}',${i},'${c.id}',this)">${val}</td>`;
   });
   return `<tr>${tds}</tr>`;
@@ -30286,7 +30324,8 @@ function hflExDemoXlsx(m) {
     // the warning now lives inside the Safety & Design Check panel as one line.
     bar.classList.remove('show'); bar.style.setProperty('display', 'none', 'important');
     var sc = document.getElementById('safetyContent'), row = document.getElementById('curvRodsRow');
-    if (have && nums.length && sc) {
+    // v7_8_6-58 (U2): the red 'BEND RADIUS VIOLATION' line is no longer shown (rod list is still calculated above); any old line is removed
+    if (false && have && nums.length && sc) {
       var s = (typeof LANG_STRINGS !== 'undefined' && LANG_STRINGS[CURRENT_LANG]) || (typeof LANG_STRINGS !== 'undefined' ? LANG_STRINGS.en : {}) || {};
       var txt = '\u26A0 ' + (s.curvAlertTitle || 'BEND RADIUS VIOLATION').replace(/^[^A-Za-z\u0900-\u097F\u0600-\u06FF]+/, '') + ': ' + nums.length + ' rod(s) below min BR (' + br.toFixed(0) + 'm): ' + nums.map(function (n) { return 'Rod ' + n; }).join(', ');
       if (!row) { row = document.createElement('div'); row.id = 'curvRodsRow'; row.className = 'srow'; sc.appendChild(row); }
@@ -33031,6 +33070,199 @@ var TX = {
   }, true);
 })();
 </script>
+
+<script id="hddTimeTapFix">
+/* v7_8_6-61 (G3/U3): Start / Finish time boxes (4 chart modes + Logbook sheets). Listeners only - no existing function, layout, saved data or LIVE logic is changed.
+   (a) Leaving a time box re-draws the row's time cells, which replaces the box the user was just tapping, so the focus was lost and a 2nd tap was needed.
+       The box that was being tapped is focused again right after the re-draw.
+   (b) The typeable box is small (36 px) inside a wider cell; a tap on the empty part of a Start / Finish cell now puts the cursor in that box.
+   Down-time boxes / reason pickers / buttons are not touched by (b). */
+(function () {
+  'use strict';
+  var RESTORE = /^(?:time-(?:start|finish|down)|hfl-time-(?:start|finish))-manual-/;
+  var TAPEXT = /^(?:time|hfl-time)-(?:start|finish)-manual-/;
+  var lastTap = { id: '', t: 0 };
+  function ok(el) { return !!(el && el.nodeType === 1 && el.id && el.isContentEditable); }
+  function caretEnd(el) {
+    try { var r = document.createRange(); r.selectNodeContents(el); r.collapse(false); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); } catch (e) {}
+  }
+  var PREV = /^(?:hfl-)?time-(?:start|finish|down)-(?:manual|live)-/;   // v7_8_6-62: LIVE (Smart Edit) boxes too
+  document.addEventListener('focusin', function (e) {
+    var el = e.target; if (ok(el) && PREV.test(el.id)) el.__tmPrev = el.textContent;
+  }, true);
+  document.addEventListener('pointerdown', function (e) {
+    var t = (e.target && e.target.closest) ? e.target.closest('[contenteditable="true"]') : null;
+    lastTap = (ok(t) && RESTORE.test(t.id)) ? { id: t.id, t: Date.now() } : { id: '', t: 0 };
+  }, true);
+  document.addEventListener('focusout', function (e) {
+    var el = e.target; if (!ok(el) || !RESTORE.test(el.id)) return;
+    var rt = e.relatedTarget;
+    var id = (rt && rt.id && RESTORE.test(rt.id)) ? rt.id : ((lastTap.id && Date.now() - lastTap.t < 1000) ? lastTap.id : '');
+    if (!id || id === el.id) return;
+    setTimeout(function () {
+      try {
+        var n = document.getElementById(id), a = document.activeElement;
+        if (!n || !n.isContentEditable || a === n) return;
+        if (a && a !== document.body && a.isContentEditable && a.id !== el.id) return;   // focus already went somewhere sensible
+        n.focus(); caretEnd(n);
+      } catch (err) {}
+    }, 0);
+  }, true);
+  document.addEventListener('click', function (e) {
+    try {
+      var t = e.target; if (!t || !t.closest) return;
+      if (t.closest('button,select,option,input,textarea,a,[contenteditable="true"]')) return;
+      var td = t.closest('td'); if (!td) return;
+      var c = td.querySelector('[id^="time-c-"],[id^="hfl-time-c-"]'); if (!c) return;
+      var list = c.querySelectorAll('[contenteditable="true"]'), sp = null;
+      for (var i = 0; i < list.length; i++) { if (TAPEXT.test(list[i].id)) { sp = list[i]; break; } }
+      if (!sp || document.activeElement === sp) return;
+      sp.focus(); caretEnd(sp);
+    } catch (err) {}
+  }, true);
+})();
+</script>
+
+<script id="hddTimeTapFix2">
+/* v7_8_6-63 (G3/U3, second attempt). Listeners only - no existing function, layout, saved data or LIVE logic is changed.
+   Why Build 61 was not enough on the phone: leaving a Start / Finish box redraws ALL four time cells of the row (_timeRenderCell), so the box under the
+   finger is thrown away while the tap is still being processed; the "focusout" of the box that was left is fired on a node that is already removed and
+   never reaches document, so the Build 61 restore did not run. This version does not wait for that event: when a tap starts on a Start / Finish
+   manual box (or on the empty part of its cell) it remembers the box id and, shortly after, puts the cursor in the box if the focus was lost.
+   It stops if the finger moves / scrolls, if a new tap starts, or if the focus is already somewhere sensible. */
+(function () {
+  'use strict';
+  var TAPEXT = /^(?:time|hfl-time)-(?:start|finish)-manual-/;
+  var cur = null;
+  function editable(el) { return !!(el && el.nodeType === 1 && el.isContentEditable); }
+  function caretEnd(el) {
+    try { var r = document.createRange(); r.selectNodeContents(el); r.collapse(false); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); } catch (e) {}
+  }
+  function wantFor(t) {
+    try {
+      if (!t || !t.closest) return '';
+      if (t.closest('button,select,option,input,textarea,a')) return '';
+      var ce = t.closest('[contenteditable="true"]');
+      if (ce) return (ce.id && TAPEXT.test(ce.id)) ? ce.id : '';
+      var td = t.closest('td'); if (!td) return '';
+      var c = td.querySelector('[id^="time-c-"],[id^="hfl-time-c-"]'); if (!c) return '';
+      var list = c.querySelectorAll('[contenteditable="true"]');
+      for (var i = 0; i < list.length; i++) { if (TAPEXT.test(list[i].id)) return list[i].id; }
+    } catch (e) {}
+    return '';
+  }
+  function check(tok) {
+    try {
+      if (cur !== tok) return;
+      var n = document.getElementById(tok.id); if (!editable(n)) return;
+      var a = document.activeElement;
+      if (a === n) return;
+      if (a && a !== document.body && a !== document.documentElement) return;   // the focus went somewhere on purpose: leave it
+      n.focus({ preventScroll: true }); caretEnd(n);
+    } catch (err) {}
+  }
+  document.addEventListener('pointerdown', function (e) {
+    var id = wantFor(e.target);
+    if (!id) { cur = null; return; }
+    var tok = { id: id, x: e.clientX, y: e.clientY };
+    cur = tok;
+    [200, 380, 600, 900, 1300].forEach(function (ms) { setTimeout(function () { check(tok); }, ms); });
+  }, true);
+  document.addEventListener('pointermove', function (e) {
+    if (cur && (Math.abs(e.clientX - cur.x) > 12 || Math.abs(e.clientY - cur.y) > 12)) cur = null;
+  }, true);
+  document.addEventListener('pointercancel', function () { cur = null; }, true);
+  document.addEventListener('scroll', function () { cur = null; }, true);
+})();
+</script>
+
+
+<script id="hddAngleKeypad">
+/* v7_8_6-66: now also the CALCULATED ANGLE cells (ids ca-N, ca-zdc-N, ca-zdcc-N, ca-cw-N, ca-cwc-N, ca-tbd-N; always the 3rd cell of a chart row).
+   v7_8_6-65: "-" in the ACTUAL ANGLE cells of the 4 chart modes. Same idea as Build 64 (DigiTrak Logbook PITCH/ANGLE): Gboard keeps a first "-" inside
+   the keyboard when the field has no inputmode; with inputmode="decimal" it types at once. Only that ONE attribute is set - no text, key, value, format or
+   layout is touched. The Actual Angle cell has no id/class and is created by 4+ templates (and ~212 static rows), so instead of editing every template it is
+   recognised by position: it is the cell two places before the START TIME cell (ACTUAL ANGLE, ACTUAL DEPTH, START TIME), in every chart-mode row. Works in any
+   language (no header text used). Logbook sheets use "hfl-time-c-start-" ids, so they never match. */
+(function () {
+  'use strict';
+  function mark(t) {
+    try {
+      if (!t || !t.closest) return;
+      var td = t.closest('td');
+      if (!td || td.getAttribute('contenteditable') !== 'true' || td.hasAttribute('inputmode')) return;
+      var n1 = td.nextElementSibling, n2 = n1 && n1.nextElementSibling;
+      if (n2 && n2.querySelector('[id^="time-c-start-"]')) { td.setAttribute('inputmode', 'decimal'); return; }   // Actual Angle (2 cells before START TIME)
+      var tr = td.parentElement;
+      if (/^ca-/.test(td.id) && td.cellIndex === 2 && tr && tr.querySelector('[id^="time-c-start-"]')) td.setAttribute('inputmode', 'decimal');   // Calculated Angle (3rd cell of a chart row)
+    } catch (e) {}
+  }
+  document.addEventListener('pointerdown', function (e) { mark(e.target); }, true);
+  document.addEventListener('focusin', function (e) { mark(e.target); }, true);
+})();
+</script>
+
+<script id="hddPlaceholderFix">
+/* v7_8_6-68: (a) also table cells without data-ph (ZDC Remarks), (b) City mode Rod 0 Actual Angle / Actual Depth dash - see below.
+   v7_8_6-67: the grey placeholder ("0%", "—", ...) comes back when a cell is emptied by the user. The placeholder is drawn by CSS only when the cell is
+   truly empty (td[contenteditable]:empty:before ...). After the user deletes what was typed, the browser often leaves a <br> (or a blank text) inside the cell, so the
+   cell is "not empty" and the placeholder stays hidden - but only in columns whose own blur code does not rewrite the cell. This listener runs after the
+   cell loses focus (and after every blur handler of the app has finished, setTimeout 0) and, ONLY when the cell contains nothing but blank text / <br> / <div><br></div>,
+   removes those leftovers. textContent.trim() is the same before and after; a cell with any other element (icons, spans), any real character, or one that is
+   focused again, or that the app already re-drew (no longer in the page) is left alone. No value, handler, format, layout or saved data changes. */
+(function () {
+  'use strict';
+  var BLANK = /^[\s\u200B\u200C\u200D\u00A0\uFEFF]*$/;
+  function onlyBlank(n) {
+    for (var c = n.firstChild; c; c = c.nextSibling) {
+      if (c.nodeType === 3) { if (!BLANK.test(c.nodeValue)) return false; }
+      else if (c.nodeType === 1) { var tn = c.tagName; if (tn !== 'BR' && tn !== 'DIV') return false; if (!onlyBlank(c)) return false; }
+      else if (c.nodeType !== 8) return false;
+    }
+    return true;
+  }
+  function clean(el) {
+    try {
+      if (!el || !el.isConnected || !el.hasAttribute) return;
+      if (!el.hasAttribute('data-ph') && el.tagName !== 'TD') return;   // v7_8_6-68: also table cells whose placeholder is drawn by an id rule (td[id^="rm-"]:empty:before)
+      var ce = el.getAttribute('contenteditable');
+      if (ce !== 'true' && ce !== '' && ce !== 'plaintext-only') return;
+      if (!el.firstChild) return;                       // already truly empty: the placeholder shows
+      if (document.activeElement === el) return;        // focus came back: leave it
+      if (!onlyBlank(el)) return;
+      el.textContent = '';
+    } catch (e) {}
+  }
+  /* v7_8_6-68: City mode, Rod 0 row: Actual Angle and Actual Depth are written as the real text "-" (an em dash, template: <td>-</td><td>-</td>), not as a
+     placeholder, so typing adds to it ("-5" became em dash + "-5") and after deleting everything no placeholder came back. When the user starts to edit such a
+     cell (tap / focus, Smart Edit ON), the dash is turned into a normal placeholder: text removed, data-ph="-" set (the same CSS look as every other empty
+     Actual cell). Only the two cells just before the START TIME cell of a chart row, only if their whole text is exactly the dash. Untouched until edited, so
+     the table as displayed / exported before any edit is unchanged. */
+  function dashToPlaceholder(t) {
+    try {
+      if (!t || !t.closest) return;
+      var td = t.closest('td');
+      if (!td || td.hasAttribute('data-ph') || td.getAttribute('contenteditable') !== 'true') return;
+      if (td.textContent !== '\u2014' || td.children.length) return;
+      var n1 = td.nextElementSibling, n2 = n1 && n1.nextElementSibling;
+      var isDepth = n1 && n1.querySelector('[id^="time-c-start-"]');
+      var isAngle = n2 && n2.querySelector('[id^="time-c-start-"]');
+      if (!isDepth && !isAngle) return;
+      td.setAttribute('data-ph', '\u2014'); td.textContent = '';
+    } catch (e) {}
+  }
+  document.addEventListener('pointerdown', function (e) { dashToPlaceholder(e.target); }, true);
+  document.addEventListener('focusin', function (e) { dashToPlaceholder(e.target); }, true);
+  document.addEventListener('focusout', function (e) {
+    var el = e.target;
+    if (!el || el.nodeType !== 1) return;
+    setTimeout(function () { clean(el); }, 0);
+  }, true);
+})();
+</script>
+
+
+
 
 <script>
 /* v7_8_6-46 — Bore Chart Modes 2 / 3 / 4: typed ACTUAL ANGLE / ACTUAL DEPTH / REMARKS (and per-rod Survey GPS / Survey RL)
